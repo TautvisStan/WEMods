@@ -1,4 +1,6 @@
 # HealthCheats
+Now rebindable!
+
 Hold `Left Alt` to apply that to your target, otherwise it will applied to your character instead.
 List of cheats:
 - `Q` - Sets health to max
