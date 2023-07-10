@@ -1,0 +1,10 @@
+{
+  "namespace": "GeeEm",
+  "name": "WWEBeltsPack",
+  "description": "This mod features 15 WWE + NXT belt textures",
+  "version_number": "1.0.0",
+  "dependencies": [
+    "BepInEx-BepInExPack-5.4.2100"
+  ],
+  "website_url": ""
+}
