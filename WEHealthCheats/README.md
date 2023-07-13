@@ -13,3 +13,5 @@ List of cheats:
 - `F` - Sets adrenaline to 0
 - `G` - Sets adrenaline timer to max
 - `H` - Ends the adrenaline timer
+- `J` - Injures the character
+- `K` - Removes character injury
