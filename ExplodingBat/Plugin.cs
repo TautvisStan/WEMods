@@ -12,7 +12,7 @@ namespace ExplodingBarbedWireBat
     {
         public const string PluginGuid = "GeeEm.WrestlingEmpire.ExplodingBarbedWireBat";
         public const string PluginName = "ExplodingBarbedWireBat";
-        public const string PluginVer = "1.0.0";
+        public const string PluginVer = "1.0.1";
 
         internal static ManualLogSource Log;
         internal readonly static Harmony Harmony = new(PluginGuid);
@@ -48,82 +48,83 @@ namespace ExplodingBarbedWireBat
             Harmony.UnpatchSelf();
             Logger.LogInfo($"Unloaded {PluginName}!");
         }
-    }
-    [HarmonyPatch(typeof(GMIKIMHFABP))]
-    public class GMIKIMHFABPPatch
-    {
-        [HarmonyPostfix]
-        [HarmonyPatch("ABIDABBEJMO")]
-        static void Postfix(GMIKIMHFABP __instance, int BCIDGGGOALA, int EPBLHHBCDEA, float AHLIFAAOOIE, float MAEAJHAIKPP, float MEHJAALLLFO, float JOEIIJHGPIK)
+        [HarmonyPatch(typeof(DJEKCMMMFJM))]
+        public class DJEKCMMMFJMPatch
         {
-            if (BCIDGGGOALA > 0)
+            [HarmonyPostfix]
+            [HarmonyPatch(nameof(DJEKCMMMFJM.HEDAFGGNBMD))]
+            static void Postfix(DJEKCMMMFJM __instance, int HGCAOGIEJLB, int JCEJPDHEDFD, float IIHKEILOOCC, float FKHCFBFKABO, float ENKKJBHNNGO, float OJJHJAFBDCH)
             {
-                var x = AHLIFAAOOIE;
-                var y = MAEAJHAIKPP;
-                var z = MEHJAALLLFO;
-                HGBIFNCNACK hgbifncnack = GCOCDCCEALD.IAKLPJIDIGC[BCIDGGGOALA];
-                if (hgbifncnack.FLAJNJNPDCB == "Barbed Bat")
+                if (HGCAOGIEJLB > 0)
                 {
-                    if (AHLIFAAOOIE == 0f && MAEAJHAIKPP == 0f && MEHJAALLLFO == 0f)
+                    var x = IIHKEILOOCC;
+                    var y = FKHCFBFKABO;
+                    var z = ENKKJBHNNGO;
+                    IAFGPLGNLKO hgbifncnack = IDHJEMEKEMM.EOBOEGHCHGG[HGCAOGIEJLB];
+                    if (hgbifncnack.DEIOJMDIMNM == "Barbed Bat")
                     {
-                        x = hgbifncnack.PPFFBIPHOEE;
-                        y = hgbifncnack.EDHBIOFAKNL;
-                        z = hgbifncnack.OIHBMKLFEBJ;
-                    }
-                    EFIBMNEKJFB.COMPLDGIDLF(3, 2, new UnityEngine.Color(10f, 10f, 10f), Plugin.configSize.Value, null, x, y, z, 0f, 0f, 0f, 1);
-                }
-            }
-        }
-    }
-    [HarmonyPatch(typeof(HGBIFNCNACK))]
-    public class HGBIFNCNACKPatch
-    {
-        [HarmonyPostfix]
-        [HarmonyPatch("BNEPKIKILOB")]
-        static void Postfix(HGBIFNCNACK __instance)
-        {
-            if (Plugin.configExplosionOnThrow.Value)
-            {
-                if (__instance.FLAJNJNPDCB == "Barbed Bat")
-                {
-                    int test = 1;
-                    while (test <= AMJONEKIAID.MOGFLKPBLIK)
-                    {
-                        GMIKIMHFABP gmikimhfabp = AMJONEKIAID.NCPIJJFEDFL[test];
-                        if (__instance.EDHBIOFAKNL > gmikimhfabp.EDHBIOFAKNL && __instance.EDHBIOFAKNL < gmikimhfabp.CPKMGEBANCB(3) + __instance.GDDJHEAGPLH / 2f && __instance.JDENBNFMLGJ == 0)
+                        if (IIHKEILOOCC == 0f && FKHCFBFKABO == 0f && ENKKJBHNNGO == 0f)
                         {
-                            int num = 0;
-                            int num2 = gmikimhfabp.BGBOCAMEIFN();
-                            if (num2 >= 3)
-                            {
-                                num = gmikimhfabp.KBBGONBBJEL(__instance.PPFFBIPHOEE, __instance.OIHBMKLFEBJ, __instance.KCIBKFDHPPD);
-                            }
-                            else if (__instance.IJICAMIHPFF(gmikimhfabp.PPFFBIPHOEE, __instance.EDHBIOFAKNL, gmikimhfabp.OIHBMKLFEBJ, 0f) > 0)
-                            {
-                                if (num2 == 2)
-                                {
-                                    num = 2;
-                                }
-                                else
-                                {
-                                    num = 1;
-                                }
-                            }
-                            if (num2 < 0 && __instance.EDHBIOFAKNL < gmikimhfabp.CPKMGEBANCB(1) - 5f)
-                            {
-                                num = 0;
-                            }
-                            if (num > 0)
-                            {
-                                float num3 = (__instance.PPFFBIPHOEE + gmikimhfabp.PPFFBIPHOEE) / 2f;
-                                float num4 = (__instance.OIHBMKLFEBJ + gmikimhfabp.OIHBMKLFEBJ) / 2f;
-                                EFIBMNEKJFB.COMPLDGIDLF(3, 2, new UnityEngine.Color(10f, 10f, 10f), Plugin.configSize.Value, null, num3, __instance.EDHBIOFAKNL, num4, 0f, 0f, 0f, 1);
-                            }
+                            x = hgbifncnack.DCLLKPILCBP;
+                            y = hgbifncnack.BEHMHIINOGM;
+                            z = hgbifncnack.FFEONFCEHDF;
                         }
-                        test++;
+                        CLJNCLLMLAO.MPPNGEHNAJL(3, 2, new UnityEngine.Color(10f, 10f, 10f), Plugin.configSize.Value, null, x, y, z, 0f, 0f, 0f, 1);
+                    }
+                }
+            }
+        }
+        [HarmonyPatch(typeof(IAFGPLGNLKO))]
+        public class IAFGPLGNLKOPatch
+        {
+            [HarmonyPostfix]
+            [HarmonyPatch(nameof(IAFGPLGNLKO.NOCELPOHHIO))]
+            static void NOCELPOHHIOPostfix(IAFGPLGNLKO __instance)
+            {
+                if (Plugin.configExplosionOnThrow.Value)
+                {
+                    if (__instance.DEIOJMDIMNM == "Barbed Bat")
+                    {
+                        int test = 1;
+                        while (test <= FFKMIEMAJML.HIKHEJJKJAE)
+                        {
+                            DJEKCMMMFJM gmikimhfabp = FFKMIEMAJML.FJCOPECCEKN[test];
+                            if (__instance.BEHMHIINOGM > gmikimhfabp.BEHMHIINOGM && __instance.BEHMHIINOGM < gmikimhfabp.CODHLHPJMGJ(3) + __instance.IADLOLCHIBF / 2f && __instance.PEANOKFAJJJ == 0)
+                            {
+                                int num = 0;
+                                int num2 = gmikimhfabp.CNFBJAIKFNO();
+                                if (num2 >= 3)
+                                {
+                                    num = gmikimhfabp.FFKIMJPLGHH(__instance.DCLLKPILCBP, __instance.FFEONFCEHDF, __instance.AEAMFLIMHGN);
+                                }
+                                else if (__instance.DLADNAFPGPJ(gmikimhfabp.DCLLKPILCBP, __instance.BEHMHIINOGM, gmikimhfabp.FFEONFCEHDF, 0f) > 0)
+                                {
+                                    if (num2 == 2)
+                                    {
+                                        num = 2;
+                                    }
+                                    else
+                                    {
+                                        num = 1;
+                                    }
+                                }
+                                if (num2 < 0 && __instance.BEHMHIINOGM < gmikimhfabp.CODHLHPJMGJ(1) - 5f)
+                                {
+                                    num = 0;
+                                }
+                                if (num > 0)
+                                {
+                                    float num3 = (__instance.DCLLKPILCBP + gmikimhfabp.DCLLKPILCBP) / 2f;
+                                    float num4 = (__instance.FFEONFCEHDF + gmikimhfabp.FFEONFCEHDF) / 2f;
+                                    CLJNCLLMLAO.MPPNGEHNAJL(3, 2, new UnityEngine.Color(10f, 10f, 10f), Plugin.configSize.Value, null, num3, __instance.BEHMHIINOGM, num4, 0f, 0f, 0f, 1);
+                                }
+                            }
+                            test++;
+                        }
                     }
                 }
             }
         }
     }
+   
 }

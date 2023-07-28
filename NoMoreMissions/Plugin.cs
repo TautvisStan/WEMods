@@ -11,7 +11,7 @@ namespace NoMoreMissions
     {
         public const string PluginGuid = "GeeEm.WrestlingEmpire.NoMoreMissions";
         public const string PluginName = "NoMoreMissions";
-        public const string PluginVer = "1.0.0";
+        public const string PluginVer = "1.0.1";
 
         internal static ManualLogSource Log;
         internal readonly static Harmony Harmony = new(PluginGuid);
@@ -38,53 +38,55 @@ namespace NoMoreMissions
             Harmony.UnpatchSelf();
             Logger.LogInfo($"Unloaded {PluginName}!");
         }
-    }
-    [HarmonyPatch(typeof(Scene_Titles))]
-    public static class Scene_Titles_Patch
-    {
-        [HarmonyPostfix]
-        [HarmonyPatch("Start")]
-        public static void Start_Patch()
+
+        [HarmonyPatch(typeof(Scene_Titles))]
+        public static class Scene_Titles_Patch
         {
-            if(!Plugin.loaded)
+            [HarmonyPostfix]
+            [HarmonyPatch(nameof(Scene_Titles.Start))]
+            public static void Start_Patch()
             {
-                Plugin.loaded = true;
-                for (int i = 1; i <= Characters.no_chars; i++)
+                if (!Plugin.loaded)
                 {
-                    if(Characters.c[i].promo >= 501 && Characters.c[i].promo < 600)
-                        Characters.c[i].promo = 0;
+                    Plugin.loaded = true;
+                    for (int i = 1; i <= Characters.no_chars; i++)
+                    {
+                        if (Characters.c[i].promo >= 501 && Characters.c[i].promo < 600)
+                            Characters.c[i].promo = 0;
+                    }
                 }
             }
         }
-    }
-    [HarmonyPatch(typeof(DNMADBBLNDC))]
-    public static class DNMADBBLNDC_Patch
-    {
-        [HarmonyPostfix]
-        [HarmonyPatch("EFGMHNHMMME")]
-        public static void EFGMHNHMMME_Patch()
+        [HarmonyPatch(typeof(FMHJNNGPMKG))]
+        public static class FMHJNNGPMKG_Patch
         {
-            Character character2 = Characters.c[DNMADBBLNDC.EFNLJOAIMHB];
-            if(character2.promo >= 501 && character2.promo < 600)
+            [HarmonyPostfix]
+            [HarmonyPatch(nameof(FMHJNNGPMKG.KLEAPOMKONL))]
+            public static void KLEAPOMKONL_Patch()
             {
-                character2.promo = 0;
-            }
-            if (DNMADBBLNDC.NKNDDJEALNN >= 501 && DNMADBBLNDC.NKNDDJEALNN < 600)
-            {
-                DNMADBBLNDC.NKNDDJEALNN = 0;
-            }
+                Character character2 = Characters.c[FMHJNNGPMKG.GHCBKFNBGGN];
+                if (character2.promo >= 501 && character2.promo < 600)
+                {
+                    character2.promo = 0;
+                }
+                if (FMHJNNGPMKG.BGHNMCBLGMF >= 501 && FMHJNNGPMKG.BGHNMCBLGMF < 600)
+                {
+                    FMHJNNGPMKG.BGHNMCBLGMF = 0;
+                }
 
-        }
-        [HarmonyPostfix]
-        [HarmonyPatch("OGCDDEOKIFB")]
-        public static void OGCDDEOKIFB_Patch(ref int __result)
-        {
-            if (DNMADBBLNDC.NKNDDJEALNN >= 501 && DNMADBBLNDC.NKNDDJEALNN < 600)
-            {
-                DNMADBBLNDC.NKNDDJEALNN = 0;
-                __result = 0;
             }
+            [HarmonyPostfix]
+            [HarmonyPatch(nameof(FMHJNNGPMKG.AEFLNJDIKGE))]
+            public static void AEFLNJDIKGE_Patch(ref int __result)
+            {
+                if (FMHJNNGPMKG.BGHNMCBLGMF >= 501 && FMHJNNGPMKG.BGHNMCBLGMF < 600)
+                {
+                    FMHJNNGPMKG.BGHNMCBLGMF = 0;
+                    __result = 0;
+                }
 
+            }
         }
     }
+
 }

@@ -14,7 +14,7 @@ namespace KeyboardSharing
     {
         public const string PluginGuid = "GeeEm.WrestlingEmpire.KeyboardSharing";
         public const string PluginName = "KeyboardSharing";
-        public const string PluginVer = "1.0.0";
+        public const string PluginVer = "1.0.1";
 
         internal static ManualLogSource Log;
         internal readonly static Harmony Harmony = new(PluginGuid);
@@ -265,34 +265,34 @@ namespace KeyboardSharing
             {
                 if (Input.GetKeyDown(ConfigRemove.Value))
                 {
-                    if (KeyboardInstance1 > IODAJCMGILB.LGCFNINPKIJ)
+                    if (KeyboardInstance1 > MFCAJFKKFFE.DANGIDINEGE)
                     {
                         KeyboardInstance1 = -1;
                     }
-                    if (KeyboardInstance2 > IODAJCMGILB.LGCFNINPKIJ)
+                    if (KeyboardInstance2 > MFCAJFKKFFE.DANGIDINEGE)
                     {
                         KeyboardInstance2 = -1;
                     }
-                    if (KeyboardInstance3 > IODAJCMGILB.LGCFNINPKIJ)
+                    if (KeyboardInstance3 > MFCAJFKKFFE.DANGIDINEGE)
                     {
                         KeyboardInstance3 = -1;
                     }
                     bool removed = false;
                     if (KeyboardInstance3 != -1)
                     {
-                        IODAJCMGILB.LGCFNINPKIJ--;
+                        MFCAJFKKFFE.DANGIDINEGE--;
                         KeyboardInstance3 = -1;
                         removed = true;
                     }
                     if (KeyboardInstance2 != -1 && !removed)
                     {
-                        IODAJCMGILB.LGCFNINPKIJ--;
+                        MFCAJFKKFFE.DANGIDINEGE--;
                         KeyboardInstance2 = -1;
                         removed = true;
                     }
                     if (KeyboardInstance1 != -1 && !removed)
                     {
-                        IODAJCMGILB.LGCFNINPKIJ--;
+                        MFCAJFKKFFE.DANGIDINEGE--;
                         KeyboardInstance1 = -1;
                         removed = true;
                     }
@@ -300,278 +300,278 @@ namespace KeyboardSharing
                 if (Input.GetKeyDown(ConfigAdd.Value))
                 {
                     bool added = false;
-                    if (KeyboardInstance1 > IODAJCMGILB.LGCFNINPKIJ)
+                    if (KeyboardInstance1 > MFCAJFKKFFE.DANGIDINEGE)
                     {
                         KeyboardInstance1 = -1;
                     }
-                    if (KeyboardInstance2 > IODAJCMGILB.LGCFNINPKIJ)
+                    if (KeyboardInstance2 > MFCAJFKKFFE.DANGIDINEGE)
                     {
                         KeyboardInstance2 = -1;
                     }
-                    if (KeyboardInstance3 > IODAJCMGILB.LGCFNINPKIJ)
+                    if (KeyboardInstance3 > MFCAJFKKFFE.DANGIDINEGE)
                     {
                         KeyboardInstance3 = -1;
                     }
                     if (KeyboardInstance1 == -1)
                     {
-                            int i = IODAJCMGILB.LGCFNINPKIJ + 1;
-                            IODAJCMGILB.LEGPGICAAJI[i] = new KDOHFMKNHOB();
-                            IODAJCMGILB.LEGPGICAAJI[i].NMKACNOOPPC = 1;  //playernumber
+                            int i = MFCAJFKKFFE.DANGIDINEGE + 1;
+                            MFCAJFKKFFE.FBOPLHBCBFI[i] = new IMBAMKCPLIF();
+                            MFCAJFKKFFE.FBOPLHBCBFI[i].DHBIELODIAN = 1;  //playernumber
                             KeyboardInstance1 = i;
-                            IODAJCMGILB.LEGPGICAAJI[i].FLFDNLEILGC = 1;
-                            IODAJCMGILB.LEGPGICAAJI[i].AHPNDLJNCFK = 0;
-                            IODAJCMGILB.LEGPGICAAJI[i].FLAJNJNPDCB = "Virtual";
-                            if (JGKBBDPDIBC.GICLAJCKKBK <= 1)
+                            MFCAJFKKFFE.FBOPLHBCBFI[i].FKPIGOJCEAK = 1;
+                            MFCAJFKKFFE.FBOPLHBCBFI[i].FNIDHNNCLBB = 0;
+                            MFCAJFKKFFE.FBOPLHBCBFI[i].DEIOJMDIMNM = "Virtual";
+                            if (LFNJDEGJLLJ.KGCBLLFLIJO <= 1)
                             {
-                                IODAJCMGILB.LEGPGICAAJI[i].AHPNDLJNCFK = 1;
-                                IODAJCMGILB.LEGPGICAAJI[i].FLAJNJNPDCB = "FakeKeyboard";
+                                MFCAJFKKFFE.FBOPLHBCBFI[i].FNIDHNNCLBB = 1;
+                                MFCAJFKKFFE.FBOPLHBCBFI[i].DEIOJMDIMNM = "FakeKeyboard";
                             }
-                        IODAJCMGILB.LGCFNINPKIJ++;
+                        MFCAJFKKFFE.DANGIDINEGE++;
                         added = true;
                     }
                     if (KeyboardInstance2 == -1 && !added)
                     {
-                            int i = IODAJCMGILB.LGCFNINPKIJ + 1;
-                            IODAJCMGILB.LEGPGICAAJI[i] = new KDOHFMKNHOB();
-                            IODAJCMGILB.LEGPGICAAJI[i].NMKACNOOPPC = 2;  //playernumber
+                            int i = MFCAJFKKFFE.DANGIDINEGE + 1;
+                            MFCAJFKKFFE.FBOPLHBCBFI[i] = new IMBAMKCPLIF();
+                            MFCAJFKKFFE.FBOPLHBCBFI[i].DHBIELODIAN = 2;  //playernumber
                             KeyboardInstance2 = i;
-                            IODAJCMGILB.LEGPGICAAJI[i].FLFDNLEILGC = 1;
-                            IODAJCMGILB.LEGPGICAAJI[i].AHPNDLJNCFK = 0;
-                            IODAJCMGILB.LEGPGICAAJI[i].FLAJNJNPDCB = "Virtual";
-                            if (JGKBBDPDIBC.GICLAJCKKBK <= 1)
+                            MFCAJFKKFFE.FBOPLHBCBFI[i].FKPIGOJCEAK = 1;
+                            MFCAJFKKFFE.FBOPLHBCBFI[i].FNIDHNNCLBB = 0;
+                            MFCAJFKKFFE.FBOPLHBCBFI[i].DEIOJMDIMNM = "Virtual";
+                            if (LFNJDEGJLLJ.KGCBLLFLIJO <= 1)
                             {
-                                IODAJCMGILB.LEGPGICAAJI[i].AHPNDLJNCFK = 1;
-                                IODAJCMGILB.LEGPGICAAJI[i].FLAJNJNPDCB = "FakeKeyboard";
+                                MFCAJFKKFFE.FBOPLHBCBFI[i].FNIDHNNCLBB = 1;
+                                MFCAJFKKFFE.FBOPLHBCBFI[i].DEIOJMDIMNM = "FakeKeyboard";
                             }
-                        IODAJCMGILB.LGCFNINPKIJ++;
+                        MFCAJFKKFFE.DANGIDINEGE++;
                         added = true;
                     }
                     if (KeyboardInstance3 == -1 && !added)
                     {
-                            int i = IODAJCMGILB.LGCFNINPKIJ + 1;
-                            IODAJCMGILB.LEGPGICAAJI[i] = new KDOHFMKNHOB();
-                            IODAJCMGILB.LEGPGICAAJI[i].NMKACNOOPPC = 3;  //playernumber
+                            int i = MFCAJFKKFFE.DANGIDINEGE + 1;
+                            MFCAJFKKFFE.FBOPLHBCBFI[i] = new IMBAMKCPLIF();
+                            MFCAJFKKFFE.FBOPLHBCBFI[i].DHBIELODIAN = 3;  //playernumber
                             KeyboardInstance3 = i;
-                            IODAJCMGILB.LEGPGICAAJI[i].FLFDNLEILGC = 1;
-                            IODAJCMGILB.LEGPGICAAJI[i].AHPNDLJNCFK = 0;
-                            IODAJCMGILB.LEGPGICAAJI[i].FLAJNJNPDCB = "Virtual";
-                            if (JGKBBDPDIBC.GICLAJCKKBK <= 1)
+                            MFCAJFKKFFE.FBOPLHBCBFI[i].FKPIGOJCEAK = 1;
+                            MFCAJFKKFFE.FBOPLHBCBFI[i].FNIDHNNCLBB = 0;
+                            MFCAJFKKFFE.FBOPLHBCBFI[i].DEIOJMDIMNM = "Virtual";
+                            if (LFNJDEGJLLJ.KGCBLLFLIJO <= 1)
                             {
-                                IODAJCMGILB.LEGPGICAAJI[i].AHPNDLJNCFK = 1;
-                                IODAJCMGILB.LEGPGICAAJI[i].FLAJNJNPDCB = "FakeKeyboard";
+                                MFCAJFKKFFE.FBOPLHBCBFI[i].FNIDHNNCLBB = 1;
+                                MFCAJFKKFFE.FBOPLHBCBFI[i].DEIOJMDIMNM = "FakeKeyboard";
                             }
-                        IODAJCMGILB.LGCFNINPKIJ++;
+                        MFCAJFKKFFE.DANGIDINEGE++;
                         added = true;
                     }
                 }
             }
         }
     }
-    [HarmonyPatch(typeof(KDOHFMKNHOB))]
-    public static class KDOHFMKNHOB_Patch
+    [HarmonyPatch(typeof(IMBAMKCPLIF))]
+    public static class IMBAMKCPLIF_Patch
     {
         [HarmonyPostfix]
-        [HarmonyPatch("GCGDPDLEHPH")]
-        public static void GCGDPDLEHPH_Patch(KDOHFMKNHOB __instance)
+        [HarmonyPatch("PAOEHLEJKIJ")]
+        public static void PAOEHLEJKIJ_Patch(IMBAMKCPLIF __instance)
         { 
-            if (__instance.NMKACNOOPPC == Plugin.KeyboardInstance1 && __instance.AHPNDLJNCFK == 1 && __instance.FLFDNLEILGC > 0) //P2
+            if (__instance.DHBIELODIAN == Plugin.KeyboardInstance1 && __instance.FNIDHNNCLBB == 1 && __instance.FKPIGOJCEAK > 0) //P2
             {
-                __instance.NEBLDBJGDAI = 0f;
-                __instance.KHMFMDHIDPH = 0f;
-                __instance.HFEHAADPDHP[1] = 0;
-                __instance.HFEHAADPDHP[2] = 0;
-                __instance.HFEHAADPDHP[3] = 0;
-                __instance.HFEHAADPDHP[4] = 0;
-                __instance.HFEHAADPDHP[5] = 0;
-                __instance.HFEHAADPDHP[6] = 0;
-                __instance.NLCCPJBCLHD = 0;
+                __instance.PEPIFGLNPDE = 0f;
+                __instance.LOGLAAGLFAH = 0f;
+                __instance.HNGCFDLDGBF[1] = 0;
+                __instance.HNGCFDLDGBF[2] = 0;
+                __instance.HNGCFDLDGBF[3] = 0;
+                __instance.HNGCFDLDGBF[4] = 0;
+                __instance.HNGCFDLDGBF[5] = 0;
+                __instance.HNGCFDLDGBF[6] = 0;
+                __instance.FHCIFKEGOOH = 0;
                 if (Input.GetKey(Plugin.ConfigJoin1.Value))
                 {
-                    __instance.BBEPHLPOHNL(0);
+                    __instance.MLCEAOMCNFK(0);
                 }
                 if (Input.GetKey(Plugin.ConfigUp1.Value))
                     {
-                        __instance.NEBLDBJGDAI = 1f;
+                        __instance.PEPIFGLNPDE = 1f;
                     }
                     if (Input.GetKey(Plugin.ConfigDown1.Value))
                     {
-                        __instance.NEBLDBJGDAI = -1f;
+                        __instance.PEPIFGLNPDE = -1f;
                     }
                     if (Input.GetKey(Plugin.ConfigRight1.Value))
                     {
-                        __instance.KHMFMDHIDPH = 1f;
+                        __instance.LOGLAAGLFAH = 1f;
                     }
                     if (Input.GetKey(Plugin.ConfigLeft1.Value))
                     {
-                        __instance.KHMFMDHIDPH = -1f;
+                        __instance.LOGLAAGLFAH = -1f;
                     }
                     if (Input.GetKey(Plugin.ConfigS1.Value))
                     {
-                        __instance.HFEHAADPDHP[1] = 1;
+                        __instance.HNGCFDLDGBF[1] = 1;
                     }
                     if (Input.GetKey(Plugin.ConfigX1.Value))
                     {
-                        __instance.HFEHAADPDHP[2] = 1;
+                        __instance.HNGCFDLDGBF[2] = 1;
                     }
                     if (Input.GetKey(Plugin.ConfigZ1.Value))
                     {
-                        __instance.HFEHAADPDHP[3] = 1;
+                        __instance.HNGCFDLDGBF[3] = 1;
                     }
                     if (Input.GetKey(Plugin.ConfigA1.Value))
                     {
-                        __instance.HFEHAADPDHP[4] = 1;
+                        __instance.HNGCFDLDGBF[4] = 1;
                     }
                     if (Input.GetKey(Plugin.ConfigSpace1.Value))
                     {
-                        __instance.HFEHAADPDHP[5] = 1;
+                        __instance.HNGCFDLDGBF[5] = 1;
                     }
                     if (Input.GetKey(Plugin.ConfigShift1.Value))
                     {
-                        __instance.HFEHAADPDHP[6] = -1;
+                        __instance.HNGCFDLDGBF[6] = -1;
                     }
                     if (Input.GetKey(Plugin.ConfigControl1.Value))
                     {
-                        __instance.HFEHAADPDHP[6] = 1;
+                        __instance.HNGCFDLDGBF[6] = 1;
                     }
                     if (Input.GetKey(Plugin.ConfigTab1.Value))
                     {
-                        __instance.NLCCPJBCLHD = 1f;
+                        __instance.FHCIFKEGOOH = 1f;
                     }
-                    __instance.IKGCLCIAOOL = __instance.KHMFMDHIDPH;
-                    __instance.ONCJKLOEGEF = __instance.NEBLDBJGDAI;
+                    __instance.FHCIFKEGOOH = __instance.LOGLAAGLFAH;
+                    __instance.PPMGGOHBOLM = __instance.PEPIFGLNPDE;
             }
-            if (__instance.NMKACNOOPPC == Plugin.KeyboardInstance2 && __instance.AHPNDLJNCFK == 1 && __instance.FLFDNLEILGC > 0) //P3
+            if (__instance.DHBIELODIAN == Plugin.KeyboardInstance2 && __instance.FNIDHNNCLBB == 1 && __instance.FKPIGOJCEAK > 0) //P3
             {
-                __instance.NEBLDBJGDAI = 0f;
-                __instance.KHMFMDHIDPH = 0f;
-                __instance.HFEHAADPDHP[1] = 0;
-                __instance.HFEHAADPDHP[2] = 0;
-                __instance.HFEHAADPDHP[3] = 0;
-                __instance.HFEHAADPDHP[4] = 0;
-                __instance.HFEHAADPDHP[5] = 0;
-                __instance.HFEHAADPDHP[6] = 0;
-                __instance.NLCCPJBCLHD = 0;
+                __instance.PEPIFGLNPDE = 0f;
+                __instance.LOGLAAGLFAH = 0f;
+                __instance.HNGCFDLDGBF[1] = 0;
+                __instance.HNGCFDLDGBF[2] = 0;
+                __instance.HNGCFDLDGBF[3] = 0;
+                __instance.HNGCFDLDGBF[4] = 0;
+                __instance.HNGCFDLDGBF[5] = 0;
+                __instance.HNGCFDLDGBF[6] = 0;
+                __instance.FHCIFKEGOOH = 0;
 
                 if (Input.GetKey(Plugin.ConfigJoin2.Value))
                 {
-                    __instance.BBEPHLPOHNL(0);
+                    __instance.MLCEAOMCNFK(0);
                 }
                 if (Input.GetKey(Plugin.ConfigUp2.Value))
                 {
-                    __instance.NEBLDBJGDAI = 1f;
+                    __instance.PEPIFGLNPDE = 1f;
                 }
                 if (Input.GetKey(Plugin.ConfigDown2.Value))
                 {
-                    __instance.NEBLDBJGDAI = -1f;
+                    __instance.PEPIFGLNPDE = -1f;
                 }
                 if (Input.GetKey(Plugin.ConfigRight2.Value))
                 {
-                    __instance.KHMFMDHIDPH = 1f;
+                    __instance.LOGLAAGLFAH = 1f;
                 }
                 if (Input.GetKey(Plugin.ConfigLeft2.Value))
                 {
-                    __instance.KHMFMDHIDPH = -1f;
+                    __instance.LOGLAAGLFAH = -1f;
                 }
                 if (Input.GetKey(Plugin.ConfigS2.Value))
                 {
-                    __instance.HFEHAADPDHP[1] = 1;
+                    __instance.HNGCFDLDGBF[1] = 1;
                 }
                 if (Input.GetKey(Plugin.ConfigX2.Value))
                 {
-                    __instance.HFEHAADPDHP[2] = 1;
+                    __instance.HNGCFDLDGBF[2] = 1;
                 }
                 if (Input.GetKey(Plugin.ConfigZ2.Value))
                 {
-                    __instance.HFEHAADPDHP[3] = 1;
+                    __instance.HNGCFDLDGBF[3] = 1;
                 }
                 if (Input.GetKey(Plugin.ConfigA2.Value))
                 {
-                    __instance.HFEHAADPDHP[4] = 1;
+                    __instance.HNGCFDLDGBF[4] = 1;
                 }
                 if (Input.GetKey(Plugin.ConfigSpace2.Value))
                 {
-                    __instance.HFEHAADPDHP[5] = 1;
+                    __instance.HNGCFDLDGBF[5] = 1;
                 }
                 if (Input.GetKey(Plugin.ConfigShift2.Value))
                 {
-                    __instance.HFEHAADPDHP[6] = -1;
+                    __instance.HNGCFDLDGBF[6] = -1;
                 }
                 if (Input.GetKey(Plugin.ConfigControl2.Value))
                 {
-                    __instance.HFEHAADPDHP[6] = 1;
+                    __instance.HNGCFDLDGBF[6] = 1;
                 }
                 if (Input.GetKey(Plugin.ConfigTab2.Value))
                 {
-                    __instance.NLCCPJBCLHD = 1f;
+                    __instance.FHCIFKEGOOH = 1f;
                 }
-                __instance.IKGCLCIAOOL = __instance.KHMFMDHIDPH;
-                __instance.ONCJKLOEGEF = __instance.NEBLDBJGDAI;
+                __instance.FHCIFKEGOOH = __instance.LOGLAAGLFAH;
+                __instance.PPMGGOHBOLM = __instance.PEPIFGLNPDE;
             }
-            if (__instance.NMKACNOOPPC == Plugin.KeyboardInstance3 && __instance.AHPNDLJNCFK == 1 && __instance.FLFDNLEILGC > 0) //P3
+            if (__instance.DHBIELODIAN == Plugin.KeyboardInstance3 && __instance.FNIDHNNCLBB == 1 && __instance.FKPIGOJCEAK > 0) //P3
             {
-                __instance.NEBLDBJGDAI = 0f;
-                __instance.KHMFMDHIDPH = 0f;
-                __instance.HFEHAADPDHP[1] = 0;
-                __instance.HFEHAADPDHP[2] = 0;
-                __instance.HFEHAADPDHP[3] = 0;
-                __instance.HFEHAADPDHP[4] = 0;
-                __instance.HFEHAADPDHP[5] = 0;
-                __instance.HFEHAADPDHP[6] = 0;
-                __instance.NLCCPJBCLHD = 0;
+                __instance.PEPIFGLNPDE = 0f;
+                __instance.LOGLAAGLFAH = 0f;
+                __instance.HNGCFDLDGBF[1] = 0;
+                __instance.HNGCFDLDGBF[2] = 0;
+                __instance.HNGCFDLDGBF[3] = 0;
+                __instance.HNGCFDLDGBF[4] = 0;
+                __instance.HNGCFDLDGBF[5] = 0;
+                __instance.HNGCFDLDGBF[6] = 0;
+                __instance.FHCIFKEGOOH = 0;
                 if (Input.GetKey(Plugin.ConfigJoin3.Value))
                 {
-                    __instance.BBEPHLPOHNL(0);
+                    __instance.MLCEAOMCNFK(0);
                 }
                 if (Input.GetKey(Plugin.ConfigUp3.Value))
                 {
-                    __instance.NEBLDBJGDAI = 1f;
+                    __instance.PEPIFGLNPDE = 1f;
                 }
                 if (Input.GetKey(Plugin.ConfigDown3.Value))
                 {
-                    __instance.NEBLDBJGDAI = -1f;
+                    __instance.PEPIFGLNPDE = -1f;
                 }
                 if (Input.GetKey(Plugin.ConfigRight3.Value))
                 {
-                    __instance.KHMFMDHIDPH = 1f;
+                    __instance.LOGLAAGLFAH = 1f;
                 }
                 if (Input.GetKey(Plugin.ConfigLeft3.Value))
                 {
-                    __instance.KHMFMDHIDPH = -1f;
+                    __instance.LOGLAAGLFAH = -1f;
                 }
                 if (Input.GetKey(Plugin.ConfigS3.Value))
                 {
-                    __instance.HFEHAADPDHP[1] = 1;
+                    __instance.HNGCFDLDGBF[1] = 1;
                 }
                 if (Input.GetKey(Plugin.ConfigX3.Value))
                 {
-                    __instance.HFEHAADPDHP[2] = 1;
+                    __instance.HNGCFDLDGBF[2] = 1;
                 }
                 if (Input.GetKey(Plugin.ConfigZ3.Value))
                 {
-                    __instance.HFEHAADPDHP[3] = 1;
+                    __instance.HNGCFDLDGBF[3] = 1;
                 }
                 if (Input.GetKey(Plugin.ConfigA3.Value))
                 {
-                    __instance.HFEHAADPDHP[4] = 1;
+                    __instance.HNGCFDLDGBF[4] = 1;
                 }
                 if (Input.GetKey(Plugin.ConfigSpace3.Value))
                 {
-                    __instance.HFEHAADPDHP[5] = 1;
+                    __instance.HNGCFDLDGBF[5] = 1;
                 }
                 if (Input.GetKey(Plugin.ConfigShift3.Value))
                 {
-                    __instance.HFEHAADPDHP[6] = -1;
+                    __instance.HNGCFDLDGBF[6] = -1;
                 }
                 if (Input.GetKey(Plugin.ConfigControl3.Value))
                 {
-                    __instance.HFEHAADPDHP[6] = 1;
+                    __instance.HNGCFDLDGBF[6] = 1;
                 }
                 if (Input.GetKey(Plugin.ConfigTab3.Value))
                 {
-                    __instance.NLCCPJBCLHD = 1f;
+                    __instance.FHCIFKEGOOH = 1f;
                 }
-                __instance.IKGCLCIAOOL = __instance.KHMFMDHIDPH;
-                __instance.ONCJKLOEGEF = __instance.NEBLDBJGDAI;
+                __instance.FHCIFKEGOOH = __instance.LOGLAAGLFAH;
+                __instance.PPMGGOHBOLM = __instance.PEPIFGLNPDE;
             }
         }
     }

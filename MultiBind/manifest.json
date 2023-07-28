@@ -1,7 +1,7 @@
 {
   "namespace": "GeeEm",
-  "name": "ExplodingBarbedWireBat",
-  "description": "Makes barbed bats create explosions on contact",
+  "name": "MultiBind",
+  "description": "Keyboard sharing + key rebinding",
   "version_number": "1.0.1",
   "dependencies": [
     "BepInEx-BepInExPack-5.4.2100"

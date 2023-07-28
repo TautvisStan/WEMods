@@ -14,7 +14,7 @@ namespace HealthCheats
     {
         public const string PluginGuid = "GeeEm.WrestlingEmpire.HealthCheats";
         public const string PluginName = "HealthCheats";
-        public const string PluginVer = "1.1.0";
+        public const string PluginVer = "1.1.1";
 
         internal static ManualLogSource Log;
         internal readonly static Harmony Harmony = new(PluginGuid);
@@ -156,53 +156,53 @@ namespace HealthCheats
                 {
                     if (Input.GetKey(Ulil.GetKeyCode(ConfigHMax.Value)))  //health max
                     {
-                        AMJONEKIAID.NCPIJJFEDFL[AMJONEKIAID.NCPIJJFEDFL[AMJONEKIAID.LKBPOJLFICP[1].PDMDFGNJCPN].PDMDFGNJCPN].LPEIDPCNMGK = int.MaxValue;
-                        AMJONEKIAID.NCPIJJFEDFL[AMJONEKIAID.NCPIJJFEDFL[AMJONEKIAID.LKBPOJLFICP[1].PDMDFGNJCPN].PDMDFGNJCPN].JAENLEMFEIC = int.MaxValue;
+                        FFKMIEMAJML.FJCOPECCEKN[FFKMIEMAJML.FJCOPECCEKN[FFKMIEMAJML.ODPPBDDAIGI[1].CJGHFHCHDNN].CJGHFHCHDNN].BGFIMKNFOBF = int.MaxValue;
+                        FFKMIEMAJML.FJCOPECCEKN[FFKMIEMAJML.FJCOPECCEKN[FFKMIEMAJML.ODPPBDDAIGI[1].CJGHFHCHDNN].CJGHFHCHDNN].OODIGDBHDHC = int.MaxValue;
                     }
                     if (Input.GetKey(Ulil.GetKeyCode(ConfigHMin.Value))) //health 0
                     {
-                        AMJONEKIAID.NCPIJJFEDFL[AMJONEKIAID.NCPIJJFEDFL[AMJONEKIAID.LKBPOJLFICP[1].PDMDFGNJCPN].PDMDFGNJCPN].LPEIDPCNMGK = 0;
-                        AMJONEKIAID.NCPIJJFEDFL[AMJONEKIAID.NCPIJJFEDFL[AMJONEKIAID.LKBPOJLFICP[1].PDMDFGNJCPN].PDMDFGNJCPN].JAENLEMFEIC = 0;
+                        FFKMIEMAJML.FJCOPECCEKN[FFKMIEMAJML.FJCOPECCEKN[FFKMIEMAJML.ODPPBDDAIGI[1].CJGHFHCHDNN].CJGHFHCHDNN].BGFIMKNFOBF = 0;
+                        FFKMIEMAJML.FJCOPECCEKN[FFKMIEMAJML.FJCOPECCEKN[FFKMIEMAJML.ODPPBDDAIGI[1].CJGHFHCHDNN].CJGHFHCHDNN].OODIGDBHDHC = 0;
                     }
                     if (Input.GetKey(Ulil.GetKeyCode(ConfigSMax.Value))) //stun max
                     {
-                        AMJONEKIAID.NCPIJJFEDFL[AMJONEKIAID.NCPIJJFEDFL[AMJONEKIAID.LKBPOJLFICP[1].PDMDFGNJCPN].PDMDFGNJCPN].CIKIJABJGOL = int.MaxValue;
+                        FFKMIEMAJML.FJCOPECCEKN[FFKMIEMAJML.FJCOPECCEKN[FFKMIEMAJML.ODPPBDDAIGI[1].CJGHFHCHDNN].CJGHFHCHDNN].EEPJILNNONC = int.MaxValue;
                     }
                     if (Input.GetKey(Ulil.GetKeyCode(ConfigSMin.Value))) //stun 0
                     {
-                        AMJONEKIAID.NCPIJJFEDFL[AMJONEKIAID.NCPIJJFEDFL[AMJONEKIAID.LKBPOJLFICP[1].PDMDFGNJCPN].PDMDFGNJCPN].CIKIJABJGOL = 0;
+                        FFKMIEMAJML.FJCOPECCEKN[FFKMIEMAJML.FJCOPECCEKN[FFKMIEMAJML.ODPPBDDAIGI[1].CJGHFHCHDNN].CJGHFHCHDNN].EEPJILNNONC = 0;
                     }
                     if (Input.GetKey(Ulil.GetKeyCode(ConfigBMax.Value))) //blindness max
                     {
-                        AMJONEKIAID.NCPIJJFEDFL[AMJONEKIAID.NCPIJJFEDFL[AMJONEKIAID.LKBPOJLFICP[1].PDMDFGNJCPN].PDMDFGNJCPN].DEGCIAJNOMC = int.MaxValue;
+                        FFKMIEMAJML.FJCOPECCEKN[FFKMIEMAJML.FJCOPECCEKN[FFKMIEMAJML.ODPPBDDAIGI[1].CJGHFHCHDNN].CJGHFHCHDNN].AEAKGBCLAEL = int.MaxValue;
                     }
                     if (Input.GetKey(Ulil.GetKeyCode(ConfigBMin.Value))) //blindness 0
                     {
-                        AMJONEKIAID.NCPIJJFEDFL[AMJONEKIAID.NCPIJJFEDFL[AMJONEKIAID.LKBPOJLFICP[1].PDMDFGNJCPN].PDMDFGNJCPN].DEGCIAJNOMC = 0;
+                        FFKMIEMAJML.FJCOPECCEKN[FFKMIEMAJML.FJCOPECCEKN[FFKMIEMAJML.ODPPBDDAIGI[1].CJGHFHCHDNN].CJGHFHCHDNN].AEAKGBCLAEL = 0;
                     }
                     if (Input.GetKey(Ulil.GetKeyCode(ConfigAMax.Value))) //adrenaline max
                     {
-                        AMJONEKIAID.NCPIJJFEDFL[AMJONEKIAID.NCPIJJFEDFL[AMJONEKIAID.LKBPOJLFICP[1].PDMDFGNJCPN].PDMDFGNJCPN].AEICBDHMALN = int.MaxValue;
+                        FFKMIEMAJML.FJCOPECCEKN[FFKMIEMAJML.FJCOPECCEKN[FFKMIEMAJML.ODPPBDDAIGI[1].CJGHFHCHDNN].CJGHFHCHDNN].HBCNKIKAIKM = int.MaxValue;
                     }
                     if (Input.GetKey(Ulil.GetKeyCode(ConfigAMin.Value))) //adrenaline 0
                     {
-                        AMJONEKIAID.NCPIJJFEDFL[AMJONEKIAID.NCPIJJFEDFL[AMJONEKIAID.LKBPOJLFICP[1].PDMDFGNJCPN].PDMDFGNJCPN].AEICBDHMALN = 0;
+                        FFKMIEMAJML.FJCOPECCEKN[FFKMIEMAJML.FJCOPECCEKN[FFKMIEMAJML.ODPPBDDAIGI[1].CJGHFHCHDNN].CJGHFHCHDNN].HBCNKIKAIKM = 0;
                     }
                     if (Input.GetKey(Ulil.GetKeyCode(ConfigAtMax.Value))) //adr timer max
                     {
-                        AMJONEKIAID.NCPIJJFEDFL[AMJONEKIAID.NCPIJJFEDFL[AMJONEKIAID.LKBPOJLFICP[1].PDMDFGNJCPN].PDMDFGNJCPN].LPJAPJBIIFF = int.MaxValue;
+                        FFKMIEMAJML.FJCOPECCEKN[FFKMIEMAJML.FJCOPECCEKN[FFKMIEMAJML.ODPPBDDAIGI[1].CJGHFHCHDNN].CJGHFHCHDNN].CFPAAMEFEOL = int.MaxValue;
                     }
                     if (Input.GetKey(Ulil.GetKeyCode(ConfigAtMin.Value))) //adr timer 0
                     {
-                        AMJONEKIAID.NCPIJJFEDFL[AMJONEKIAID.NCPIJJFEDFL[AMJONEKIAID.LKBPOJLFICP[1].PDMDFGNJCPN].PDMDFGNJCPN].LPJAPJBIIFF = 1;
+                        FFKMIEMAJML.FJCOPECCEKN[FFKMIEMAJML.FJCOPECCEKN[FFKMIEMAJML.ODPPBDDAIGI[1].CJGHFHCHDNN].CJGHFHCHDNN].CFPAAMEFEOL = 1;
                     }
                     if (Input.GetKeyDown(Ulil.GetKeyCode(ConfigInMax.Value))) //injure
                     {
-                        Injure(AMJONEKIAID.NCPIJJFEDFL[AMJONEKIAID.NCPIJJFEDFL[AMJONEKIAID.LKBPOJLFICP[1].PDMDFGNJCPN].PDMDFGNJCPN]);
+                        Injure(FFKMIEMAJML.FJCOPECCEKN[FFKMIEMAJML.FJCOPECCEKN[FFKMIEMAJML.ODPPBDDAIGI[1].CJGHFHCHDNN].CJGHFHCHDNN]);
                     }
                     if (Input.GetKeyDown(Ulil.GetKeyCode(ConfigInMin.Value))) //heal
                     {
-                        Heal(AMJONEKIAID.NCPIJJFEDFL[AMJONEKIAID.NCPIJJFEDFL[AMJONEKIAID.LKBPOJLFICP[1].PDMDFGNJCPN].PDMDFGNJCPN]);
+                        Heal(FFKMIEMAJML.FJCOPECCEKN[FFKMIEMAJML.FJCOPECCEKN[FFKMIEMAJML.ODPPBDDAIGI[1].CJGHFHCHDNN].CJGHFHCHDNN]);
                     }
 
                 }
@@ -210,53 +210,53 @@ namespace HealthCheats
                 {
                     if (Input.GetKey(Ulil.GetKeyCode(ConfigHMax.Value))) //health max
                     {
-                        AMJONEKIAID.NCPIJJFEDFL[AMJONEKIAID.LKBPOJLFICP[1].PDMDFGNJCPN].LPEIDPCNMGK = int.MaxValue;
-                        AMJONEKIAID.NCPIJJFEDFL[AMJONEKIAID.LKBPOJLFICP[1].PDMDFGNJCPN].JAENLEMFEIC = int.MaxValue;
+                        FFKMIEMAJML.FJCOPECCEKN[FFKMIEMAJML.ODPPBDDAIGI[1].CJGHFHCHDNN].BGFIMKNFOBF = int.MaxValue;
+                        FFKMIEMAJML.FJCOPECCEKN[FFKMIEMAJML.ODPPBDDAIGI[1].CJGHFHCHDNN].OODIGDBHDHC = int.MaxValue;
                     }
                     if (Input.GetKey(Ulil.GetKeyCode(ConfigHMin.Value))) //health 0
                     {
-                        AMJONEKIAID.NCPIJJFEDFL[AMJONEKIAID.LKBPOJLFICP[1].PDMDFGNJCPN].LPEIDPCNMGK = 0;
-                        AMJONEKIAID.NCPIJJFEDFL[AMJONEKIAID.LKBPOJLFICP[1].PDMDFGNJCPN].JAENLEMFEIC = 0;
+                        FFKMIEMAJML.FJCOPECCEKN[FFKMIEMAJML.ODPPBDDAIGI[1].CJGHFHCHDNN].BGFIMKNFOBF = 0;
+                        FFKMIEMAJML.FJCOPECCEKN[FFKMIEMAJML.ODPPBDDAIGI[1].CJGHFHCHDNN].OODIGDBHDHC = 0;
                     }
                     if (Input.GetKey(Ulil.GetKeyCode(ConfigSMax.Value))) //stun max
                     {
-                        AMJONEKIAID.NCPIJJFEDFL[AMJONEKIAID.LKBPOJLFICP[1].PDMDFGNJCPN].CIKIJABJGOL = int.MaxValue;
+                        FFKMIEMAJML.FJCOPECCEKN[FFKMIEMAJML.ODPPBDDAIGI[1].CJGHFHCHDNN].EEPJILNNONC = int.MaxValue;
                     }
                     if (Input.GetKey(Ulil.GetKeyCode(ConfigSMin.Value))) //stun 0
                     {
-                        AMJONEKIAID.NCPIJJFEDFL[AMJONEKIAID.LKBPOJLFICP[1].PDMDFGNJCPN].CIKIJABJGOL = 0;
+                        FFKMIEMAJML.FJCOPECCEKN[FFKMIEMAJML.ODPPBDDAIGI[1].CJGHFHCHDNN].EEPJILNNONC = 0;
                     }
                     if (Input.GetKey(Ulil.GetKeyCode(ConfigBMax.Value))) //blindness max
                     {
-                        AMJONEKIAID.NCPIJJFEDFL[AMJONEKIAID.LKBPOJLFICP[1].PDMDFGNJCPN].DEGCIAJNOMC = int.MaxValue;
+                        FFKMIEMAJML.FJCOPECCEKN[FFKMIEMAJML.ODPPBDDAIGI[1].CJGHFHCHDNN].AEAKGBCLAEL = int.MaxValue;
                     }
                     if (Input.GetKey(Ulil.GetKeyCode(ConfigBMin.Value))) //blindness 0
                     {
-                        AMJONEKIAID.NCPIJJFEDFL[AMJONEKIAID.LKBPOJLFICP[1].PDMDFGNJCPN].DEGCIAJNOMC = 0;
+                        FFKMIEMAJML.FJCOPECCEKN[FFKMIEMAJML.ODPPBDDAIGI[1].CJGHFHCHDNN].AEAKGBCLAEL = 0;
                     }
                     if (Input.GetKey(Ulil.GetKeyCode(ConfigAMax.Value))) //adrenaline max
                     {
-                        AMJONEKIAID.NCPIJJFEDFL[AMJONEKIAID.LKBPOJLFICP[1].PDMDFGNJCPN].AEICBDHMALN = int.MaxValue;
+                        FFKMIEMAJML.FJCOPECCEKN[FFKMIEMAJML.ODPPBDDAIGI[1].CJGHFHCHDNN].HBCNKIKAIKM = int.MaxValue;
                     }
                     if (Input.GetKey(Ulil.GetKeyCode(ConfigAMin.Value))) //adrenaline 0
                     {
-                        AMJONEKIAID.NCPIJJFEDFL[AMJONEKIAID.LKBPOJLFICP[1].PDMDFGNJCPN].AEICBDHMALN = 0;
+                        FFKMIEMAJML.FJCOPECCEKN[FFKMIEMAJML.ODPPBDDAIGI[1].CJGHFHCHDNN].HBCNKIKAIKM = 0;
                     }
                     if (Input.GetKey(Ulil.GetKeyCode(ConfigAtMax.Value))) //adr timer max
                     {
-                        AMJONEKIAID.NCPIJJFEDFL[AMJONEKIAID.LKBPOJLFICP[1].PDMDFGNJCPN].LPJAPJBIIFF = int.MaxValue;
+                        FFKMIEMAJML.FJCOPECCEKN[FFKMIEMAJML.ODPPBDDAIGI[1].CJGHFHCHDNN].CFPAAMEFEOL = int.MaxValue;
                     }
                     if (Input.GetKey(Ulil.GetKeyCode(ConfigAtMin.Value))) //adr timer 0
                     {
-                        AMJONEKIAID.NCPIJJFEDFL[AMJONEKIAID.LKBPOJLFICP[1].PDMDFGNJCPN].LPJAPJBIIFF = 1;
+                        FFKMIEMAJML.FJCOPECCEKN[FFKMIEMAJML.ODPPBDDAIGI[1].CJGHFHCHDNN].CFPAAMEFEOL = 1;
                     }
                     if (Input.GetKeyDown(Ulil.GetKeyCode(ConfigInMax.Value))) //injure
                     {
-                        Injure(AMJONEKIAID.NCPIJJFEDFL[AMJONEKIAID.LKBPOJLFICP[1].PDMDFGNJCPN]);
+                        Injure(FFKMIEMAJML.FJCOPECCEKN[FFKMIEMAJML.ODPPBDDAIGI[1].CJGHFHCHDNN]);
                     }
                     if (Input.GetKeyDown(Ulil.GetKeyCode(ConfigInMin.Value))) //heal
                     {
-                        Heal(AMJONEKIAID.NCPIJJFEDFL[AMJONEKIAID.LKBPOJLFICP[1].PDMDFGNJCPN]);
+                        Heal(FFKMIEMAJML.FJCOPECCEKN[FFKMIEMAJML.ODPPBDDAIGI[1].CJGHFHCHDNN]);
                     }
                 }
             }
@@ -265,53 +265,53 @@ namespace HealthCheats
 
             }
         }
-        public static void Injure(GMIKIMHFABP instance)
+        public static void Injure(DJEKCMMMFJM instance)
         {
-            //GMIKIMHFABP instance = AMJONEKIAID.NCPIJJFEDFL[AMJONEKIAID.LKBPOJLFICP[2].PDMDFGNJCPN];
-            instance.PKKAFJHMKDE = UnityEngine.Random.Range(1, 31);
-           // instance.IPNKFGHIDJP.injury = instance.PKKAFJHMKDE;
-            if (ONACPDNNNMM.JJAJNKLJHCL == 0 && instance.IPNKFGHIDJP.injuryTime < 2)
+            //DJEKCMMMFJM instance = FFKMIEMAJML.FJCOPECCEKN[FFKMIEMAJML.ODPPBDDAIGI[2].CJGHFHCHDNN];
+            instance.HLALEJPPKBO = UnityEngine.Random.Range(1, 31);
+            // instance.LLEGGMCIALJ.injury = instance.MGCGBGHEBFJ;
+            if (PHECEOMIMND.IPAFPBPKIKP == 0 && instance.LLEGGMCIALJ.injuryTime < 2)
             {
-                instance.IPNKFGHIDJP.injuryTime = 2;
+                instance.LLEGGMCIALJ.injuryTime = 2;
             }
-            JKPIHABGBGP.BDFEDMELBOL(instance.BJANPGIFKHD, JKPIHABGBGP.PHDFFBOFBKI[JGKBBDPDIBC.OCMIPAODMHH(1, 2, 0)], -0.1f, 1f);
-            instance.CACNKHNHAAL(JGKBBDPDIBC.OCMIPAODMHH(2, 3, 0), 1f);
-            if (ONACPDNNNMM.IDNGKPOBMFO == 16)
+            IKPECOJMCAB.OBLNONIKENE(instance.MLDLMDCFHOM, IKPECOJMCAB.MGOGPDAECEM[LFNJDEGJLLJ.NBNFJOFFMHO(1, 2, 0)], -0.1f, 1f);
+            instance.IIMFKLDIKOA(LFNJDEGJLLJ.NBNFJOFFMHO(2, 3, 0), 1f);
+            if (PHECEOMIMND.CKILNIEAAPD == 16)
             {
-                JKPIHABGBGP.HPICKPAJOKP(0, JGKBBDPDIBC.JOGCPNBFFNJ(3, 20), 1f);
-                ONACPDNNNMM.EFEKHAFNJDM *= 0.8f;
+                IKPECOJMCAB.GNILNDHIFEG(0, LFNJDEGJLLJ.ICJAEBKBCNH(3, 20), 1f);
+                PHECEOMIMND.FGMJCPFIIEE *= 0.8f;
             }
             else
             {
-                JKPIHABGBGP.HPICKPAJOKP(0, -1, 1f);
-                JKPIHABGBGP.HPICKPAJOKP(0, JGKBBDPDIBC.OCMIPAODMHH(16, 20, 0), 0f);
-                ONACPDNNNMM.EFEKHAFNJDM += instance.MGHOMFFCEGK[1] * (instance.MGHOMFFCEGK[1] / 10f) * instance.FLGHPCBAJFK(0);
-                if (ONACPDNNNMM.BAGBHKFPKGP == 16)
+                IKPECOJMCAB.GNILNDHIFEG(0, -1, 1f);
+                IKPECOJMCAB.GNILNDHIFEG(0, LFNJDEGJLLJ.NBNFJOFFMHO(16, 20, 0), 0f);
+                PHECEOMIMND.FGMJCPFIIEE += instance.IDLOAACGLKA[1] * (instance.IDLOAACGLKA[1] / 10f) * instance.BKJENLNOFOD(0);
+                if (PHECEOMIMND.DEIKILLNJOI == 16)
                 {
-                    ONACPDNNNMM.EFEKHAFNJDM += instance.MGHOMFFCEGK[1] * (instance.MGHOMFFCEGK[1] / 10f) * instance.FLGHPCBAJFK(0);
+                    PHECEOMIMND.FGMJCPFIIEE += instance.IDLOAACGLKA[1] * (instance.IDLOAACGLKA[1] / 10f) * instance.BKJENLNOFOD(0);
                 }
             }
-            ONACPDNNNMM.DIAADODHFDC += 250f * instance.FLGHPCBAJFK(0);
-            instance.LPEIDPCNMGK /= 2f;
-            instance.AEICBDHMALN /= 2f;
-            if (ONACPDNNNMM.JJAJNKLJHCL != 0)
+            PHECEOMIMND.HBBLNFPONMG += 250f * instance.BKJENLNOFOD(0);
+            instance.BGFIMKNFOBF /= 2f;
+            instance.HBCNKIKAIKM /= 2f;
+            if (PHECEOMIMND.IPAFPBPKIKP != 0)
             {
-                for (int i = 1; i <= AMJONEKIAID.MOGFLKPBLIK; i++)
+                for (int i = 1; i <= FFKMIEMAJML.HIKHEJJKJAE; i++)
                 {
-                    if (AMJONEKIAID.NCPIJJFEDFL[i].MMDNKLMAOEF == 3 || AMJONEKIAID.NCPIJJFEDFL[i].MMDNKLMAOEF == 0)
+                    if (FFKMIEMAJML.FJCOPECCEKN[i].FOPIBFHEBHM == 3 || FFKMIEMAJML.FJCOPECCEKN[i].FOPIBFHEBHM == 0)
                     {
-                        AMJONEKIAID.NCPIJJFEDFL[i].OEBCDJGHNEH = 48;
+                        FFKMIEMAJML.FJCOPECCEKN[i].AKDIGFNDMFP = 48;
                     }
                 }
             }
-            Characters.DPJLHKNBEKO(AMJONEKIAID.NCPIJJFEDFL[instance.EAGPOMCFONI].NLMPKIAICOP, instance.NLMPKIAICOP);
-            AMJONEKIAID.OGANAMIKGDJ(instance.EAGPOMCFONI, instance.NMKACNOOPPC, 1);
+            Characters.PLAKMCOFJDH(FFKMIEMAJML.FJCOPECCEKN[instance.CCCLFMLNPIK].ALFACADGNDC, instance.ALFACADGNDC);
+            FFKMIEMAJML.OJCAIJPIDCG(instance.CCCLFMLNPIK, instance.DHBIELODIAN, 1);
         }
-        public static void Heal(GMIKIMHFABP instance)
+        public static void Heal(DJEKCMMMFJM instance)
         {
-            instance.PKKAFJHMKDE = 0;
-            instance.IPNKFGHIDJP.injuryTime = 0;
-            instance.IPNKFGHIDJP.injury = 0;
+            instance.HLALEJPPKBO = 0;
+            instance.LLEGGMCIALJ.injuryTime = 0;
+            instance.LLEGGMCIALJ.injury = 0;
         }
     }
         public static class Ulil
@@ -322,5 +322,5 @@ namespace HealthCheats
             }
         }
 }
-//target                    AMJONEKIAID.NCPIJJFEDFL[AMJONEKIAID.NCPIJJFEDFL[AMJONEKIAID.LKBPOJLFICP[1].PDMDFGNJCPN].PDMDFGNJCPN].
-//self                     AMJONEKIAID.NCPIJJFEDFL[AMJONEKIAID.LKBPOJLFICP[1].PDMDFGNJCPN].
+//target                    FFKMIEMAJML.FJCOPECCEKN[FFKMIEMAJML.FJCOPECCEKN[FFKMIEMAJML.ODPPBDDAIGI[1].CJGHFHCHDNN].CJGHFHCHDNN].
+//self                     FFKMIEMAJML.FJCOPECCEKN[FFKMIEMAJML.ODPPBDDAIGI[1].CJGHFHCHDNN].
