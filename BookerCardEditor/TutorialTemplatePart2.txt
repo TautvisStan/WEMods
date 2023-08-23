@@ -1,0 +1,10 @@
+# Additional note about interpromotional contests
+# card_type: 4 will set it to an interpromotional contest
+# The card will also be reset regardless if "reset_card: true" is set or not
+
+card_type: 4
+
+# rival_fed is required and it will set the opponent promotion.
+# You can use any promotion as rivals except for Legends and your own.
+
+rival_fed: 9

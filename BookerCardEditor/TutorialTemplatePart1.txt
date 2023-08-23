@@ -1,0 +1,30 @@
+# Note: all of these settings are completely optional and can be removed if not needed
+# "reset_card: true" can be used if you want to completely clear the card,
+# it will also reset the attendance
+
+reset_card: true
+
+# card_type will set a type, supported ones are: 0 - no show, 1 - TV taping, 2 - Pay-per-view,
+# 4 - interpromotional contest (look at tutorial template part 2),
+# 5 - charity, 6 - memorial
+# NOTE: 3 - tournament, however I wouldn't recommend you to use it,
+# it might be an incomplete/scrapped feature considering it never appears in game.
+
+card_type: 2
+
+# card_size will set the card size. Recommended ones are 6 and 10, however technically
+# any size between 0-10 seems to be working
+
+card_size: 6
+
+# attendance can be used to set an exact number of attendance
+
+attendance: 3000
+
+# territory sets your current territory. Open Territories.txt for the id list of them.
+# note: you might need to open map twice to see it changed.
+
+territory: 10
+
+# Once you are done, go into booker mode and in the calendar screen press the + button on numpad
+# (rebindable) and you should see the changes.

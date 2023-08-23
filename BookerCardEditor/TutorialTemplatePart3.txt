@@ -1,0 +1,45 @@
+# The next bits are individual matches
+# "match_id: x" and "match_end" are required, others are optional
+# Use the following template to force book any person in the game
+# The only limitation is that it can only be Singles format
+
+match_id: 1
+match_name: This is a top card match example
+left_name: Person id 20
+left_id: 20
+right_name: Person id 30
+right_id: 30
+match_end
+
+# For guest matches make sure to set the guest as the right person
+
+match_id: 2
+match_name: Guest match (correct)
+right_name: Guest person id 123
+right_id: 123
+match_end
+
+# Otherwise they both will be unselectable
+
+match_id: 3
+match_name: Guest match (incorrect)
+left_name: Guest person id 123
+left_id: 123
+match_end
+
+# Additional note: Left and right side names can be set only if
+# they have a wrestler id set
+
+match_id: 4
+match_name: Wrestler names note
+left_name: This will be replaced by "???"
+left_id: 0
+right_name: This will appear in game
+right_id: 147
+match_end
+
+# And for the match name itself at least one person must be set.
+
+match_id: 5
+match_name: Match name that will not be visible
+match_end
