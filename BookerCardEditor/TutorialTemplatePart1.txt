@@ -26,5 +26,5 @@ attendance: 3000
 
 territory: 10
 
-# Once you are done, go into booker mode and in the calendar screen press the + button on numpad
-# (rebindable) and you should see the changes.
+# Once you are done, go into booker mode and in the calendar screen, press the + button on numpad
+# (rebindable in the separate config file) and you should see the changes.

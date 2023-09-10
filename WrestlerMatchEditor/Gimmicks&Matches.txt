@@ -1,0 +1,72 @@
+Gimmicks:
+1: Hardcore
+2: Furniture Smash (Tables?)
+3: Steel Cage
+4: Empty Arena
+5: Hell in a Cell
+6: Loser Leaves
+7: Hair Vs Hair
+8: Race Against Time
+9: Multiple Referee
+10: Guest Referee
+11: Backstage (?)
+12: Handicap
+13: Mask Vs Mask
+14: No Ring
+15: Tables & Chairs
+16: Tag Team
+17: Team
+18: Shoot Fight
+19: Submission
+20: Street Fight
+21: First Blood
+22: Torture Chamber
+23: Non Title
+24: Open Challenge
+25: Guest Partner
+26: Cage Fight
+27: Barbed Wire
+28: Exploding
+29: Exploding Barbed Wire
+30: Red Light
+31: Blackout
+32: Disco
+33: Buried Alive
+34: Backstage  (Hollywood?)
+35: Christmas Chaos
+51: Ropeless (square ring)
+52: Ropeless (hexagon ring)
+61: Steel Cage (square ring)
+62: Steel Cage (hexagon ring)
+71: Ropeless Cage (square ring)
+72: Ropeless Cage (hexagon ring)
+101: random furniture
+102: random weapon
+103: random furniture + random weapon
+
+Matches:
+1: Confrontation
+2: Singles
+3: Best Of Three
+4: Ironman
+5: Last Laugh
+6: Submission
+7: Last Man Standing
+8: Street Fight
+9: First Blood
+10: Sumo Contest
+11: Shoot Fight
+12: Triple Threat
+13: Handicap
+14: Tag Team
+15: Tag Elimination
+16: Team
+17: War
+18: Elimination
+19: Battle Royal
+20: Countdown Battle Royal
+21: Countdown Elimination
+22: Gauntlet
+23: Escape To Victory
+24: Furniture Smash
+25: Hardcore

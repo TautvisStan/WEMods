@@ -1,0 +1,10 @@
+{
+  "namespace": "GeeEm",
+  "name": "WrestlerMatchEditor",
+  "description": "This mod lets you to modify the wrestler match through a text file",
+  "version_number": "1.0.0",
+  "dependencies": [
+    "BepInEx-BepInExPack-5.4.2100"
+  ],
+  "website_url": ""
+}

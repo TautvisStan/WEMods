@@ -1,0 +1,27 @@
+# show_type will set a type, supported ones are: 0 - no show, 1 - TV taping, 2 - Pay-per-view,
+# 4 - interpromotional contest, 5 - charity, 6 - memorial
+# NOTE: 3 - tournament, however I wouldn't recommend you to use it,
+# it might be an incomplete/scrapped feature considering it never appears in game.
+
+show_type: 2
+
+# match_size will set the number of wrestlers. 
+
+match_size: 10
+
+# gimmick will set the match gimmick (first line on the match description in the calendar screen)
+
+gimmick: 29
+
+# match_type will set the match type (second line on the match description in the calendar screen)
+
+match_type: 25
+
+# opponent will set a specific opponent. Note that picking someone from a different promotion
+# will set the show type to interpromotional contest
+
+opponent: 106
+
+# Once you are done, go into wrestler mode and in the calendar screen, press the + button on numpad
+# (rebindable in the separate config file) and you should see the changes.
+# Note that some gimmick/match combinations may or may not work and/or switch to something else by the game.

@@ -20,6 +20,7 @@ right_id: 123
 match_end
 
 # Otherwise they both will be unselectable
+# (The only exception if the left wrestler is from your promotion)
 
 match_id: 3
 match_name: Guest match (incorrect)

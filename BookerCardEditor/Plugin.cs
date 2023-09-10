@@ -2,6 +2,7 @@ using BepInEx;
 using BepInEx.Configuration;
 using BepInEx.Logging;
 using HarmonyLib;
+using System;
 using System.Collections.Generic;
 using System.IO;
 using UnityEngine;
@@ -15,7 +16,7 @@ namespace BookerCardEditor
     {
         public const string PluginGuid = "GeeEm.WrestlingEmpire.BookerCardEditor";
         public const string PluginName = "BookerCardEditor";
-        public const string PluginVer = "1.0.0";
+        public const string PluginVer = "1.0.1";
 
         internal static ManualLogSource Log;
         internal readonly static Harmony Harmony = new(PluginGuid);
@@ -61,9 +62,38 @@ namespace BookerCardEditor
         }
         private void Update()
         {
-            if(Input.GetKeyDown(loadCardButton.Value) && LFNJDEGJLLJ.NHDABIOCLFH == 2 && (SceneManager.GetActiveScene().name == "Calendar" || SceneManager.GetActiveScene().name == "Atlas"))
+            if(Input.GetKeyDown(loadCardButton.Value))
             {
-                LoadCard();
+                Logger.LogInfo("Load custom card button has been pressed");
+                if (LFNJDEGJLLJ.NHDABIOCLFH == 2)
+                {
+                    if (SceneManager.GetActiveScene().name == "Calendar")
+                    {
+                        Logger.LogInfo("Loading custom card.");
+                        try
+                        {
+                            LoadCard();
+                        }
+                        catch (Exception e)
+                        {
+                            Logger.LogError("Error while loading custom card: ");
+                            Logger.LogError(e);
+                        }
+                        finally
+                        {
+                            Logger.LogInfo("Done loading custom card.");
+                        }
+                    }
+                    else
+                    {
+                        Logger.LogInfo("Didn't load, not in the calendar menu.");
+                    }
+                }
+                else
+                {
+                    Logger.LogInfo("Didn't load, not in the booker mode.");
+                }
+
             }    
         }
         public void LoadCard()
@@ -72,7 +102,6 @@ namespace BookerCardEditor
             List<Segment> segments = new List<Segment>();
             Segment CustomSegment = new Segment();
             string[] lines = File.ReadAllLines(Path.Combine(PluginPath, "CustomCard.txt"));
-            int matchid = 0;
             foreach (string line in lines)
             {
                 if (line.Trim().Length == 0)
@@ -135,9 +164,8 @@ namespace BookerCardEditor
                 }
                 if (line.ToLower().StartsWith("match_id:"))
                 {
-                    matchid = int.Parse(line.Substring(9).Trim());
                     CustomSegment = new Segment();
-                    CustomSegment.id = matchid;
+                    CustomSegment.id = int.Parse(line.Substring(9).Trim());
                     continue;
                 }
                 if (line.ToLower().StartsWith("match_name:"))   
@@ -174,14 +202,17 @@ namespace BookerCardEditor
 
             if (Progress.card[card.date] == null)
             {
+                Logger.LogInfo("Card is null, so reloading it");
                 Progress.MOHIFAFEPFE(card.date);
             }
             if (card.rivalFed != -1)
             {
+                Logger.LogInfo("setting rival_fed " + card.rivalFed);
                 Progress.rivalFed = card.rivalFed;
             }
             if (card.type != -1)
             {
+                Logger.LogInfo("setting card_type " + card.type);
                 if (card.type == 4)
                 {
                     Progress.card[card.date].FFGHCMGIDOB(card.date, 6);
@@ -194,6 +225,7 @@ namespace BookerCardEditor
             }
             if (card.resetCard)
             {
+                Logger.LogInfo("resetting the card");
                 World.BCGKOALHLFO();
                 World.GIBGMPFBBOF(0, card.date, 1);
                 World.PCPFMFFBKCP();
@@ -203,35 +235,45 @@ namespace BookerCardEditor
 
             if (card.size != -1)
             {
+                Logger.LogInfo("setting card_size " + card.size);
                 List<Segment> savedSegments = new List<Segment>();
-                for (int i = 0; i < 6; i++) 
+                int smallersize = Progress.card[card.date].size < card.size ? Progress.card[card.date].size : card.size;
+                for (int i = 1; i <= smallersize; i++) 
                 {
                     savedSegments.Add(Progress.card[card.date].segment[i]);
                 }
                 Progress.card[card.date].FFGHCMGIDOB(card.date, card.size);
-                for (int i = 0; i < 6; i++)
+                foreach (Segment segment in savedSegments)
                 {
-                    Progress.card[card.date].segment[i] = savedSegments[i];
+                    Progress.card[card.date].segment[segment.id] = segment;
                 }
             }
             if (card.attendance != -1)
             {
+                Logger.LogInfo("setting attendance " + card.attendance);
                 Progress.attendance[card.date] = card.attendance;
             }
             if (card.territory != -1)
             {
+                Logger.LogInfo("setting territory " + card.territory);
                 Progress.territory[card.date] = card.territory;
             }
             foreach (Segment segment in segments)
             {
+                Logger.LogInfo("setting match segment: ");
+                Logger.LogInfo("match_id " + segment.id);
+                Logger.LogInfo("match \"" + segment.match + "\"");
+                Logger.LogInfo("left_name \"" + segment.leftName + "\"");
+                Logger.LogInfo("right_name \"" + segment.rightName + "\"");
+                Logger.LogInfo("left_char " + segment.leftChar);
+                Logger.LogInfo("right_char " + segment.rightChar);
                 Progress.card[card.date].segment[segment.id] = segment;
+                Logger.LogInfo("=====================================");
             }
         }
         
     }
 }
-//todo figure out a way to change card size without fuckups
-
 
 //generic 
 //Progress.MOHIFAFEPFE(Progress.date); - create card if not exists
