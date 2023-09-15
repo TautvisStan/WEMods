@@ -1,0 +1,17 @@
+Clauses:
+-6: Immediate Start (Will be available without delay)
+-5: Overtime (Cannot refuse additional responsibilities) / (Expected to work several times per show)
+-4: Incentive (Only paid for winning matches)
+-3: Enhancement Talent (Only paid for losing matches) / (Not expected to win matches)
+-2: No Compete (May not sign with a rival promotion)
+-1: No Creative Control (May not make or refuse any changes)
+0: No clause 
+1: Creative Control (Right to make or refuse any changes)
+2: Iron Clad (Cannot be terminated prematurely by either party)
+3: Win Bonus (Wins pay more and losses pay less)
+4: Downside Guarantee (Paid each week no matter what)
+5: Health Insurance (Compensated for any health issues)
+6: Favoured Nations (Pay rises to match any other employee)
+7: Nepotism (Existing relationships are signed to the same deal)
+8: Title Push (Promised to be booked as or against a champion)
+9: Part Time (Scheduled to work fewer dates)

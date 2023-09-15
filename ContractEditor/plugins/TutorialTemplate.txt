@@ -1,0 +1,14 @@
+# salary sets the weekly salary
+
+salary: 696969
+
+# weeks sets the remaining weeks left on the contract
+
+weeks: 6969
+
+# clause sets the contract clause
+
+clause: 8
+
+# Once you are done, go into the roster screen and while selected the person, press the - button on numpad
+# (rebindable in the separate config file) and you should see the changes once clicked on someone else and back.
