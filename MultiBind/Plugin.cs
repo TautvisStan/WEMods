@@ -79,28 +79,28 @@ namespace MultiBind
                     "Move right button",
                KeyboardButtons));
             controlScheme.ConfigA = Config.Bind(player,
-             "Attack Button (" + player + ") / West Button",
+             "Attack Button (" + player + ")",
              "A",
              new ConfigDescription(
-                    "Attack button",
+                    "Attack button / West Button",
                KeyboardButtons));
             controlScheme.ConfigS = Config.Bind(player,
-             "Grapple Button (" + player + ") / North Button",
+             "Grapple Button (" + player + ")",
              "S",
              new ConfigDescription(
-                    "Grapple button",
+                    "Grapple button / North Button",
                KeyboardButtons));
             controlScheme.ConfigZ = Config.Bind(player,
-             "Run Button (" + player + ") / South Button",
+             "Run Button (" + player + ")",
              "Z",
              new ConfigDescription(
-                    "Run button",
+                    "Run button / South Button",
                KeyboardButtons));
             controlScheme.ConfigX = Config.Bind(player,
-             "Pick Up Button (" + player + ") / East Button",
+             "Pick Up Button (" + player + ")",
              "X",
              new ConfigDescription(
-                    "Pick up button",
+                    "Pick up button / East Button",
                KeyboardButtons));
             controlScheme.ConfigSpace = Config.Bind(player,
              "Taunt Button (" + player + ")",
@@ -109,28 +109,28 @@ namespace MultiBind
                     "Taunt button",
                KeyboardButtons));
             controlScheme.ConfigShift = Config.Bind(player,
-             "Focus (Shift) Button (" + player + ") / Left Shoulder Button",
+             "Focus (Shift) Button (" + player + ")",
              "LeftShift",
              new ConfigDescription(
-                    "Change focus (shift) button",
+                    "Change focus (shift) button / Left Shoulder Button",
                KeyboardButtons));
             controlScheme.ConfigControl = Config.Bind(player,
-             "Focus (Control) Button (" + player + ") / Right Shoulder Button",
+             "Focus (Control) Button (" + player + ")",
              "LeftControl",
              new ConfigDescription(
-                    "Change focus (control) button",
+                    "Change focus (control) button / Right Shoulder Button",
                KeyboardButtons));
             controlScheme.ConfigTab = Config.Bind(player,
-             "Change Control (TAB) Button (" + player + ") / Right Trigger",
+             "Change Control (TAB) Button (" + player + ")",
              "Tab",
              new ConfigDescription(
-                    "Left Trigger Button",
+                    "Left Trigger Button / Right Trigger",
                KeyboardButtons));
             controlScheme.ConfigLeftTrigger = Config.Bind(player,
-             "LeftTrigger (" + player + ") / Left Trigger",
+             "LeftTrigger (" + player + ")",
              "None",
              new ConfigDescription(
-                    "Change the left trigger button",
+                    "Change the left trigger button / Left Trigger",
                KeyboardButtons));
             controlScheme.ConfigJoin = Config.Bind(player,
              "Join Button (" + player + ")",
@@ -181,6 +181,15 @@ namespace MultiBind
         }
         private void Update()
         {
+            if (SceneManager.GetActiveScene().name == "Controllers")
+            {
+                if (Input.GetKeyDown(Ulil.GetKeyCode(ConfigControllerMode.Value)))
+                {
+                    Debug.LogWarning("REFRESH");
+
+
+                }
+            }
             if (SceneManager.GetActiveScene().name == "Titles")
             {
                 if (Input.GetKeyDown(Ulil.GetKeyCode(ConfigRemove.Value)))
@@ -247,6 +256,9 @@ namespace MultiBind
                         ControllerModeInt = 1;
                         BCJPMAHPHEP.FNIDHNNCLBB = 1;
                     }
+                    MFCAJFKKFFE.FBOPLHBCBFI[0].FNIDHNNCLBB = ControllerModeInt;
+                    MFCAJFKKFFE.FBOPLHBCBFI[0].DEIOJMDIMNM = "Keyboard";
+                    MFCAJFKKFFE.FBOPLHBCBFI[0].FKPIGOJCEAK = 1;
                     for (int i = 0; i < 4; i++)
                     {
                         if (KeyboardInstance[i] != -1)
