@@ -3,9 +3,11 @@ using BepInEx.Logging;
 using HarmonyLib;
 using Newtonsoft.Json;
 using System.Collections.Generic;
+using System.Data;
 using System.IO;
 using System.Linq;
 using UnityEngine;
+using UnityEngine.SceneManagement;
 using UnityEngine.UI;
 
 namespace BookerWinrateTracker
@@ -31,11 +33,6 @@ namespace BookerWinrateTracker
         public static List<int> draws;
         public static bool readytosave = false;
         public static Dictionary<int, CharacterWinrate> Winrates;
-
-
-       // public static List<CharacterWinrate> Winrates; /// <summary>
-        /// ///////CHAJNGE INTO DICTIONARY
-        /// </summary>
 
         public class CharacterWinrate
         {
@@ -79,11 +76,14 @@ namespace BookerWinrateTracker
         }
         public static void LoadWinrateFromFile()
         {
-            using (StreamReader file = File.OpenText(Path.Combine(PluginPath, "Winrates.json")))
-            { 
-                JsonSerializer serializer = new JsonSerializer();
-                Winrates = (Dictionary<int, CharacterWinrate>)serializer.Deserialize(file, typeof(Dictionary<int, CharacterWinrate>));
-                if (Winrates == null) Winrates = new();
+            if (File.Exists(Path.Combine(PluginPath, "Winrates.json")))
+            {
+                using (StreamReader file = File.OpenText(Path.Combine(PluginPath, "Winrates.json")))
+                {
+                    JsonSerializer serializer = new JsonSerializer();
+                    Winrates = (Dictionary<int, CharacterWinrate>)serializer.Deserialize(file, typeof(Dictionary<int, CharacterWinrate>));
+                    if (Winrates == null) Winrates = new();
+                }
             }
         }
         public static void ReloadCharacterWinrates()
@@ -161,23 +161,91 @@ namespace BookerWinrateTracker
         }
         [HarmonyPatch(typeof(PHECEOMIMND), nameof(PHECEOMIMND.HDKPGMAKCLO))]  //Match end, might still restart
         [HarmonyPostfix]
-        static void PHECEOMIMND_HDKPGMAKCLO_Postfix(int winner)  //
+        static void PHECEOMIMND_HDKPGMAKCLO_Postfix(int LBDCLOPBBJF)  //
         {
-
+            winners = new();
+            draws = new();
+            losers = new();
             if (LFNJDEGJLLJ.NHDABIOCLFH != 2) return;
             //if team mode, add winning team participants to winners, others to losers
             //if singles, add winner to winners, others to losers
             //if draw, add all to draws
             if(PHECEOMIMND.PPCJLFLDAKP == 0) //draw
             {
-                //PHECEOMIMND.DPALBBPCJKD - wrestler count? starters, not counting interference entrants
-               // FFKMIEMAJML.FJCOPECCEKN
+                foreach (DJEKCMMMFJM character in FFKMIEMAJML.FJCOPECCEKN)
+                {
+                    if(character.FOPIBFHEBHM == 1)
+                    {
+                        draws.Add(character.ALFACADGNDC);
+                    }
+                }
+            }
+            else //someone won
+            {
+                foreach (DJEKCMMMFJM character in FFKMIEMAJML.FJCOPECCEKN)
+                {
+                    if (character.FOPIBFHEBHM == 1)
+                    {
+                        if (PHECEOMIMND.IINDGFPADFM > 0)//team mode
+                        {
+                            if (character.CBABJHOPJPF == FFKMIEMAJML.FJCOPECCEKN[LBDCLOPBBJF].CBABJHOPJPF)
+                            {
+                                winners.Add(character.ALFACADGNDC);
+                            }
+                            else
+                            {
+                                losers.Add(character.ALFACADGNDC);
+                            }
+                        }
+                        else  //singles
+                        {
+                            if(character == FFKMIEMAJML.FJCOPECCEKN[LBDCLOPBBJF])
+                            {
+                                winners.Add(character.ALFACADGNDC);
+                            }
+                            else
+                            {
+                                losers.Add(character.ALFACADGNDC);
+                            }
+                        }
+                    }
+                }
             }
             //FFKMIEMAJML.FJCOPECCEKN[winner] //winner
         }
+        [HarmonyPatch(typeof(JJDCNALMPCI), nameof(JJDCNALMPCI.NCIBLEAKGFH))]
+        [HarmonyPrefix]
+        public static void JJDCNALMPCI_NCIBLEAKGFH_Prefix()
+        {
+            if (Characters.booker == 0 || LFNJDEGJLLJ.NHDABIOCLFH != 2) return;
+            if (SceneManager.GetActiveScene().name != "Game") return;
+            ReloadCharacterWinrates();
+            foreach(int i in winners)
+            {
+                if (Winrates.ContainsKey(i))
+                {
+                    Winrates[i].Wins++;
+                }
+            }
+            foreach (int i in draws)
+            {
+                if (Winrates.ContainsKey(i))
+                {
+                    Winrates[i].Draws++;
+                }
+            }
+            foreach (int i in losers)
+            {
+                if (Winrates.ContainsKey(i))
+                {
+                    Winrates[i].Loses++;
+                }
+            }
+            SaveWinrateToFile();
+        }
     }
 
-
+//FFKMIEMAJML.FJCOPECCEKN[1].FOPIBFHEBHM == 1 wrestler; 0 announcer; 2 manager?; 3 ref
 }
 /* Setup
  * 
