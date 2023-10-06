@@ -1,7 +1,9 @@
 using BepInEx;
+using BepInEx.Configuration;
 using BepInEx.Logging;
 using HarmonyLib;
 using Newtonsoft.Json;
+using System;
 using System.Collections.Generic;
 using System.Data;
 using System.IO;
@@ -33,16 +35,38 @@ namespace BookerWinrateTracker
         public static List<int> draws;
         public static bool readytosave = false;
         public static Dictionary<int, CharacterWinrate> Winrates;
+        public static ConfigEntry<bool> AdvancedDisplay;
 
         public class CharacterWinrate
         {
-            public int Wins;
-            public int Draws;
-            public int Loses;
+            public IndividualTypesWinrate Special { get; set; }
+            public IndividualTypesWinrate Singles { get; set; }
+            public IndividualTypesWinrate Team { get; set; }
             public CharacterWinrate()
             {
-                Wins = 0; Draws = 0; Loses = 0;
+                Special = new();
+                Singles = new();
+                Team = new();
             }
+            public int GetTotalWins()
+            {
+                return Special.Wins + Singles.Wins + Team.Wins;
+            }
+            public int GetTotalDraws()
+            {
+                return Special.Draws + Singles.Draws + Team.Draws;
+            }
+            public int GetTotalLoses()
+            {
+                return Special.Loses + Singles.Loses + Team.Loses;
+            }
+        }
+        public class IndividualTypesWinrate
+        {
+            public int Wins = 0;
+            public int Draws = 0;
+            public int Loses = 0;
+
         }
 
 
@@ -53,6 +77,10 @@ namespace BookerWinrateTracker
 
             PluginPath = Path.GetDirectoryName(Info.Location);
             Winrates = new();
+            AdvancedDisplay = Config.Bind("General",
+             "AdvancedDisplay",
+             false,
+             "Separate the winrate display into individual types (singles, teams, special)");
         }
 
         private void OnEnable()
@@ -76,14 +104,23 @@ namespace BookerWinrateTracker
         }
         public static void LoadWinrateFromFile()
         {
-            if (File.Exists(Path.Combine(PluginPath, "Winrates.json")))
+            try
             {
-                using (StreamReader file = File.OpenText(Path.Combine(PluginPath, "Winrates.json")))
+                if (File.Exists(Path.Combine(PluginPath, "Winrates.json")))
                 {
-                    JsonSerializer serializer = new JsonSerializer();
-                    Winrates = (Dictionary<int, CharacterWinrate>)serializer.Deserialize(file, typeof(Dictionary<int, CharacterWinrate>));
-                    if (Winrates == null) Winrates = new();
+                    using (StreamReader file = File.OpenText(Path.Combine(PluginPath, "Winrates.json")))
+                    {
+                        JsonSerializer serializer = new JsonSerializer();
+                        Winrates = (Dictionary<int, CharacterWinrate>)serializer.Deserialize(file, typeof(Dictionary<int, CharacterWinrate>));
+                        if (Winrates == null) Winrates = new();
+                    }
                 }
+            }
+            catch (Exception e)
+            {
+                Log.LogError("An error has occured while trying to load the winrates from a file. Character winrates will be reset.");
+                Log.LogError(e);
+                Winrates = new();
             }
         }
         public static void ReloadCharacterWinrates()
@@ -111,7 +148,17 @@ namespace BookerWinrateTracker
         {
             CharacterWinrate winrate;
             bool success = Winrates.TryGetValue(id, out winrate);
-            if(success) RateText.GetComponent<Text>().text = "W-D-L: " + winrate.Wins + "-" + winrate.Draws + "-" + winrate.Loses;
+            if (success)
+            {
+                if (AdvancedDisplay.Value == true)
+                {
+                    RateText.GetComponent<Text>().text = "S: " + winrate.Singles.Wins + "-" + winrate.Singles.Draws + "-" + winrate.Singles.Loses + "; T: " + winrate.Team.Wins + "-" + winrate.Team.Draws + "-" + winrate.Team.Loses + "; Sp: " + winrate.Special.Wins + "-" + winrate.Special.Draws + "-" + winrate.Special.Loses;
+                }
+                else
+                {
+                    RateText.GetComponent<Text>().text = "W-D-L: " + winrate.GetTotalWins() + "-" + winrate.GetTotalDraws() + "-" + winrate.GetTotalLoses();
+                }
+            }
             return success;
         }
         public static void SetUpGameObjects()
@@ -140,6 +187,13 @@ namespace BookerWinrateTracker
             SetUpGameObjects();
             ReloadCharacterWinrates();
         }
+        [HarmonyPatch(typeof(Scene_News), nameof(Scene_News.Start))]  //setup the game objects
+        [HarmonyPostfix]
+        static void Scene_News_Setup()
+        {
+            SetUpGameObjects();
+            ReloadCharacterWinrates();
+        }
         [HarmonyPatch(typeof(Scene_Select_Char), nameof(Scene_Select_Char.Update))]  //Update the score
         [HarmonyPostfix]
         static void Scene_Select_Char_Update()
@@ -153,6 +207,25 @@ namespace BookerWinrateTracker
             {
                 WinRate.SetActive(true);
                 if(!LoadWinrate(Characters.c[Characters.foc].id)) WinRate.SetActive(false);
+            }
+            else
+            {
+                WinRate.SetActive(false);
+            }
+        }
+        [HarmonyPatch(typeof(Scene_News), nameof(Scene_Select_Char.Update))]  //Update the score
+        [HarmonyPostfix]
+        static void Scene_News_Update()
+        {
+            if (Characters.booker == 0 || LFNJDEGJLLJ.NHDABIOCLFH != 2)
+            {
+                WinRate.SetActive(false);
+                return;
+            }
+            if (Characters.c[HFFFILGAOIL.NMBKGKCAOFD[HFFFILGAOIL.NJJPPLCPOIA].ALFACADGNDC[1]].fed == Characters.c[Characters.booker].fed)
+            {
+                WinRate.SetActive(true);
+                if (!LoadWinrate(Characters.c[HFFFILGAOIL.NMBKGKCAOFD[HFFFILGAOIL.NJJPPLCPOIA].ALFACADGNDC[1]].id)) WinRate.SetActive(false);
             }
             else
             {
@@ -197,7 +270,7 @@ namespace BookerWinrateTracker
                                 losers.Add(character.ALFACADGNDC);
                             }
                         }
-                        else  //singles
+                        else  //singles or countdowns
                         {
                             if(character == FFKMIEMAJML.FJCOPECCEKN[LBDCLOPBBJF])
                             {
@@ -224,21 +297,54 @@ namespace BookerWinrateTracker
             {
                 if (Winrates.ContainsKey(i))
                 {
-                    Winrates[i].Wins++;
+                    if (PHECEOMIMND.IINDGFPADFM > 0)
+                    {
+                        Winrates[i].Team.Wins++;
+                    }
+                    else if (PHECEOMIMND.IINDGFPADFM == 0)
+                    {
+                        Winrates[i].Singles.Wins++;
+                    }
+                    else if (PHECEOMIMND.IINDGFPADFM < 0)
+                    {
+                        Winrates[i].Special.Wins++;
+                    }
                 }
             }
             foreach (int i in draws)
             {
                 if (Winrates.ContainsKey(i))
                 {
-                    Winrates[i].Draws++;
+                    if (PHECEOMIMND.IINDGFPADFM > 0)
+                    {
+                        Winrates[i].Team.Draws++;
+                    }
+                    else if (PHECEOMIMND.IINDGFPADFM == 0)
+                    {
+                        Winrates[i].Singles.Draws++;
+                    }
+                    else if (PHECEOMIMND.IINDGFPADFM < 0)
+                    {
+                        Winrates[i].Special.Draws++;
+                    }
                 }
             }
             foreach (int i in losers)
             {
                 if (Winrates.ContainsKey(i))
                 {
-                    Winrates[i].Loses++;
+                    if (PHECEOMIMND.IINDGFPADFM > 0)
+                    {
+                        Winrates[i].Team.Loses++;
+                    }
+                    else if (PHECEOMIMND.IINDGFPADFM == 0)
+                    {
+                        Winrates[i].Singles.Loses++;
+                    }
+                    else if (PHECEOMIMND.IINDGFPADFM < 0)
+                    {
+                        Winrates[i].Special.Loses++;
+                    }
                 }
             }
             SaveWinrateToFile();
