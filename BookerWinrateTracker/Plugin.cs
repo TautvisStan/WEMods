@@ -20,7 +20,7 @@ namespace BookerWinrateTracker
     {
         public const string PluginGuid = "GeeEm.WrestlingEmpire.BookerWinrateTracker";
         public const string PluginName = "BookerWinrateTracker";
-        public const string PluginVer = "1.0.0";
+        public const string PluginVer = "1.0.2";
 
         internal static ManualLogSource Log;
         internal readonly static Harmony Harmony = new(PluginGuid);
@@ -30,9 +30,9 @@ namespace BookerWinrateTracker
         public static GameObject WinRate;
         public static GameObject RateText;
 
-        public static List<int> winners;
-        public static List<int> losers;
-        public static List<int> draws;
+        public static List<int> winners = new();
+        public static List<int> losers = new();
+        public static List<int> draws = new();
         public static bool readytosave = false;
         public static Dictionary<int, CharacterWinrate> Winrates;
         public static ConfigEntry<bool> AdvancedDisplay;
@@ -96,7 +96,7 @@ namespace BookerWinrateTracker
         }
         public static void SaveWinrateToFile()
         {
-            using (StreamWriter file = File.CreateText(Path.Combine(PluginPath, "Winrates.json")))
+            using (StreamWriter file = File.CreateText(Path.Combine(Paths.ConfigPath, "BookerWinrates.json")))
             {
                 JsonSerializer serializer = new JsonSerializer();
                 serializer.Serialize(file, Winrates);
@@ -106,13 +106,17 @@ namespace BookerWinrateTracker
         {
             try
             {
-                if (File.Exists(Path.Combine(PluginPath, "Winrates.json")))
+                if (File.Exists(Path.Combine(Paths.ConfigPath, "BookerWinrates.json")))
                 {
-                    using (StreamReader file = File.OpenText(Path.Combine(PluginPath, "Winrates.json")))
+                    using (StreamReader file = File.OpenText(Path.Combine(Paths.ConfigPath, "BookerWinrates.json")))
                     {
                         JsonSerializer serializer = new JsonSerializer();
                         Winrates = (Dictionary<int, CharacterWinrate>)serializer.Deserialize(file, typeof(Dictionary<int, CharacterWinrate>));
-                        if (Winrates == null) Winrates = new();
+                        if (Winrates == null)
+                        {
+                            Debug.LogError("Failed to load the winrates for an unknown reason.");
+                            Winrates = new();
+                        }
                     }
                 }
             }
@@ -348,6 +352,9 @@ namespace BookerWinrateTracker
                 }
             }
             SaveWinrateToFile();
+            winners = new();
+            draws = new();
+            losers = new();
         }
     }
 
