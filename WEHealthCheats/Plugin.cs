@@ -5,6 +5,7 @@ using HarmonyLib;
 using System;
 using System.IO;
 using UnityEngine;
+using static UnityEngine.GraphicsBuffer;
 
 namespace HealthCheats
 {
@@ -14,7 +15,7 @@ namespace HealthCheats
     {
         public const string PluginGuid = "GeeEm.WrestlingEmpire.HealthCheats";
         public const string PluginName = "HealthCheats";
-        public const string PluginVer = "1.1.1";
+        public const string PluginVer = "1.2.0";
 
         internal static ManualLogSource Log;
         internal readonly static Harmony Harmony = new(PluginGuid);
@@ -34,7 +35,8 @@ namespace HealthCheats
         public static ConfigEntry<string> ConfigAtMin;
         public static ConfigEntry<string> ConfigInMax;
         public static ConfigEntry<string> ConfigInMin;
-
+        public static ConfigEntry<string> ConfigKOMax;
+        public static ConfigEntry<string> ConfigKOMin;
 
         private void Awake()
         {
@@ -133,6 +135,20 @@ namespace HealthCheats
                 "Removes the character injury",
                 new AcceptableValueList<string>("None", "Backspace", "Delete", "Tab", "Clear", "Return", "Pause", "Escape", "Space", "Quote", "Comma", "Minus", "Period", "Slash", "Alpha0", "Alpha1", "Alpha2", "Alpha3", "Alpha4", "Alpha5", "Alpha6", "Alpha7", "Alpha8", "Alpha9", "Semicolon", "Equals", "LeftBracket", "Backslash", "RightBracket", "BackQuote", "A", "B", "C", "D", "E", "F", "G", "H", "I", "J", "K", "L", "M", "N", "O", "P", "Q", "R", "S", "T", "U", "V", "W", "X", "Y", "Z", "Delete", "Keypad0", "Keypad1", "Keypad2", "Keypad3", "Keypad4", "Keypad5", "Keypad6", "Keypad7", "Keypad8", "Keypad9", "KeypadPeriod", "KeypadDivide", "KeypadMultiply", "KeypadMinus", "KeypadPlus", "KeypadEnter", "KeypadEquals", "UpArrow", "DownArrow", "RightArrow", "LeftArrow", "Insert", "Home", "End", "PageUp", "PageDown", "F1", "F2", "F3", "F4", "F5", "F6", "F7", "F8", "F9", "F10", "F11", "F12", "F13", "F14", "F15", "Numlock", "CapsLock", "ScrollLock", "RightShift", "LeftShift", "RightControl", "LeftControl", "RightAlt", "LeftAlt", "RightCommand", "RightApple", "LeftCommand", "LeftApple", "LeftWindows", "RightWindows", "Print", "Menu")));
 
+            ConfigKOMax = Config.Bind("Controls",
+             "Knock out a target",
+             "C",
+             new ConfigDescription(
+                "Instantly knock out (and DQ) a target",
+                new AcceptableValueList<string>("None", "Backspace", "Delete", "Tab", "Clear", "Return", "Pause", "Escape", "Space", "Quote", "Comma", "Minus", "Period", "Slash", "Alpha0", "Alpha1", "Alpha2", "Alpha3", "Alpha4", "Alpha5", "Alpha6", "Alpha7", "Alpha8", "Alpha9", "Semicolon", "Equals", "LeftBracket", "Backslash", "RightBracket", "BackQuote", "A", "B", "C", "D", "E", "F", "G", "H", "I", "J", "K", "L", "M", "N", "O", "P", "Q", "R", "S", "T", "U", "V", "W", "X", "Y", "Z", "Delete", "Keypad0", "Keypad1", "Keypad2", "Keypad3", "Keypad4", "Keypad5", "Keypad6", "Keypad7", "Keypad8", "Keypad9", "KeypadPeriod", "KeypadDivide", "KeypadMultiply", "KeypadMinus", "KeypadPlus", "KeypadEnter", "KeypadEquals", "UpArrow", "DownArrow", "RightArrow", "LeftArrow", "Insert", "Home", "End", "PageUp", "PageDown", "F1", "F2", "F3", "F4", "F5", "F6", "F7", "F8", "F9", "F10", "F11", "F12", "F13", "F14", "F15", "Numlock", "CapsLock", "ScrollLock", "RightShift", "LeftShift", "RightControl", "LeftControl", "RightAlt", "LeftAlt", "RightCommand", "RightApple", "LeftCommand", "LeftApple", "LeftWindows", "RightWindows", "Print", "Menu")));
+
+            ConfigKOMin = Config.Bind("Controls",
+             "Recover target from knockout",
+             "V",
+             new ConfigDescription(
+                "Recover target from knockout",
+                new AcceptableValueList<string>("None", "Backspace", "Delete", "Tab", "Clear", "Return", "Pause", "Escape", "Space", "Quote", "Comma", "Minus", "Period", "Slash", "Alpha0", "Alpha1", "Alpha2", "Alpha3", "Alpha4", "Alpha5", "Alpha6", "Alpha7", "Alpha8", "Alpha9", "Semicolon", "Equals", "LeftBracket", "Backslash", "RightBracket", "BackQuote", "A", "B", "C", "D", "E", "F", "G", "H", "I", "J", "K", "L", "M", "N", "O", "P", "Q", "R", "S", "T", "U", "V", "W", "X", "Y", "Z", "Delete", "Keypad0", "Keypad1", "Keypad2", "Keypad3", "Keypad4", "Keypad5", "Keypad6", "Keypad7", "Keypad8", "Keypad9", "KeypadPeriod", "KeypadDivide", "KeypadMultiply", "KeypadMinus", "KeypadPlus", "KeypadEnter", "KeypadEquals", "UpArrow", "DownArrow", "RightArrow", "LeftArrow", "Insert", "Home", "End", "PageUp", "PageDown", "F1", "F2", "F3", "F4", "F5", "F6", "F7", "F8", "F9", "F10", "F11", "F12", "F13", "F14", "F15", "Numlock", "CapsLock", "ScrollLock", "RightShift", "LeftShift", "RightControl", "LeftControl", "RightAlt", "LeftAlt", "RightCommand", "RightApple", "LeftCommand", "LeftApple", "LeftWindows", "RightWindows", "Print", "Menu")));
+
 
 
         }
@@ -204,6 +220,14 @@ namespace HealthCheats
                     {
                         Heal(FFKMIEMAJML.FJCOPECCEKN[FFKMIEMAJML.FJCOPECCEKN[FFKMIEMAJML.ODPPBDDAIGI[1].CJGHFHCHDNN].CJGHFHCHDNN]);
                     }
+                    if (Input.GetKeyDown(Ulil.GetKeyCode(ConfigKOMax.Value))) //KO
+                    {
+                        KnockOut(FFKMIEMAJML.FJCOPECCEKN[FFKMIEMAJML.FJCOPECCEKN[FFKMIEMAJML.ODPPBDDAIGI[1].CJGHFHCHDNN].CJGHFHCHDNN]);
+                    }
+                    if (Input.GetKeyDown(Ulil.GetKeyCode(ConfigKOMin.Value))) //recover
+                    {
+                        Recover(FFKMIEMAJML.FJCOPECCEKN[FFKMIEMAJML.FJCOPECCEKN[FFKMIEMAJML.ODPPBDDAIGI[1].CJGHFHCHDNN].CJGHFHCHDNN]);
+                    }
 
                 }
                 else //player
@@ -257,6 +281,14 @@ namespace HealthCheats
                     if (Input.GetKeyDown(Ulil.GetKeyCode(ConfigInMin.Value))) //heal
                     {
                         Heal(FFKMIEMAJML.FJCOPECCEKN[FFKMIEMAJML.ODPPBDDAIGI[1].CJGHFHCHDNN]);
+                    }
+                    if (Input.GetKeyDown(Ulil.GetKeyCode(ConfigKOMax.Value))) //KO
+                    {
+                        KnockOut(FFKMIEMAJML.FJCOPECCEKN[FFKMIEMAJML.ODPPBDDAIGI[1].CJGHFHCHDNN]);
+                    }
+                    if (Input.GetKeyDown(Ulil.GetKeyCode(ConfigKOMin.Value))) //recover
+                    {
+                        Recover(FFKMIEMAJML.FJCOPECCEKN[FFKMIEMAJML.ODPPBDDAIGI[1].CJGHFHCHDNN]);
                     }
                 }
             }
@@ -312,6 +344,32 @@ namespace HealthCheats
             instance.HLALEJPPKBO = 0;
             instance.LLEGGMCIALJ.injuryTime = 0;
             instance.LLEGGMCIALJ.injury = 0;
+        }
+
+        public static void KnockOut(DJEKCMMMFJM instance)
+        {
+            instance.EFEPIJKLOEF = 1;
+            if (PHECEOMIMND.IPAFPBPKIKP > 0 && instance.FOPIBFHEBHM == 1 && instance.MBDGNNMBEPH == 0)
+            {
+                PHECEOMIMND.MOPIODHDBNK(instance.CCCLFMLNPIK, instance.DHBIELODIAN);
+            }
+            instance.FOPIBFHEBHM = 0;
+            instance.MBDGNNMBEPH = 1f;
+
+
+            PHECEOMIMND.NNJEDKEFIGL = PHECEOMIMND.JACHPAHIGPP(1);
+            if (PHECEOMIMND.NNJEDKEFIGL == 0)
+            {
+                PHECEOMIMND.ACABDNDNJPN = 0;
+                if (PHECEOMIMND.ONIAMCHKGEL >= 1 && PHECEOMIMND.ONIAMCHKGEL <= 2)
+                {
+                    PHECEOMIMND.ONIAMCHKGEL = 0;
+                }
+            }
+        }
+        public static void Recover(DJEKCMMMFJM instance)
+        {
+            instance.EFEPIJKLOEF = 0;
         }
     }
         public static class Ulil

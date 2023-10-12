@@ -1,7 +1,7 @@
 # HealthCheats
-Now rebindable!
+Now with knock outs!
 
-Hold `Left Alt` to apply that to your target, otherwise it will applied to your character instead.
+Hold `Left Alt` to apply that to your target, otherwise it will applied to your character instead. Buttons can be rebind in a config file.
 List of cheats:
 - `Q` - Sets health to max
 - `W` - Sets health to 0
@@ -15,3 +15,5 @@ List of cheats:
 - `H` - Ends the adrenaline timer
 - `J` - Injures the character
 - `K` - Removes character injury
+- `C` - Knocks out and DQs a character
+- `V` - Revives knocked out character
