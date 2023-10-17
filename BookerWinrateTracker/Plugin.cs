@@ -20,7 +20,7 @@ namespace BookerWinrateTracker
     {
         public const string PluginGuid = "GeeEm.WrestlingEmpire.BookerWinrateTracker";
         public const string PluginName = "BookerWinrateTracker";
-        public const string PluginVer = "1.0.2";
+        public const string PluginVer = "1.0.3";
 
         internal static ManualLogSource Log;
         internal readonly static Harmony Harmony = new(PluginGuid);
@@ -36,7 +36,7 @@ namespace BookerWinrateTracker
         public static bool readytosave = false;
         public static Dictionary<int, CharacterWinrate> Winrates;
         public static ConfigEntry<bool> AdvancedDisplay;
-
+        public static ConfigEntry<bool> SkipConfrontations;
         public class CharacterWinrate
         {
             public IndividualTypesWinrate Special { get; set; }
@@ -81,6 +81,10 @@ namespace BookerWinrateTracker
              "AdvancedDisplay",
              false,
              "Separate the winrate display into individual types (singles, teams, special)");
+            SkipConfrontations = Config.Bind("General",
+ "SkipConfrontations",
+ false,
+ "Ignore and don't track confrontation type matches");
         }
 
         private void OnEnable()
@@ -244,6 +248,7 @@ namespace BookerWinrateTracker
             draws = new();
             losers = new();
             if (LFNJDEGJLLJ.NHDABIOCLFH != 2) return;
+            if (SkipConfrontations.Value == true && PHECEOMIMND.DIHLIACKIMI == 1) return;
             //if team mode, add winning team participants to winners, others to losers
             //if singles, add winner to winners, others to losers
             //if draw, add all to draws
