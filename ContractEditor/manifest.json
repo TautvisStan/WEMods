@@ -2,7 +2,7 @@
   "namespace": "GeeEm",
   "name": "ContractEditor",
   "description": "This mod lets you to modify the wrestler contract through a text file",
-  "version_number": "1.0.0",
+  "version_number": "1.0.1",
   "dependencies": [
     "BepInEx-BepInExPack-5.4.2100"
   ],

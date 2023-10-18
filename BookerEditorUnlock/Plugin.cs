@@ -13,7 +13,7 @@ namespace PromotionEditorUnlock
     {
         public const string PluginGuid = "GeeEm.WrestlingEmpire.PromotionEditorUnlock";
         public const string PluginName = "PromotionEditorUnlock";
-        public const string PluginVer = "1.0.1";
+        public const string PluginVer = "1.0.2";
 
         internal static ManualLogSource Log;
         internal readonly static Harmony Harmony = new(PluginGuid);
@@ -43,8 +43,8 @@ namespace PromotionEditorUnlock
         public static class ProgressPatch
         {
             [HarmonyPrefix]
-            [HarmonyPatch(nameof(Progress.FIJMANMIAIG))]
-            public static bool FIJMANMIAIGPatch(ref int __result)
+            [HarmonyPatch(nameof(Progress.FEEFCAJHAII))]
+            public static bool FEEFCAJHAIIPatch(ref int __result)
             {
                 __result = 3;
                 return false;

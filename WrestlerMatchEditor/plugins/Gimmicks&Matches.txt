@@ -34,6 +34,8 @@ Gimmicks:
 33: Buried Alive
 34: Backstage  (Hollywood?)
 35: Christmas Chaos
+36: Exposed Wood
+37: Exposed Metal
 51: Ropeless (square ring)
 52: Ropeless (hexagon ring)
 61: Steel Cage (square ring)

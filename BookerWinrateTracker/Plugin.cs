@@ -20,7 +20,7 @@ namespace BookerWinrateTracker
     {
         public const string PluginGuid = "GeeEm.WrestlingEmpire.BookerWinrateTracker";
         public const string PluginName = "BookerWinrateTracker";
-        public const string PluginVer = "1.0.3";
+        public const string PluginVer = "1.0.4";
 
         internal static ManualLogSource Log;
         internal readonly static Harmony Harmony = new(PluginGuid);
@@ -133,7 +133,7 @@ namespace BookerWinrateTracker
         }
         public static void ReloadCharacterWinrates()
         {
-            if (Characters.booker == 0 || LFNJDEGJLLJ.NHDABIOCLFH != 2) return;
+            if (Characters.booker == 0 || NAEEIFNFBBO.CBMHGKFFHJE != 2) return;
             LoadWinrateFromFile();
             foreach (KeyValuePair<int, CharacterWinrate> characterWinrate in Winrates.ToList())
             {
@@ -206,7 +206,7 @@ namespace BookerWinrateTracker
         [HarmonyPostfix]
         static void Scene_Select_Char_Update()
         {
-            if (Characters.booker == 0 || LFNJDEGJLLJ.NHDABIOCLFH != 2)
+            if (Characters.booker == 0 || NAEEIFNFBBO.CBMHGKFFHJE != 2)
             {
                 WinRate.SetActive(false);
                 return;
@@ -225,96 +225,96 @@ namespace BookerWinrateTracker
         [HarmonyPostfix]
         static void Scene_News_Update()
         {
-            if (Characters.booker == 0 || LFNJDEGJLLJ.NHDABIOCLFH != 2)
+            if (Characters.booker == 0 || NAEEIFNFBBO.CBMHGKFFHJE != 2)
             {
                 WinRate.SetActive(false);
                 return;
             }
-            if (Characters.c[HFFFILGAOIL.NMBKGKCAOFD[HFFFILGAOIL.NJJPPLCPOIA].ALFACADGNDC[1]].fed == Characters.c[Characters.booker].fed)
+            if (Characters.c[IMNHOCBFGHJ.OLMOLOOOIJM[IMNHOCBFGHJ.ODOAPLMOJPD].GOOKPABIPBC[1]].fed == Characters.c[Characters.booker].fed)
             {
                 WinRate.SetActive(true);
-                if (!LoadWinrate(Characters.c[HFFFILGAOIL.NMBKGKCAOFD[HFFFILGAOIL.NJJPPLCPOIA].ALFACADGNDC[1]].id)) WinRate.SetActive(false);
+                if (!LoadWinrate(Characters.c[IMNHOCBFGHJ.OLMOLOOOIJM[IMNHOCBFGHJ.ODOAPLMOJPD].GOOKPABIPBC[1]].id)) WinRate.SetActive(false);
             }
             else
             {
                 WinRate.SetActive(false);
             }
         }
-        [HarmonyPatch(typeof(PHECEOMIMND), nameof(PHECEOMIMND.HDKPGMAKCLO))]  //Match end, might still restart
+        [HarmonyPatch(typeof(FFCEGMEAIBP), nameof(FFCEGMEAIBP.BAGEPNPJPLD))]  //Match end, might still restart
         [HarmonyPostfix]
-        static void PHECEOMIMND_HDKPGMAKCLO_Postfix(int LBDCLOPBBJF)  //
+        static void FFCEGMEAIBP_BAGEPNPJPLD_Postfix(int KJELLNJFNGO)  //
         {
             winners = new();
             draws = new();
             losers = new();
-            if (LFNJDEGJLLJ.NHDABIOCLFH != 2) return;
-            if (SkipConfrontations.Value == true && PHECEOMIMND.DIHLIACKIMI == 1) return;
+            if (NAEEIFNFBBO.CBMHGKFFHJE != 2) return;
+            if (SkipConfrontations.Value == true && FFCEGMEAIBP.CBIPLGLDCAG == 1) return;
             //if team mode, add winning team participants to winners, others to losers
             //if singles, add winner to winners, others to losers
             //if draw, add all to draws
-            if(PHECEOMIMND.PPCJLFLDAKP == 0) //draw
+            if(FFCEGMEAIBP.OOODPHNGHGD == 0) //draw
             {
-                foreach (DJEKCMMMFJM character in FFKMIEMAJML.FJCOPECCEKN)
+                foreach (DFOGOCNBECG character in NJBJIIIACEP.OAAMGFLINOB)
                 {
-                    if(character.FOPIBFHEBHM == 1)
+                    if(character.FIEMGOLBHIO == 1)
                     {
-                        draws.Add(character.ALFACADGNDC);
+                        draws.Add(character.GOOKPABIPBC);
                     }
                 }
             }
             else //someone won
             {
-                foreach (DJEKCMMMFJM character in FFKMIEMAJML.FJCOPECCEKN)
+                foreach (DFOGOCNBECG character in NJBJIIIACEP.OAAMGFLINOB)
                 {
-                    if (character.FOPIBFHEBHM == 1)
+                    if (character.FIEMGOLBHIO == 1)
                     {
-                        if (PHECEOMIMND.IINDGFPADFM > 0)//team mode
+                        if (FFCEGMEAIBP.OLJFOJOLLOM > 0)//team mode
                         {
-                            if (character.CBABJHOPJPF == FFKMIEMAJML.FJCOPECCEKN[LBDCLOPBBJF].CBABJHOPJPF)
+                            if (character.LBCFAJGDKJP == NJBJIIIACEP.OAAMGFLINOB[KJELLNJFNGO].LBCFAJGDKJP)
                             {
-                                winners.Add(character.ALFACADGNDC);
+                                winners.Add(character.GOOKPABIPBC);
                             }
                             else
                             {
-                                losers.Add(character.ALFACADGNDC);
+                                losers.Add(character.GOOKPABIPBC);
                             }
                         }
                         else  //singles or countdowns
                         {
-                            if(character == FFKMIEMAJML.FJCOPECCEKN[LBDCLOPBBJF])
+                            if(character == NJBJIIIACEP.OAAMGFLINOB[KJELLNJFNGO])
                             {
-                                winners.Add(character.ALFACADGNDC);
+                                winners.Add(character.GOOKPABIPBC);
                             }
                             else
                             {
-                                losers.Add(character.ALFACADGNDC);
+                                losers.Add(character.GOOKPABIPBC);
                             }
                         }
                     }
                 }
             }
-            //FFKMIEMAJML.FJCOPECCEKN[winner] //winner
+            //NJBJIIIACEP.OAAMGFLINOB[winner] //winner
         }
-        [HarmonyPatch(typeof(JJDCNALMPCI), nameof(JJDCNALMPCI.NCIBLEAKGFH))]
+        [HarmonyPatch(typeof(LIPNHOMGGHF), nameof(LIPNHOMGGHF.PMIIOCMHEAE))]
         [HarmonyPrefix]
-        public static void JJDCNALMPCI_NCIBLEAKGFH_Prefix()
+        public static void LIPNHOMGGHF_PMIIOCMHEAE_Prefix()
         {
-            if (Characters.booker == 0 || LFNJDEGJLLJ.NHDABIOCLFH != 2) return;
+            if (Characters.booker == 0 || NAEEIFNFBBO.CBMHGKFFHJE != 2) return;
             if (SceneManager.GetActiveScene().name != "Game") return;
             ReloadCharacterWinrates();
             foreach(int i in winners)
             {
                 if (Winrates.ContainsKey(i))
                 {
-                    if (PHECEOMIMND.IINDGFPADFM > 0)
+                    if (FFCEGMEAIBP.OLJFOJOLLOM > 0)
                     {
                         Winrates[i].Team.Wins++;
                     }
-                    else if (PHECEOMIMND.IINDGFPADFM == 0)
+                    else if (FFCEGMEAIBP.OLJFOJOLLOM == 0)
                     {
                         Winrates[i].Singles.Wins++;
                     }
-                    else if (PHECEOMIMND.IINDGFPADFM < 0)
+                    else if (FFCEGMEAIBP.OLJFOJOLLOM < 0)
                     {
                         Winrates[i].Special.Wins++;
                     }
@@ -324,15 +324,15 @@ namespace BookerWinrateTracker
             {
                 if (Winrates.ContainsKey(i))
                 {
-                    if (PHECEOMIMND.IINDGFPADFM > 0)
+                    if (FFCEGMEAIBP.OLJFOJOLLOM > 0)
                     {
                         Winrates[i].Team.Draws++;
                     }
-                    else if (PHECEOMIMND.IINDGFPADFM == 0)
+                    else if (FFCEGMEAIBP.OLJFOJOLLOM == 0)
                     {
                         Winrates[i].Singles.Draws++;
                     }
-                    else if (PHECEOMIMND.IINDGFPADFM < 0)
+                    else if (FFCEGMEAIBP.OLJFOJOLLOM < 0)
                     {
                         Winrates[i].Special.Draws++;
                     }
@@ -342,15 +342,15 @@ namespace BookerWinrateTracker
             {
                 if (Winrates.ContainsKey(i))
                 {
-                    if (PHECEOMIMND.IINDGFPADFM > 0)
+                    if (FFCEGMEAIBP.OLJFOJOLLOM > 0)
                     {
                         Winrates[i].Team.Loses++;
                     }
-                    else if (PHECEOMIMND.IINDGFPADFM == 0)
+                    else if (FFCEGMEAIBP.OLJFOJOLLOM == 0)
                     {
                         Winrates[i].Singles.Loses++;
                     }
-                    else if (PHECEOMIMND.IINDGFPADFM < 0)
+                    else if (FFCEGMEAIBP.OLJFOJOLLOM < 0)
                     {
                         Winrates[i].Special.Loses++;
                     }
@@ -363,7 +363,7 @@ namespace BookerWinrateTracker
         }
     }
 
-//FFKMIEMAJML.FJCOPECCEKN[1].FOPIBFHEBHM == 1 wrestler; 0 announcer; 2 manager?; 3 ref
+//NJBJIIIACEP.OAAMGFLINOB[1].FIEMGOLBHIO == 1 wrestler; 0 announcer; 2 manager?; 3 ref
 }
 /* Setup
  * 

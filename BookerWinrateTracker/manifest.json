@@ -2,7 +2,7 @@
   "namespace": "GeeEm",
   "name": "BookerWinrateTracker",
   "description": "This mod will track your booker mode wrestler wins, draws and losses.",
-  "version_number": "1.0.3",
+  "version_number": "1.0.4",
   "dependencies": [
     "BepInEx-BepInExPack-5.4.2100"
   ],

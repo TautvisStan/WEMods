@@ -13,7 +13,7 @@ namespace IncreasedSliderLimits
     {
         public const string PluginGuid = "GeeEm.WrestlingEmpire.IncreasedSliderLimits";
         public const string PluginName = "IncreasedSliderLimits";
-        public const string PluginVer = "1.0.0";
+        public const string PluginVer = "1.0.1";
 
         internal static ManualLogSource Log;
         internal readonly static Harmony Harmony = new(PluginGuid);
@@ -77,86 +77,86 @@ namespace IncreasedSliderLimits
             Logger.LogInfo($"Unloaded {PluginName}!");
         }
 
-        [HarmonyPatch(typeof(BOAPBLKGGHL), nameof(BOAPBLKGGHL.MBNBGBELPIA))]
+        [HarmonyPatch(typeof(AKFIIKOMPLL), nameof(AKFIIKOMPLL.ODONMLDCHHF))]
         [HarmonyPrefix]
-        static bool Prefix(BOAPBLKGGHL __instance, float __0, float __1, float __2, ref float __3, ref float __4, int __5)
+        static bool Prefix(AKFIIKOMPLL __instance, float __0, float __1, float __2, ref float __3, ref float __4, int __5)
         {
-            if (__1 == 1f && __2 == 5f && __3 == 50f && __4 == 99f && __5 == 0 && (__instance == JJDCNALMPCI.ECEJOIDPOCN[1] || __instance == JJDCNALMPCI.ECEJOIDPOCN[2] || __instance == JJDCNALMPCI.ECEJOIDPOCN[3] || __instance == JJDCNALMPCI.ECEJOIDPOCN[4] || __instance == JJDCNALMPCI.ECEJOIDPOCN[5] || __instance == JJDCNALMPCI.ECEJOIDPOCN[6]) && JJDCNALMPCI.PJHNMEEFCME == 1)
+            if (__1 == 1f && __2 == 5f && __3 == 50f && __4 == 99f && __5 == 0 && (__instance == LIPNHOMGGHF.FKANHDIMMBJ[1] || __instance == LIPNHOMGGHF.FKANHDIMMBJ[2] || __instance == LIPNHOMGGHF.FKANHDIMMBJ[3] || __instance == LIPNHOMGGHF.FKANHDIMMBJ[4] || __instance == LIPNHOMGGHF.FKANHDIMMBJ[5] || __instance == LIPNHOMGGHF.FKANHDIMMBJ[6]) && LIPNHOMGGHF.CHLJMEPFJOK == 1)
             {
                 __3 = Plugin.minStat.Value;
                 __4 = Plugin.maxStat.Value;
-                if ((__instance == JJDCNALMPCI.ECEJOIDPOCN[1] || __instance == JJDCNALMPCI.ECEJOIDPOCN[6]) && KeepPopAttLocked.Value)
+                if ((__instance == LIPNHOMGGHF.FKANHDIMMBJ[1] || __instance == LIPNHOMGGHF.FKANHDIMMBJ[6]) && KeepPopAttLocked.Value)
                 {
                     __3 = 50f;
                     __4 = 99f;
                 }
             }
-            if (__1 == 0.01f && __2 == 10f && __3 == 0.8f && __4 == 1.2f && __5 == 0 && (__instance == JJDCNALMPCI.ECEJOIDPOCN[3]) && JJDCNALMPCI.PJHNMEEFCME == 2)
+            if (__1 == 0.01f && __2 == 10f && __3 == 0.8f && __4 == 1.2f && __5 == 0 && (__instance == LIPNHOMGGHF.FKANHDIMMBJ[3]) && LIPNHOMGGHF.CHLJMEPFJOK == 2)
             {
                 __3 = Plugin.minHeight.Value;
                 __4 = Plugin.maxHeight.Value;
             }
-            if (__1 == 0.01f && __2 == 10f && __3 == 0.7f && __4 == 1.2f && __5 == 0 && (__instance == JJDCNALMPCI.ECEJOIDPOCN[9]) && JJDCNALMPCI.PJHNMEEFCME == 1)
+            if (__1 == 0.01f && __2 == 10f && __3 == 0.7f && __4 == 1.2f && __5 == 0 && (__instance == LIPNHOMGGHF.FKANHDIMMBJ[9]) && LIPNHOMGGHF.CHLJMEPFJOK == 1)
             {
                 __3 = Plugin.minMusic.Value;
                 __4 = Plugin.maxMusic.Value;
             }
             return true;
         }
-        [HarmonyPatch(typeof(Character), nameof(Character.KDFKDJBGPDO))] //!!!!
+        [HarmonyPatch(typeof(Character), nameof(Character.IMMIIDECGCF))] //!!!!
         [HarmonyPrefix]
-        static bool CharacterKDFKDJBGPDO(Character __instance, int JKOIBBNALKP, ref float HJODLIDCCCC)
+        static bool CharacterIMMIIDECGCF(Character __instance, int LGLHGGDPNPD, ref float OEGLNPMNEOE)
         {
-            if (LFNJDEGJLLJ.NHDABIOCLFH > 0)
+            if (NAEEIFNFBBO.CBMHGKFFHJE > 0)
             {
-                HJODLIDCCCC *= BCKHHMIMAEN.PGMACJDMLPP;
-                int num = Mathf.RoundToInt(__instance.stat[JKOIBBNALKP]);
-                if (JKOIBBNALKP == 6 && HJODLIDCCCC > 0f)
+                OEGLNPMNEOE *= MBLIOKEDHHB.MCJHGEHEPMD;
+                int num = Mathf.RoundToInt(__instance.stat[LGLHGGDPNPD]);
+                if (LGLHGGDPNPD == 6 && OEGLNPMNEOE > 0f)
                 {
-                    HJODLIDCCCC *= (150f - __instance.stat[JKOIBBNALKP]) / 100f;
+                    OEGLNPMNEOE *= (150f - __instance.stat[LGLHGGDPNPD]) / 100f;
                 }
-                __instance.stat[JKOIBBNALKP] += HJODLIDCCCC;
-                if ((JKOIBBNALKP == 1 || JKOIBBNALKP == 6) && KeepPopAttLocked.Value)
+                __instance.stat[LGLHGGDPNPD] += OEGLNPMNEOE;
+                if ((LGLHGGDPNPD == 1 || LGLHGGDPNPD == 6) && KeepPopAttLocked.Value)
                 {
-                    if (__instance.stat[JKOIBBNALKP] < 50f)
+                    if (__instance.stat[LGLHGGDPNPD] < 50f)
                     {
-                        __instance.stat[JKOIBBNALKP] = 50f;
+                        __instance.stat[LGLHGGDPNPD] = 50f;
                     }
-                    if (__instance.stat[JKOIBBNALKP] > 99f)
+                    if (__instance.stat[LGLHGGDPNPD] > 99f)
                     {
-                        __instance.stat[JKOIBBNALKP] = 99f;
+                        __instance.stat[LGLHGGDPNPD] = 99f;
                     }
                 }
                 else
                 {
-                    if (__instance.stat[JKOIBBNALKP] < Plugin.minStat.Value)
+                    if (__instance.stat[LGLHGGDPNPD] < Plugin.minStat.Value)
                     {
-                        __instance.stat[JKOIBBNALKP] = Plugin.minStat.Value;
+                        __instance.stat[LGLHGGDPNPD] = Plugin.minStat.Value;
                     }
-                    if (__instance.stat[JKOIBBNALKP] > Plugin.maxStat.Value)
+                    if (__instance.stat[LGLHGGDPNPD] > Plugin.maxStat.Value)
                     {
-                        __instance.stat[JKOIBBNALKP] = Plugin.maxStat.Value;
+                        __instance.stat[LGLHGGDPNPD] = Plugin.maxStat.Value;
                     }
                 }
-                if (JJDCNALMPCI.AAAIDOOHBCM == 50 && PHECEOMIMND.IPAFPBPKIKP == 0 && __instance.id == Characters.star && FFKMIEMAJML.ODPPBDDAIGI != null && FFKMIEMAJML.ODPPBDDAIGI[1].JECBPHJDGAN == 0f)
+                if (LIPNHOMGGHF.FAKHAFKOBPB == 50 && FFCEGMEAIBP.LOBDMDPMFLK == 0 && __instance.id == Characters.star && NJBJIIIACEP.DCAFAIGGFCC != null && NJBJIIIACEP.DCAFAIGGFCC[1].GHGLMKCECOI == 0f)
                 {
-                    if (Mathf.RoundToInt(__instance.stat[JKOIBBNALKP]) < num)
+                    if (Mathf.RoundToInt(__instance.stat[LGLHGGDPNPD]) < num)
                     {
-                        IKPECOJMCAB.NMHGFGAEKEJ(IKPECOJMCAB.CFEIEIILAOE, 1f, 1f);
-                        FFKMIEMAJML.ODPPBDDAIGI[1].LGAOAIMBGDI(Characters.statName[JKOIBBNALKP] + ": " + Mathf.RoundToInt(__instance.stat[JKOIBBNALKP]).ToString("0") + "%", new Color(0.9f, 0.1f, 0.1f));
+                        CHLPMKEGJBJ.DNNPEAOCDOG(CHLPMKEGJBJ.AEJEOKACNBJ, 1f, 1f);
+                        NJBJIIIACEP.DCAFAIGGFCC[1].BFBKLJHKKGE(Characters.statName[LGLHGGDPNPD] + ": " + Mathf.RoundToInt(__instance.stat[LGLHGGDPNPD]).ToString("0") + "%", new Color(0.9f, 0.1f, 0.1f));
                     }
-                    if (Mathf.RoundToInt(__instance.stat[JKOIBBNALKP]) > num)
+                    if (Mathf.RoundToInt(__instance.stat[LGLHGGDPNPD]) > num)
                     {
-                        IKPECOJMCAB.NMHGFGAEKEJ(IKPECOJMCAB.JMGEFFFCJBE, 1f, 1f);
-                        FFKMIEMAJML.ODPPBDDAIGI[1].LGAOAIMBGDI(Characters.statName[JKOIBBNALKP] + ": " + Mathf.RoundToInt(__instance.stat[JKOIBBNALKP]).ToString("0") + "%", new Color(0.1f, 0.9f, 0.1f));
+                        CHLPMKEGJBJ.DNNPEAOCDOG(CHLPMKEGJBJ.MBEMMCMOJFF, 1f, 1f);
+                        NJBJIIIACEP.DCAFAIGGFCC[1].BFBKLJHKKGE(Characters.statName[LGLHGGDPNPD] + ": " + Mathf.RoundToInt(__instance.stat[LGLHGGDPNPD]).ToString("0") + "%", new Color(0.1f, 0.9f, 0.1f));
                     }
                 }
             }
             return false;
         }
-        [HarmonyPatch(typeof(Character), nameof(Character.OHEDMCHNGKN))]  //!!!!
+        [HarmonyPatch(typeof(Character), nameof(Character.LLJKACBKKJM))]  //!!!!
         [HarmonyPrefix]
-        static bool CharacterOHEDMCHNGKN(Character __instance)
+        static bool CharacterLLJKACBKKJM(Character __instance)
         {
             {
                 if (__instance.health < 0f)

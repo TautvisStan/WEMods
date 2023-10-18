@@ -16,7 +16,7 @@ namespace BookerCardEditor
     {
         public const string PluginGuid = "GeeEm.WrestlingEmpire.BookerCardEditor";
         public const string PluginName = "BookerCardEditor";
-        public const string PluginVer = "1.0.1";
+        public const string PluginVer = "1.0.2";
 
         internal static ManualLogSource Log;
         internal readonly static Harmony Harmony = new(PluginGuid);
@@ -65,7 +65,7 @@ namespace BookerCardEditor
             if(Input.GetKeyDown(loadCardButton.Value))
             {
                 Logger.LogInfo("Load custom card button has been pressed");
-                if (LFNJDEGJLLJ.NHDABIOCLFH == 2)
+                if (NAEEIFNFBBO.CBMHGKFFHJE == 2)
                 {
                     if (SceneManager.GetActiveScene().name == "Calendar")
                     {
@@ -203,7 +203,7 @@ namespace BookerCardEditor
             if (Progress.card[card.date] == null)
             {
                 Logger.LogInfo("Card is null, so reloading it");
-                Progress.MOHIFAFEPFE(card.date);
+                Progress.PDBLBLFNDHE(card.date);
             }
             if (card.rivalFed != -1)
             {
@@ -215,8 +215,8 @@ namespace BookerCardEditor
                 Logger.LogInfo("setting card_type " + card.type);
                 if (card.type == 4)
                 {
-                    Progress.card[card.date].FFGHCMGIDOB(card.date, 6);
-                    Progress.BBBGMKCJJBB(card.date);
+                    Progress.card[card.date].PIMGMPBCODM(card.date, 6);
+                    Progress.MBGDIFJMIHA(card.date);
                 }
                 else
                 {
@@ -226,10 +226,10 @@ namespace BookerCardEditor
             if (card.resetCard)
             {
                 Logger.LogInfo("resetting the card");
-                World.BCGKOALHLFO();
-                World.GIBGMPFBBOF(0, card.date, 1);
-                World.PCPFMFFBKCP();
-                Progress.card[card.date].FFGHCMGIDOB(card.date, Progress.card[card.date].size);
+                World.KKJICBHPPEL();
+                World.NIKGKKEJCFL(0, card.date, 1);
+                World.CIEFJFNEEFJ();
+                Progress.card[card.date].PIMGMPBCODM(card.date, Progress.card[card.date].size);
             }
 
 
@@ -242,7 +242,7 @@ namespace BookerCardEditor
                 {
                     savedSegments.Add(Progress.card[card.date].segment[i]);
                 }
-                Progress.card[card.date].FFGHCMGIDOB(card.date, card.size);
+                Progress.card[card.date].PIMGMPBCODM(card.date, card.size);
                 foreach (Segment segment in savedSegments)
                 {
                     Progress.card[card.date].segment[segment.id] = segment;
@@ -276,19 +276,19 @@ namespace BookerCardEditor
 }
 
 //generic 
-//Progress.MOHIFAFEPFE(Progress.date); - create card if not exists
+//Progress.PDBLBLFNDHE(Progress.date); - create card if not exists
 //Progress.show[Progress.date];  - type
-//Progress.card[Progress.date].FFGHCMGIDOB(Progress.date, 6); - reset card
-//World.GIBGMPFBBOF(Progress.fed, Progress.date, 1); - reset attendance + arena?
+//Progress.card[Progress.date].PIMGMPBCODM(Progress.date, 6); - reset card
+//World.NIKGKKEJCFL(Progress.fed, Progress.date, 1); - reset attendance + arena?
 
 /*
- * World.BCGKOALHLFO(); -save arena
-World.GIBGMPFBBOF(0, Progress.date, 1); -reset attendance + arena
-World.PCPFMFFBKCP(); - load arena*/
+ * World.KKJICBHPPEL(); -save arena
+World.NIKGKKEJCFL(0, Progress.date, 1); -reset attendance + arena
+World.CIEFJFNEEFJ(); - load arena*/
 /* Cross promotion: 
  * Progress.rivalFed = 2; -opp fed. can't be the same as you!
-    Progress.card[Progress.date].FFGHCMGIDOB(Progress.date, 6);
-    Progress.BBBGMKCJJBB(Progress.date);
+    Progress.card[Progress.date].PIMGMPBCODM(Progress.date, 6);
+    Progress.MBGDIFJMIHA(Progress.date);
  * 
  * 
  */

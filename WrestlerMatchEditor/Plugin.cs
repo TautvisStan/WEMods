@@ -16,7 +16,7 @@ namespace WrestlerMatchEditor
     {
         public const string PluginGuid = "GeeEm.WrestlingEmpire.WrestlerMatchEditor";
         public const string PluginName = "WrestlerMatchEditor";
-        public const string PluginVer = "1.0.0";
+        public const string PluginVer = "1.0.1";
 
         internal static ManualLogSource Log;
         internal readonly static Harmony Harmony = new(PluginGuid);
@@ -64,7 +64,7 @@ namespace WrestlerMatchEditor
             if(Input.GetKeyDown(loadMatchButton.Value))
             {
               //  Logger.LogInfo("Load custom match button has been pressed");
-                if (LFNJDEGJLLJ.NHDABIOCLFH == 1)
+                if (NAEEIFNFBBO.CBMHGKFFHJE == 1)
                 {
                     if (SceneManager.GetActiveScene().name == "Calendar")
                     {

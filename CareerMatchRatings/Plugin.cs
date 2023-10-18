@@ -13,7 +13,7 @@ namespace CareerMatchRatings
     {
         public const string PluginGuid = "GeeEm.WrestlingEmpire.CareerMatchRatings";
         public const string PluginName = "CareerMatchRatings";
-        public const string PluginVer = "1.0.0";
+        public const string PluginVer = "1.0.1";
 
         internal static ManualLogSource Log;
         internal readonly static Harmony Harmony = new(PluginGuid);
@@ -47,16 +47,16 @@ namespace CareerMatchRatings
             if (SceneManager.GetActiveScene().name == "Game")
             {
                 //Debug.Log("CORRECT SCENE");
-                if (JJDCNALMPCI.FCNKGIEMNGM == 0)
+                if (LIPNHOMGGHF.GCJKOBOBIGA == 0)
                 {
-                    if (PHECEOMIMND.IPAFPBPKIKP >= 2 && PHECEOMIMND.FPNMMEOLGKP <= 0)
+                    if (FFCEGMEAIBP.LOBDMDPMFLK >= 2 && FFCEGMEAIBP.AEKLGCEFIHM <= 0)
                     {
-                        if (PHECEOMIMND.PIIDOKJHMEN == null)
+                        if (FFCEGMEAIBP.MONJNNCCICI == null)
                         {
-                            PHECEOMIMND.PHANDLABCEP();
-                            PHECEOMIMND.JBOPJLCBCNN(3);
+                            FFCEGMEAIBP.MFIOAPKFAEF();
+                            FFCEGMEAIBP.KGFCDMHGJHL(3);
                         }
-                        PHECEOMIMND.OECDBBMAOHJ();
+                        FFCEGMEAIBP.FLOHFJIGHNK();
                     }
                 }
             }
@@ -65,55 +65,55 @@ namespace CareerMatchRatings
         [HarmonyPostfix]
         static void Scene_Game_StartPostfix()
         {
-            if (PHECEOMIMND.IPAFPBPKIKP != 0 && PHECEOMIMND.FPNMMEOLGKP <= 0)
+            if (FFCEGMEAIBP.LOBDMDPMFLK != 0 && FFCEGMEAIBP.AEKLGCEFIHM <= 0)
             {
-                PHECEOMIMND.PHANDLABCEP();
+                FFCEGMEAIBP.MFIOAPKFAEF();
             }
         }
         [HarmonyPatch(typeof(Scene_Game), nameof(Scene_Game.Update))]  //updating ratings
         [HarmonyPostfix]
         static void Scene_Game_UpdatePostfix()
         {
-            if (JJDCNALMPCI.FCNKGIEMNGM == 0)
+            if (LIPNHOMGGHF.GCJKOBOBIGA == 0)
             {
-                if (PHECEOMIMND.IPAFPBPKIKP >= 2 && PHECEOMIMND.FPNMMEOLGKP <= 0)
+                if (FFCEGMEAIBP.LOBDMDPMFLK >= 2 && FFCEGMEAIBP.AEKLGCEFIHM <= 0)
                 {
-                    if (PHECEOMIMND.PIIDOKJHMEN != null)
+                    if (FFCEGMEAIBP.MONJNNCCICI != null)
                     {
-                        PHECEOMIMND.OECDBBMAOHJ();
+                        FFCEGMEAIBP.FLOHFJIGHNK();
                     }
                 }
             }
         }
-        [HarmonyPatch(typeof(PHECEOMIMND), nameof(PHECEOMIMND.NHPJFOBBCEF))]  //Match start
+        [HarmonyPatch(typeof(FFCEGMEAIBP), nameof(FFCEGMEAIBP.DMJFCHKLEFH))]  //Match start
         [HarmonyPostfix]
-        static void PHECEOMIMND_NHPJFOBBCEFPostfix()
+        static void FFCEGMEAIBP_DMJFCHKLEFHPostfix()
         {
-            if (PHECEOMIMND.FPNMMEOLGKP <= 0)
+            if (FFCEGMEAIBP.AEKLGCEFIHM <= 0)
             {
-                PHECEOMIMND.JBOPJLCBCNN(LFNJDEGJLLJ.FBHGHEHIFOK);
+                FFCEGMEAIBP.KGFCDMHGJHL(NAEEIFNFBBO.CGOHLKMAFOB);
             }
         }
-        [HarmonyPatch(typeof(PHECEOMIMND), nameof(PHECEOMIMND.JLHIGPPGGDG))]  //Match restart
+        [HarmonyPatch(typeof(FFCEGMEAIBP), nameof(FFCEGMEAIBP.EAAIHKLJFCM))]  //Match restart
         [HarmonyPostfix]
-        static void PHECEOMIMND_JLHIGPPGGDGPostfix()
+        static void FFCEGMEAIBP_EAAIHKLJFCMPostfix()
         {
-            if (PHECEOMIMND.FPNMMEOLGKP <= 0)
+            if (FFCEGMEAIBP.AEKLGCEFIHM <= 0)
             {
-                PHECEOMIMND.FGMJCPFIIEE = PHECEOMIMND.ONBIIDFHLPH * 0.75f * PHECEOMIMND.GNLJKMOOECN;
-                PHECEOMIMND.HBBLNFPONMG = PHECEOMIMND.AOHFPCPNEFJ * 0.75f * PHECEOMIMND.GNLJKMOOECN;
-                PHECEOMIMND.JBOPJLCBCNN(LFNJDEGJLLJ.FBHGHEHIFOK);
+                FFCEGMEAIBP.MBJFIEPNHPP = FFCEGMEAIBP.LPCIJOCKGHB * 0.75f * FFCEGMEAIBP.HFHBNLJKNJI;
+                FFCEGMEAIBP.IJOIMLGJION = FFCEGMEAIBP.MANDMCIEJBK * 0.75f * FFCEGMEAIBP.HFHBNLJKNJI;
+                FFCEGMEAIBP.KGFCDMHGJHL(NAEEIFNFBBO.CGOHLKMAFOB);
             }
         }
-        [HarmonyPatch(typeof(PHECEOMIMND), nameof(PHECEOMIMND.HDKPGMAKCLO))]  //Match end
+        [HarmonyPatch(typeof(FFCEGMEAIBP), nameof(FFCEGMEAIBP.BAGEPNPJPLD))]  //Match end
         [HarmonyPostfix]
-        static void PHECEOMIMND_HDKPGMAKCLOPostfix()
+        static void FFCEGMEAIBP_BAGEPNPJPLDPostfix()
         {
-            if (PHECEOMIMND.FPNMMEOLGKP <= 0)
+            if (FFCEGMEAIBP.AEKLGCEFIHM <= 0)
             {
-                PHECEOMIMND.OECDBBMAOHJ();
-                PHECEOMIMND.JBOPJLCBCNN(1);
-                PHECEOMIMND.FHGELGGEKBL(PHECEOMIMND.HHNMPIGANJO, PHECEOMIMND.ONBIIDFHLPH, 5500f, 1);
+                FFCEGMEAIBP.FLOHFJIGHNK();
+                FFCEGMEAIBP.KGFCDMHGJHL(1);
+                FFCEGMEAIBP.GADAJGJBMIB(FFCEGMEAIBP.FMBDEENKKJG, FFCEGMEAIBP.LPCIJOCKGHB, 5500f, 1);
             }
         }
 

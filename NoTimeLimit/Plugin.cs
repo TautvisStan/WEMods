@@ -10,8 +10,8 @@ namespace NoTimeLimits
     public class Plugin : BaseUnityPlugin
     {
         public const string PluginGuid = "GeeEm.WrestlingEmpire.NoTimeLimits";
-        public const string PluginName = "CareerMatchRatings";
-        public const string PluginVer = "1.0.0";
+        public const string PluginName = "NoTimeLimits";
+        public const string PluginVer = "1.0.1";
 
         internal static ManualLogSource Log;
         internal readonly static Harmony Harmony = new(PluginGuid);
@@ -39,17 +39,17 @@ namespace NoTimeLimits
         }
 
 
-        [HarmonyPatch(typeof(PHECEOMIMND), nameof(PHECEOMIMND.NHPJFOBBCEF))]  //Match start
+        [HarmonyPatch(typeof(FFCEGMEAIBP), nameof(FFCEGMEAIBP.DMJFCHKLEFH))]  //Match start
         [HarmonyPostfix]
-        static void PHECEOMIMND_NHPJFOBBCEFPostfix()
+        static void FFCEGMEAIBP_DMJFCHKLEFHPostfix()
         {
             //check wrestler mode
-            if (LFNJDEGJLLJ.NHDABIOCLFH == 1)
+            if (NAEEIFNFBBO.CBMHGKFFHJE == 1)
             {
                 //check not allowed stipulations
-                if (PHECEOMIMND.NEECMNDFAFF != 8 && PHECEOMIMND.FNIDHNNCLBB != 3 && PHECEOMIMND.FNIDHNNCLBB != 4)
+                if (FFCEGMEAIBP.MINKNAEGMIH != 8 && FFCEGMEAIBP.BPJFLJPKKJK != 3 && FFCEGMEAIBP.BPJFLJPKKJK != 4)
                 {
-                    PHECEOMIMND.CCPMCEMAKBJ = 0;
+                    FFCEGMEAIBP.NBAFIEALMHN = 0;
                 }
             }
         }

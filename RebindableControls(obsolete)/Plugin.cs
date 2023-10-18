@@ -107,78 +107,78 @@ namespace RebindableControls
             Logger.LogInfo($"Unloaded {PluginName}!");
         }
 
-        [HarmonyPatch(typeof(IMBAMKCPLIF))]
-        public static class IMBAMKCPLIF_Patch
+        [HarmonyPatch(typeof(BJMGCKGNCHO))]
+        public static class BJMGCKGNCHO_Patch
         {
             [HarmonyPostfix]
-            [HarmonyPatch("PAOEHLEJKIJ")]
-            public static void PAOEHLEJKIJ_Patch(IMBAMKCPLIF __instance)
+            [HarmonyPatch("NCOEPCFFBJA")]
+            public static void NCOEPCFFBJA_Patch(BJMGCKGNCHO __instance)
             {
-                if (__instance.DHBIELODIAN == 0 && __instance.FNIDHNNCLBB == 1 && __instance.FKPIGOJCEAK > 0)
+                if (__instance.PLFGKLGCOMD == 0 && __instance.BPJFLJPKKJK == 1 && __instance.AHBNKMMMGFI > 0)
                 {
-                    __instance.PEPIFGLNPDE = 0f;
-                    __instance.LOGLAAGLFAH = 0f;
-                    __instance.HNGCFDLDGBF[1] = 0;
-                    __instance.HNGCFDLDGBF[2] = 0;
-                    __instance.HNGCFDLDGBF[3] = 0;
-                    __instance.HNGCFDLDGBF[4] = 0;
-                    __instance.HNGCFDLDGBF[5] = 0;
-                    __instance.HNGCFDLDGBF[6] = 0;
-                    __instance.FHCIFKEGOOH = 0;
+                    __instance.JLBOEDNDIPI = 0f;
+                    __instance.MGJCMCPCPDN = 0f;
+                    __instance.IOIJFFLMBCH[1] = 0;
+                    __instance.IOIJFFLMBCH[2] = 0;
+                    __instance.IOIJFFLMBCH[3] = 0;
+                    __instance.IOIJFFLMBCH[4] = 0;
+                    __instance.IOIJFFLMBCH[5] = 0;
+                    __instance.IOIJFFLMBCH[6] = 0;
+                    __instance.IMBKMMOCBBF = 0;
                     if (Input.GetKey(Plugin.ConfigJoin.Value))
                     {
-                        __instance.MLCEAOMCNFK(0);
+                        __instance.JIIMLBLGKAL(0);
                     }
                     if (Input.GetKey(Plugin.ConfigUp.Value))
                     {
-                        __instance.PEPIFGLNPDE = 1f;
+                        __instance.JLBOEDNDIPI = 1f;
                     }
                     if (Input.GetKey(Plugin.ConfigDown.Value))
                     {
-                        __instance.PEPIFGLNPDE = -1f;
+                        __instance.JLBOEDNDIPI = -1f;
                     }
                     if (Input.GetKey(Plugin.ConfigRight.Value))
                     {
-                        __instance.LOGLAAGLFAH = 1f;
+                        __instance.MGJCMCPCPDN = 1f;
                     }
                     if (Input.GetKey(Plugin.ConfigLeft.Value))
                     {
-                        __instance.LOGLAAGLFAH = -1f;
+                        __instance.MGJCMCPCPDN = -1f;
                     }
                     if (Input.GetKey(Plugin.ConfigS.Value))
                     {
-                        __instance.HNGCFDLDGBF[1] = 1;
+                        __instance.IOIJFFLMBCH[1] = 1;
                     }
                     if (Input.GetKey(Plugin.ConfigX.Value))
                     {
-                        __instance.HNGCFDLDGBF[2] = 1;
+                        __instance.IOIJFFLMBCH[2] = 1;
                     }
                     if (Input.GetKey(Plugin.ConfigZ.Value))
                     {
-                        __instance.HNGCFDLDGBF[3] = 1;
+                        __instance.IOIJFFLMBCH[3] = 1;
                     }
                     if (Input.GetKey(Plugin.ConfigA.Value))
                     {
-                        __instance.HNGCFDLDGBF[4] = 1;
+                        __instance.IOIJFFLMBCH[4] = 1;
                     }
                     if (Input.GetKey(Plugin.ConfigSpace.Value))
                     {
-                        __instance.HNGCFDLDGBF[5] = 1;
+                        __instance.IOIJFFLMBCH[5] = 1;
                     }
                     if (Input.GetKey(Plugin.ConfigShift.Value))
                     {
-                        __instance.HNGCFDLDGBF[6] = -1;
+                        __instance.IOIJFFLMBCH[6] = -1;
                     }
                     if (Input.GetKey(Plugin.ConfigControl.Value))
                     {
-                        __instance.HNGCFDLDGBF[6] = 1;
+                        __instance.IOIJFFLMBCH[6] = 1;
                     }
                     if (Input.GetKey(Plugin.ConfigTab.Value))
                     {
-                        __instance.FHCIFKEGOOH = 1f;
+                        __instance.IMBKMMOCBBF = 1f;
                     }
-                    __instance.FHCIFKEGOOH = __instance.LOGLAAGLFAH;
-                    __instance.PPMGGOHBOLM = __instance.PEPIFGLNPDE;
+                    __instance.IMBKMMOCBBF = __instance.MGJCMCPCPDN;
+                    __instance.PNLIFOBMMGG = __instance.JLBOEDNDIPI;
                 }
             }
         }

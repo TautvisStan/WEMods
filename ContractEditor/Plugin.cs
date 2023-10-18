@@ -16,7 +16,7 @@ namespace ContractEditor
     {
         public const string PluginGuid = "GeeEm.WrestlingEmpire.ContractEditor";
         public const string PluginName = "ContractEditor";
-        public const string PluginVer = "1.0.0";
+        public const string PluginVer = "1.0.1";
 
         internal static ManualLogSource Log;
         internal readonly static Harmony Harmony = new(PluginGuid);

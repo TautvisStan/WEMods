@@ -11,7 +11,7 @@ namespace NoMoreMissions
     {
         public const string PluginGuid = "GeeEm.WrestlingEmpire.NoMoreMissions";
         public const string PluginName = "NoMoreMissions";
-        public const string PluginVer = "1.0.1";
+        public const string PluginVer = "1.0.2";
 
         internal static ManualLogSource Log;
         internal readonly static Harmony Harmony = new(PluginGuid);
@@ -57,31 +57,31 @@ namespace NoMoreMissions
                 }
             }
         }
-        [HarmonyPatch(typeof(FMHJNNGPMKG))]
-        public static class FMHJNNGPMKG_Patch
+        [HarmonyPatch(typeof(NEGAFEHECNL))]
+        public static class NEGAFEHECNL_Patch
         {
             [HarmonyPostfix]
-            [HarmonyPatch(nameof(FMHJNNGPMKG.KLEAPOMKONL))]
-            public static void KLEAPOMKONL_Patch()
+            [HarmonyPatch(nameof(NEGAFEHECNL.OILBBIFDBDP))]
+            public static void OILBBIFDBDP_Patch()
             {
-                Character character2 = Characters.c[FMHJNNGPMKG.GHCBKFNBGGN];
+                Character character2 = Characters.c[NEGAFEHECNL.FEAIGHFCIBK];
                 if (character2.promo >= 501 && character2.promo < 600)
                 {
                     character2.promo = 0;
                 }
-                if (FMHJNNGPMKG.BGHNMCBLGMF >= 501 && FMHJNNGPMKG.BGHNMCBLGMF < 600)
+                if (NEGAFEHECNL.GOEACIHJCCJ >= 501 && NEGAFEHECNL.GOEACIHJCCJ < 600)
                 {
-                    FMHJNNGPMKG.BGHNMCBLGMF = 0;
+                    NEGAFEHECNL.GOEACIHJCCJ = 0;
                 }
 
             }
             [HarmonyPostfix]
-            [HarmonyPatch(nameof(FMHJNNGPMKG.AEFLNJDIKGE))]
-            public static void AEFLNJDIKGE_Patch(ref int __result)
+            [HarmonyPatch(nameof(NEGAFEHECNL.CICDFJKBOIM))]
+            public static void CICDFJKBOIM_Patch(ref int __result)
             {
-                if (FMHJNNGPMKG.BGHNMCBLGMF >= 501 && FMHJNNGPMKG.BGHNMCBLGMF < 600)
+                if (NEGAFEHECNL.GOEACIHJCCJ >= 501 && NEGAFEHECNL.GOEACIHJCCJ < 600)
                 {
-                    FMHJNNGPMKG.BGHNMCBLGMF = 0;
+                    NEGAFEHECNL.GOEACIHJCCJ = 0;
                     __result = 0;
                 }
 

@@ -14,7 +14,7 @@ namespace AcceptAllProposals
     {
         public const string PluginGuid = "GeeEm.WrestlingEmpire.AcceptAllProposals";
         public const string PluginName = "AcceptAllProposals";
-        public const string PluginVer = "1.0.0";
+        public const string PluginVer = "1.0.1";
 
         internal static ManualLogSource Log;
         internal readonly static Harmony Harmony = new(PluginGuid);
@@ -41,9 +41,9 @@ namespace AcceptAllProposals
             Logger.LogInfo($"Unloaded {PluginName}!");
         }
 
-        [HarmonyPatch(typeof(FMHJNNGPMKG), nameof(FMHJNNGPMKG.HBNENABOFLI))]  //matches
+        [HarmonyPatch(typeof(NEGAFEHECNL), nameof(NEGAFEHECNL.LBPJGAGBCLP))]  //matches
         [HarmonyPrefix]
-        static bool FMHJNNGPMKG_HBNENABOFLI(ref int __result, int JCEJPDHEDFD)
+        static bool NEGAFEHECNL_LBPJGAGBCLP(ref int __result, int GKNIAFAOLJK)
         {
             if(Input.GetKey(KeyCode.N))
             {
@@ -52,9 +52,9 @@ namespace AcceptAllProposals
             }
             return true;
         }
-        [HarmonyPatch(typeof(FMHJNNGPMKG), nameof(FMHJNNGPMKG.HLEALPKBHCB))]  //manager
+        [HarmonyPatch(typeof(NEGAFEHECNL), nameof(NEGAFEHECNL.GFNGNOGAMBL))]  //manager
         [HarmonyPrefix]
-        static bool FMHJNNGPMKG_HLEALPKBHCB(ref int __result, int JCEJPDHEDFD)
+        static bool NEGAFEHECNL_GFNGNOGAMBL(ref int __result, int GKNIAFAOLJK)
         {
             if (Input.GetKey(KeyCode.N))
             {
@@ -63,9 +63,9 @@ namespace AcceptAllProposals
             }
             return true;
         }
-        [HarmonyPatch(typeof(FMHJNNGPMKG), nameof(FMHJNNGPMKG.CDNBJOGEAME))]  //partner
+        [HarmonyPatch(typeof(NEGAFEHECNL), nameof(NEGAFEHECNL.PMKDGGFHOEO))]  //partner
         [HarmonyPrefix]
-        static bool FMHJNNGPMKG_CDNBJOGEAME(ref int __result, int JCEJPDHEDFD)
+        static bool NEGAFEHECNL_PMKDGGFHOEO(ref int __result, int GKNIAFAOLJK)
         {
             if (Input.GetKey(KeyCode.N))
             {
