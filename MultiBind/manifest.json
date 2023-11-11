@@ -2,7 +2,7 @@
   "namespace": "GeeEm",
   "name": "MultiBind",
   "description": "Keyboard sharing + key rebinding",
-  "version_number": "1.1.1",
+  "version_number": "1.1.2",
   "dependencies": [
     "BepInEx-BepInExPack-5.4.2100"
   ],
