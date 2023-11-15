@@ -1,0 +1,10 @@
+{
+  "namespace": "GeeEm",
+  "name": "OnePunch",
+  "description": "Your wrestler career character strikes remove all health, with a toggle for injuries and knock outs",
+  "version_number": "1.0.0",
+  "dependencies": [
+    "BepInEx-BepInExPack-5.4.2100"
+  ],
+  "website_url": ""
+}
