@@ -4,6 +4,9 @@ This mod lets players rebind their keyboard controls and share a single keyboard
 
 You can now toggle a controller mode by pressing numpad enter in the main menu. This mode will trick the game into thinking your keyboard is a xbox controller, allowing you to navigate the menus using the keyboard without the need of mouse.
 
+Now supports rebinding buttons to the mouse. `Mouse0` - left mouse button, `Mouse1` - right mouse button, `Mouse2` - middle mouse button, `Mouse3` `Mouse4` `Mouse5` `Mouse6` - additional buttons on your mouse (you will have to figure out these yourself)
+
+
 Controls can be changed in the mod config file. Keybinds that can be changed:
 - Movement (arrow keys)
 - Attack (A) (West button in the controller mode)

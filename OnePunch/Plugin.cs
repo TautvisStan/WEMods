@@ -12,7 +12,7 @@ namespace OnePunch
     {
         public const string PluginGuid = "GeeEm.WrestlingEmpire.OnePunch";
         public const string PluginName = "OnePunch";
-        public const string PluginVer = "1.0.0";
+        public const string PluginVer = "1.0.1";
 
         internal static ManualLogSource Log;
         internal readonly static Harmony Harmony = new(PluginGuid);
@@ -70,7 +70,7 @@ namespace OnePunch
             [HarmonyPrefix] //Strike attacks
             static void Prefix(DFOGOCNBECG __instance, DFOGOCNBECG __0, int __1, float __2)
             {
-                if (__instance.EMDMDLNJFKP.id != Characters.star) return;
+                if (__instance.EMDMDLNJFKP.id != Characters.wrestler) return;
                 if (Plugin.NoHealthAndStun.Value) DamageStun(__0);
                 if (Plugin.Dizzyness.Value) DizzyTarget(__0);
                 if (Plugin.InjureTarget.Value) Injure(__0);
@@ -81,7 +81,7 @@ namespace OnePunch
             [HarmonyPrefix] //Ground attacks
             static void Prefix(DFOGOCNBECG __instance, float KCMMOFECACH, float HAFBGEAMBMI, float JHCBBFEIKHL, int HNMOIBIFJID, float CLNCAKDCODN, float FJDILPBOGEJ)
             {
-                if (__instance.EMDMDLNJFKP.id != Characters.star) return;
+                if (__instance.EMDMDLNJFKP.id != Characters.wrestler) return;
                 HAFBGEAMBMI *= __instance.JNLAJNFCDHA;
                 KCMMOFECACH *= __instance.JNLAJNFCDHA;
                 float num = __instance.NJDGEELLAKG;
