@@ -12,7 +12,7 @@ namespace OnePunch
     {
         public const string PluginGuid = "GeeEm.WrestlingEmpire.OnePunch";
         public const string PluginName = "OnePunch";
-        public const string PluginVer = "1.0.1";
+        public const string PluginVer = "1.1.0";
 
         internal static ManualLogSource Log;
         internal readonly static Harmony Harmony = new(PluginGuid);
@@ -66,9 +66,34 @@ namespace OnePunch
         [HarmonyPatch(typeof(DFOGOCNBECG))]
         public static class DFOGOCNBECG_Patch
         {
+            [HarmonyPatch(nameof(DFOGOCNBECG.DIIMPIPKAFK))]
+            [HarmonyPrefix] //Submission strike attacks
+            static void DIIMPIPKAFK_Prefix(DFOGOCNBECG __instance, DFOGOCNBECG ELPIOHCPOIJ, int DODBHICKEPB, float CLNCAKDCODN, float FJDILPBOGEJ)
+            {
+                if (__instance.EMDMDLNJFKP.id != Characters.wrestler) return;
+                if (Plugin.NoHealthAndStun.Value) DamageStun(ELPIOHCPOIJ);
+                if (Plugin.Dizzyness.Value) DizzyTarget(ELPIOHCPOIJ);
+                if (Plugin.InjureTarget.Value) Injure(ELPIOHCPOIJ);
+                if (Plugin.KOTarget.Value) KnockOut(ELPIOHCPOIJ);
+
+            }
+            [HarmonyPatch(nameof(DFOGOCNBECG.MHNNBEOCPGA))]
+            [HarmonyPrefix] //Grapple attacks
+            static void MHNNBEOCPGA_Prefix(DFOGOCNBECG __instance, int MKCPMOJGBEM, float FPLEMEKHJLD, float FJDILPBOGEJ)
+            {
+                if (__instance.EMDMDLNJFKP.id != Characters.wrestler) return;
+                if (__instance.DPHHFKLDOOG > 0 || __instance.ELPIOHCPOIJ.NLDPMDNKGIC == 643 || __instance.ELPIOHCPOIJ.NLDPMDNKGIC == 644)
+                {
+
+                    if (Plugin.NoHealthAndStun.Value) DamageStun(__instance.ELPIOHCPOIJ);
+                    if (Plugin.Dizzyness.Value) DizzyTarget(__instance.ELPIOHCPOIJ);
+                    if (Plugin.InjureTarget.Value) Injure(__instance.ELPIOHCPOIJ);
+                    if (Plugin.KOTarget.Value) KnockOut(__instance.ELPIOHCPOIJ);
+                }
+            }
             [HarmonyPatch(nameof(DFOGOCNBECG.LKGOPCPNDNK))]
             [HarmonyPrefix] //Strike attacks
-            static void Prefix(DFOGOCNBECG __instance, DFOGOCNBECG __0, int __1, float __2)
+            static void LKGOPCPNDNK_Prefix(DFOGOCNBECG __instance, DFOGOCNBECG __0, int __1, float __2)
             {
                 if (__instance.EMDMDLNJFKP.id != Characters.wrestler) return;
                 if (Plugin.NoHealthAndStun.Value) DamageStun(__0);
@@ -79,7 +104,7 @@ namespace OnePunch
             }
             [HarmonyPatch(nameof(DFOGOCNBECG.PFGONEIPHLJ))]
             [HarmonyPrefix] //Ground attacks
-            static void Prefix(DFOGOCNBECG __instance, float KCMMOFECACH, float HAFBGEAMBMI, float JHCBBFEIKHL, int HNMOIBIFJID, float CLNCAKDCODN, float FJDILPBOGEJ)
+            static void PFGONEIPHLJ_Prefix(DFOGOCNBECG __instance, float KCMMOFECACH, float HAFBGEAMBMI, float JHCBBFEIKHL, int HNMOIBIFJID, float CLNCAKDCODN, float FJDILPBOGEJ)
             {
                 if (__instance.EMDMDLNJFKP.id != Characters.wrestler) return;
                 HAFBGEAMBMI *= __instance.JNLAJNFCDHA;

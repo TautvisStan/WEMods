@@ -1,7 +1,7 @@
 # OnePunch
-Inspired by the YoungFro video, your wrestler career character punches and strikes will instantly remove all health from the target.
+Inspired by the YoungFro video, your wrestler career character attacks will instantly remove all health from the target.
 
-**DUE TO LIMITATIONS IT CURRENTLY DOESN'T WORK ON GRAPPLE ATTACKS**
+**SHOULD NOW ALSO WORK WITH GRAPPLE ATTACKS AND SUBMISSION STRIKES**
 
 Injuries or knockouts on hit can be toggled in the config file.
 
