@@ -12,7 +12,7 @@ namespace OnePunch
     {
         public const string PluginGuid = "GeeEm.WrestlingEmpire.OnePunch";
         public const string PluginName = "OnePunch";
-        public const string PluginVer = "1.1.0";
+        public const string PluginVer = "1.1.1";
 
         internal static ManualLogSource Log;
         internal readonly static Harmony Harmony = new(PluginGuid);
@@ -311,7 +311,7 @@ namespace OnePunch
         }
         public static void DizzyTarget(DFOGOCNBECG instance)
         {
-            NJBJIIIACEP.OAAMGFLINOB[NJBJIIIACEP.OAAMGFLINOB[NJBJIIIACEP.DCAFAIGGFCC[1].NNMDEFLLNBF].NNMDEFLLNBF].FLOPBFFLLDE = float.MinValue;
+            instance.FLOPBFFLLDE = float.MinValue;
         }
     }
 
