@@ -1,1 +1,3 @@
-Hold N during the dialogue to force anyone accept matches/partners/managers.
+Now works with the new dialog system.
+
+Hold N during the dialogue to force anyone accept your requests.
