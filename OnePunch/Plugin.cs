@@ -12,7 +12,7 @@ namespace OnePunch
     {
         public const string PluginGuid = "GeeEm.WrestlingEmpire.OnePunch";
         public const string PluginName = "OnePunch";
-        public const string PluginVer = "1.1.1";
+        public const string PluginVer = "1.1.2";
 
         internal static ManualLogSource Log;
         internal readonly static Harmony Harmony = new(PluginGuid);
@@ -289,7 +289,6 @@ namespace OnePunch
             {
                 FFCEGMEAIBP.NCAAOLGAGCG(instance.JNNBBJKLEFK, instance.PLFGKLGCOMD);
             }
-            instance.FIEMGOLBHIO = 0;
             instance.MGPDGDCIBGC = 1f;
 
 

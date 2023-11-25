@@ -1,5 +1,5 @@
 # HealthCheats
-Now with knock outs!
+Now with explosions!
 
 Hold `Left Alt` to apply that to your target, otherwise it will applied to your character instead. Buttons can be rebind in a config file.
 List of cheats:
@@ -17,3 +17,4 @@ List of cheats:
 - `K` - Removes character injury
 - `C` - Knocks out and DQs a character
 - `V` - Revives knocked out character
+- `B` - Explodes a character

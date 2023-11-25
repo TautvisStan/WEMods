@@ -14,7 +14,7 @@ namespace HealthCheats
     {
         public const string PluginGuid = "GeeEm.WrestlingEmpire.HealthCheats";
         public const string PluginName = "HealthCheats";
-        public const string PluginVer = "1.2.1";
+        public const string PluginVer = "1.3.0";
 
         internal static ManualLogSource Log;
         internal readonly static Harmony Harmony = new(PluginGuid);
@@ -36,6 +36,13 @@ namespace HealthCheats
         public static ConfigEntry<string> ConfigInMin;
         public static ConfigEntry<string> ConfigKOMax;
         public static ConfigEntry<string> ConfigKOMin;
+        public static ConfigEntry<string> ConfigBlowUp;
+
+
+
+        public AcceptableValueList<string> KeyboardButtons = new AcceptableValueList<string>("None", "Backspace", "Delete", "Tab", "Clear", "Return", "Pause", "Escape", "Space", "Quote", "Comma", "Minus", "Period", "Slash", "Alpha0", "Alpha1", "Alpha2", "Alpha3", "Alpha4", "Alpha5", "Alpha6", "Alpha7", "Alpha8", "Alpha9", "Semicolon", "Equals", "LeftBracket", "Backslash", "RightBracket", "BackQuote", "A", "B", "C", "D", "E", "F", "G", "H", "I", "J", "K", "L", "M", "N", "O", "P", "Q", "R", "S", "T", "U", "V", "W", "X", "Y", "Z", "Delete", "Keypad0", "Keypad1", "Keypad2", "Keypad3", "Keypad4", "Keypad5", "Keypad6", "Keypad7", "Keypad8", "Keypad9", "KeypadPeriod", "KeypadDivide", "KeypadMultiply", "KeypadMinus", "KeypadPlus", "KeypadEnter", "KeypadEquals", "UpArrow", "DownArrow", "RightArrow", "LeftArrow", "Insert", "Home", "End", "PageUp", "PageDown", "F1", "F2", "F3", "F4", "F5", "F6", "F7", "F8", "F9", "F10", "F11", "F12", "F13", "F14", "F15", "Numlock", "CapsLock", "ScrollLock", "RightShift", "LeftShift", "RightControl", "LeftControl", "RightAlt", "LeftAlt", "RightCommand", "RightApple", "LeftCommand", "LeftApple", "LeftWindows", "RightWindows", "Print", "Menu", "Mouse0", "Mouse1", "Mouse2", "Mouse3", "Mouse4", "Mouse5", "Mouse6");
+
+        public int PlayerNum;
 
         private void Awake()
         {
@@ -48,105 +55,112 @@ namespace HealthCheats
              "LeftAlt",
              new ConfigDescription(
                 "Applies the effect to target instead",
-                new AcceptableValueList<string>("None", "Backspace", "Delete", "Tab", "Clear", "Return", "Pause", "Escape", "Space", "Quote", "Comma", "Minus", "Period", "Slash", "Alpha0", "Alpha1", "Alpha2", "Alpha3", "Alpha4", "Alpha5", "Alpha6", "Alpha7", "Alpha8", "Alpha9", "Semicolon", "Equals", "LeftBracket", "Backslash", "RightBracket", "BackQuote", "A", "B", "C", "D", "E", "F", "G", "H", "I", "J", "K", "L", "M", "N", "O", "P", "Q", "R", "S", "T", "U", "V", "W", "X", "Y", "Z", "Delete", "Keypad0", "Keypad1", "Keypad2", "Keypad3", "Keypad4", "Keypad5", "Keypad6", "Keypad7", "Keypad8", "Keypad9", "KeypadPeriod", "KeypadDivide", "KeypadMultiply", "KeypadMinus", "KeypadPlus", "KeypadEnter", "KeypadEquals", "UpArrow", "DownArrow", "RightArrow", "LeftArrow", "Insert", "Home", "End", "PageUp", "PageDown", "F1", "F2", "F3", "F4", "F5", "F6", "F7", "F8", "F9", "F10", "F11", "F12", "F13", "F14", "F15", "Numlock", "CapsLock", "ScrollLock", "RightShift", "LeftShift", "RightControl", "LeftControl", "RightAlt", "LeftAlt", "RightCommand", "RightApple", "LeftCommand", "LeftApple", "LeftWindows", "RightWindows", "Print", "Menu")));
+                KeyboardButtons));
 
             ConfigHMax = Config.Bind("Controls",
              "Max Health",
              "Q",
              new ConfigDescription(
                 "Sets health to max",
-                new AcceptableValueList<string>("None", "Backspace", "Delete", "Tab", "Clear", "Return", "Pause", "Escape", "Space", "Quote", "Comma", "Minus", "Period", "Slash", "Alpha0", "Alpha1", "Alpha2", "Alpha3", "Alpha4", "Alpha5", "Alpha6", "Alpha7", "Alpha8", "Alpha9", "Semicolon", "Equals", "LeftBracket", "Backslash", "RightBracket", "BackQuote", "A", "B", "C", "D", "E", "F", "G", "H", "I", "J", "K", "L", "M", "N", "O", "P", "Q", "R", "S", "T", "U", "V", "W", "X", "Y", "Z", "Delete", "Keypad0", "Keypad1", "Keypad2", "Keypad3", "Keypad4", "Keypad5", "Keypad6", "Keypad7", "Keypad8", "Keypad9", "KeypadPeriod", "KeypadDivide", "KeypadMultiply", "KeypadMinus", "KeypadPlus", "KeypadEnter", "KeypadEquals", "UpArrow", "DownArrow", "RightArrow", "LeftArrow", "Insert", "Home", "End", "PageUp", "PageDown", "F1", "F2", "F3", "F4", "F5", "F6", "F7", "F8", "F9", "F10", "F11", "F12", "F13", "F14", "F15", "Numlock", "CapsLock", "ScrollLock", "RightShift", "LeftShift", "RightControl", "LeftControl", "RightAlt", "LeftAlt", "RightCommand", "RightApple", "LeftCommand", "LeftApple", "LeftWindows", "RightWindows", "Print", "Menu")));
+                KeyboardButtons));
 
             ConfigHMin = Config.Bind("Controls",
              "0 Health",
              "W",
              new ConfigDescription(
                 "Sets health to 0",
-                new AcceptableValueList<string>("None", "Backspace", "Delete", "Tab", "Clear", "Return", "Pause", "Escape", "Space", "Quote", "Comma", "Minus", "Period", "Slash", "Alpha0", "Alpha1", "Alpha2", "Alpha3", "Alpha4", "Alpha5", "Alpha6", "Alpha7", "Alpha8", "Alpha9", "Semicolon", "Equals", "LeftBracket", "Backslash", "RightBracket", "BackQuote", "A", "B", "C", "D", "E", "F", "G", "H", "I", "J", "K", "L", "M", "N", "O", "P", "Q", "R", "S", "T", "U", "V", "W", "X", "Y", "Z", "Delete", "Keypad0", "Keypad1", "Keypad2", "Keypad3", "Keypad4", "Keypad5", "Keypad6", "Keypad7", "Keypad8", "Keypad9", "KeypadPeriod", "KeypadDivide", "KeypadMultiply", "KeypadMinus", "KeypadPlus", "KeypadEnter", "KeypadEquals", "UpArrow", "DownArrow", "RightArrow", "LeftArrow", "Insert", "Home", "End", "PageUp", "PageDown", "F1", "F2", "F3", "F4", "F5", "F6", "F7", "F8", "F9", "F10", "F11", "F12", "F13", "F14", "F15", "Numlock", "CapsLock", "ScrollLock", "RightShift", "LeftShift", "RightControl", "LeftControl", "RightAlt", "LeftAlt", "RightCommand", "RightApple", "LeftCommand", "LeftApple", "LeftWindows", "RightWindows", "Print", "Menu")));
+                KeyboardButtons));
 
             ConfigSMax = Config.Bind("Controls",
              "Max Stun",
              "E",
              new ConfigDescription(
                 "Sets stun to max",
-                new AcceptableValueList<string>("None", "Backspace", "Delete", "Tab", "Clear", "Return", "Pause", "Escape", "Space", "Quote", "Comma", "Minus", "Period", "Slash", "Alpha0", "Alpha1", "Alpha2", "Alpha3", "Alpha4", "Alpha5", "Alpha6", "Alpha7", "Alpha8", "Alpha9", "Semicolon", "Equals", "LeftBracket", "Backslash", "RightBracket", "BackQuote", "A", "B", "C", "D", "E", "F", "G", "H", "I", "J", "K", "L", "M", "N", "O", "P", "Q", "R", "S", "T", "U", "V", "W", "X", "Y", "Z", "Delete", "Keypad0", "Keypad1", "Keypad2", "Keypad3", "Keypad4", "Keypad5", "Keypad6", "Keypad7", "Keypad8", "Keypad9", "KeypadPeriod", "KeypadDivide", "KeypadMultiply", "KeypadMinus", "KeypadPlus", "KeypadEnter", "KeypadEquals", "UpArrow", "DownArrow", "RightArrow", "LeftArrow", "Insert", "Home", "End", "PageUp", "PageDown", "F1", "F2", "F3", "F4", "F5", "F6", "F7", "F8", "F9", "F10", "F11", "F12", "F13", "F14", "F15", "Numlock", "CapsLock", "ScrollLock", "RightShift", "LeftShift", "RightControl", "LeftControl", "RightAlt", "LeftAlt", "RightCommand", "RightApple", "LeftCommand", "LeftApple", "LeftWindows", "RightWindows", "Print", "Menu")));
+                KeyboardButtons));
 
             ConfigSMin = Config.Bind("Controls",
              "0 Stun",
              "R",
              new ConfigDescription(
                 "Sets stun to 0",
-                new AcceptableValueList<string>("None", "Backspace", "Delete", "Tab", "Clear", "Return", "Pause", "Escape", "Space", "Quote", "Comma", "Minus", "Period", "Slash", "Alpha0", "Alpha1", "Alpha2", "Alpha3", "Alpha4", "Alpha5", "Alpha6", "Alpha7", "Alpha8", "Alpha9", "Semicolon", "Equals", "LeftBracket", "Backslash", "RightBracket", "BackQuote", "A", "B", "C", "D", "E", "F", "G", "H", "I", "J", "K", "L", "M", "N", "O", "P", "Q", "R", "S", "T", "U", "V", "W", "X", "Y", "Z", "Delete", "Keypad0", "Keypad1", "Keypad2", "Keypad3", "Keypad4", "Keypad5", "Keypad6", "Keypad7", "Keypad8", "Keypad9", "KeypadPeriod", "KeypadDivide", "KeypadMultiply", "KeypadMinus", "KeypadPlus", "KeypadEnter", "KeypadEquals", "UpArrow", "DownArrow", "RightArrow", "LeftArrow", "Insert", "Home", "End", "PageUp", "PageDown", "F1", "F2", "F3", "F4", "F5", "F6", "F7", "F8", "F9", "F10", "F11", "F12", "F13", "F14", "F15", "Numlock", "CapsLock", "ScrollLock", "RightShift", "LeftShift", "RightControl", "LeftControl", "RightAlt", "LeftAlt", "RightCommand", "RightApple", "LeftCommand", "LeftApple", "LeftWindows", "RightWindows", "Print", "Menu")));
+                KeyboardButtons));
 
             ConfigBMax = Config.Bind("Controls",
              "Max Blindness",
              "T",
              new ConfigDescription(
                 "Sets \"blindness\" to max",
-                new AcceptableValueList<string>("None", "Backspace", "Delete", "Tab", "Clear", "Return", "Pause", "Escape", "Space", "Quote", "Comma", "Minus", "Period", "Slash", "Alpha0", "Alpha1", "Alpha2", "Alpha3", "Alpha4", "Alpha5", "Alpha6", "Alpha7", "Alpha8", "Alpha9", "Semicolon", "Equals", "LeftBracket", "Backslash", "RightBracket", "BackQuote", "A", "B", "C", "D", "E", "F", "G", "H", "I", "J", "K", "L", "M", "N", "O", "P", "Q", "R", "S", "T", "U", "V", "W", "X", "Y", "Z", "Delete", "Keypad0", "Keypad1", "Keypad2", "Keypad3", "Keypad4", "Keypad5", "Keypad6", "Keypad7", "Keypad8", "Keypad9", "KeypadPeriod", "KeypadDivide", "KeypadMultiply", "KeypadMinus", "KeypadPlus", "KeypadEnter", "KeypadEquals", "UpArrow", "DownArrow", "RightArrow", "LeftArrow", "Insert", "Home", "End", "PageUp", "PageDown", "F1", "F2", "F3", "F4", "F5", "F6", "F7", "F8", "F9", "F10", "F11", "F12", "F13", "F14", "F15", "Numlock", "CapsLock", "ScrollLock", "RightShift", "LeftShift", "RightControl", "LeftControl", "RightAlt", "LeftAlt", "RightCommand", "RightApple", "LeftCommand", "LeftApple", "LeftWindows", "RightWindows", "Print", "Menu")));
+                KeyboardButtons));
 
             ConfigBMin = Config.Bind("Controls",
              "0 Blindness",
              "Y",
              new ConfigDescription(
                 "Sets \"blindness\" to 0",
-                new AcceptableValueList<string>("None", "Backspace", "Delete", "Tab", "Clear", "Return", "Pause", "Escape", "Space", "Quote", "Comma", "Minus", "Period", "Slash", "Alpha0", "Alpha1", "Alpha2", "Alpha3", "Alpha4", "Alpha5", "Alpha6", "Alpha7", "Alpha8", "Alpha9", "Semicolon", "Equals", "LeftBracket", "Backslash", "RightBracket", "BackQuote", "A", "B", "C", "D", "E", "F", "G", "H", "I", "J", "K", "L", "M", "N", "O", "P", "Q", "R", "S", "T", "U", "V", "W", "X", "Y", "Z", "Delete", "Keypad0", "Keypad1", "Keypad2", "Keypad3", "Keypad4", "Keypad5", "Keypad6", "Keypad7", "Keypad8", "Keypad9", "KeypadPeriod", "KeypadDivide", "KeypadMultiply", "KeypadMinus", "KeypadPlus", "KeypadEnter", "KeypadEquals", "UpArrow", "DownArrow", "RightArrow", "LeftArrow", "Insert", "Home", "End", "PageUp", "PageDown", "F1", "F2", "F3", "F4", "F5", "F6", "F7", "F8", "F9", "F10", "F11", "F12", "F13", "F14", "F15", "Numlock", "CapsLock", "ScrollLock", "RightShift", "LeftShift", "RightControl", "LeftControl", "RightAlt", "LeftAlt", "RightCommand", "RightApple", "LeftCommand", "LeftApple", "LeftWindows", "RightWindows", "Print", "Menu")));
+                KeyboardButtons));
 
             ConfigAMax = Config.Bind("Controls",
              "Max Adrenaline",
              "D",
              new ConfigDescription(
                 "Sets adrenaline to max",
-                new AcceptableValueList<string>("None", "Backspace", "Delete", "Tab", "Clear", "Return", "Pause", "Escape", "Space", "Quote", "Comma", "Minus", "Period", "Slash", "Alpha0", "Alpha1", "Alpha2", "Alpha3", "Alpha4", "Alpha5", "Alpha6", "Alpha7", "Alpha8", "Alpha9", "Semicolon", "Equals", "LeftBracket", "Backslash", "RightBracket", "BackQuote", "A", "B", "C", "D", "E", "F", "G", "H", "I", "J", "K", "L", "M", "N", "O", "P", "Q", "R", "S", "T", "U", "V", "W", "X", "Y", "Z", "Delete", "Keypad0", "Keypad1", "Keypad2", "Keypad3", "Keypad4", "Keypad5", "Keypad6", "Keypad7", "Keypad8", "Keypad9", "KeypadPeriod", "KeypadDivide", "KeypadMultiply", "KeypadMinus", "KeypadPlus", "KeypadEnter", "KeypadEquals", "UpArrow", "DownArrow", "RightArrow", "LeftArrow", "Insert", "Home", "End", "PageUp", "PageDown", "F1", "F2", "F3", "F4", "F5", "F6", "F7", "F8", "F9", "F10", "F11", "F12", "F13", "F14", "F15", "Numlock", "CapsLock", "ScrollLock", "RightShift", "LeftShift", "RightControl", "LeftControl", "RightAlt", "LeftAlt", "RightCommand", "RightApple", "LeftCommand", "LeftApple", "LeftWindows", "RightWindows", "Print", "Menu")));
+                KeyboardButtons));
 
             ConfigAMin = Config.Bind("Controls",
              "0 Adrenaline",
              "F",
              new ConfigDescription(
                 "Sets adrenaline to 0",
-                new AcceptableValueList<string>("None", "Backspace", "Delete", "Tab", "Clear", "Return", "Pause", "Escape", "Space", "Quote", "Comma", "Minus", "Period", "Slash", "Alpha0", "Alpha1", "Alpha2", "Alpha3", "Alpha4", "Alpha5", "Alpha6", "Alpha7", "Alpha8", "Alpha9", "Semicolon", "Equals", "LeftBracket", "Backslash", "RightBracket", "BackQuote", "A", "B", "C", "D", "E", "F", "G", "H", "I", "J", "K", "L", "M", "N", "O", "P", "Q", "R", "S", "T", "U", "V", "W", "X", "Y", "Z", "Delete", "Keypad0", "Keypad1", "Keypad2", "Keypad3", "Keypad4", "Keypad5", "Keypad6", "Keypad7", "Keypad8", "Keypad9", "KeypadPeriod", "KeypadDivide", "KeypadMultiply", "KeypadMinus", "KeypadPlus", "KeypadEnter", "KeypadEquals", "UpArrow", "DownArrow", "RightArrow", "LeftArrow", "Insert", "Home", "End", "PageUp", "PageDown", "F1", "F2", "F3", "F4", "F5", "F6", "F7", "F8", "F9", "F10", "F11", "F12", "F13", "F14", "F15", "Numlock", "CapsLock", "ScrollLock", "RightShift", "LeftShift", "RightControl", "LeftControl", "RightAlt", "LeftAlt", "RightCommand", "RightApple", "LeftCommand", "LeftApple", "LeftWindows", "RightWindows", "Print", "Menu")));
+                KeyboardButtons));
 
             ConfigAtMax = Config.Bind("Controls",
              "Max Adrenaline Timer",
              "G",
              new ConfigDescription(
                 "Sets adrenaline timer to max",
-                new AcceptableValueList<string>("None", "Backspace", "Delete", "Tab", "Clear", "Return", "Pause", "Escape", "Space", "Quote", "Comma", "Minus", "Period", "Slash", "Alpha0", "Alpha1", "Alpha2", "Alpha3", "Alpha4", "Alpha5", "Alpha6", "Alpha7", "Alpha8", "Alpha9", "Semicolon", "Equals", "LeftBracket", "Backslash", "RightBracket", "BackQuote", "A", "B", "C", "D", "E", "F", "G", "H", "I", "J", "K", "L", "M", "N", "O", "P", "Q", "R", "S", "T", "U", "V", "W", "X", "Y", "Z", "Delete", "Keypad0", "Keypad1", "Keypad2", "Keypad3", "Keypad4", "Keypad5", "Keypad6", "Keypad7", "Keypad8", "Keypad9", "KeypadPeriod", "KeypadDivide", "KeypadMultiply", "KeypadMinus", "KeypadPlus", "KeypadEnter", "KeypadEquals", "UpArrow", "DownArrow", "RightArrow", "LeftArrow", "Insert", "Home", "End", "PageUp", "PageDown", "F1", "F2", "F3", "F4", "F5", "F6", "F7", "F8", "F9", "F10", "F11", "F12", "F13", "F14", "F15", "Numlock", "CapsLock", "ScrollLock", "RightShift", "LeftShift", "RightControl", "LeftControl", "RightAlt", "LeftAlt", "RightCommand", "RightApple", "LeftCommand", "LeftApple", "LeftWindows", "RightWindows", "Print", "Menu")));
+                KeyboardButtons));
 
             ConfigAtMin = Config.Bind("Controls",
              "Adrenaline Timer End",
              "H",
              new ConfigDescription(
                 "Ends the adrenaline timer",
-                new AcceptableValueList<string>("None", "Backspace", "Delete", "Tab", "Clear", "Return", "Pause", "Escape", "Space", "Quote", "Comma", "Minus", "Period", "Slash", "Alpha0", "Alpha1", "Alpha2", "Alpha3", "Alpha4", "Alpha5", "Alpha6", "Alpha7", "Alpha8", "Alpha9", "Semicolon", "Equals", "LeftBracket", "Backslash", "RightBracket", "BackQuote", "A", "B", "C", "D", "E", "F", "G", "H", "I", "J", "K", "L", "M", "N", "O", "P", "Q", "R", "S", "T", "U", "V", "W", "X", "Y", "Z", "Delete", "Keypad0", "Keypad1", "Keypad2", "Keypad3", "Keypad4", "Keypad5", "Keypad6", "Keypad7", "Keypad8", "Keypad9", "KeypadPeriod", "KeypadDivide", "KeypadMultiply", "KeypadMinus", "KeypadPlus", "KeypadEnter", "KeypadEquals", "UpArrow", "DownArrow", "RightArrow", "LeftArrow", "Insert", "Home", "End", "PageUp", "PageDown", "F1", "F2", "F3", "F4", "F5", "F6", "F7", "F8", "F9", "F10", "F11", "F12", "F13", "F14", "F15", "Numlock", "CapsLock", "ScrollLock", "RightShift", "LeftShift", "RightControl", "LeftControl", "RightAlt", "LeftAlt", "RightCommand", "RightApple", "LeftCommand", "LeftApple", "LeftWindows", "RightWindows", "Print", "Menu")));
+                KeyboardButtons));
 
             ConfigInMax = Config.Bind("Controls",
              "Injure the character",
              "J",
              new ConfigDescription(
                 "Injures the character",
-                new AcceptableValueList<string>("None", "Backspace", "Delete", "Tab", "Clear", "Return", "Pause", "Escape", "Space", "Quote", "Comma", "Minus", "Period", "Slash", "Alpha0", "Alpha1", "Alpha2", "Alpha3", "Alpha4", "Alpha5", "Alpha6", "Alpha7", "Alpha8", "Alpha9", "Semicolon", "Equals", "LeftBracket", "Backslash", "RightBracket", "BackQuote", "A", "B", "C", "D", "E", "F", "G", "H", "I", "J", "K", "L", "M", "N", "O", "P", "Q", "R", "S", "T", "U", "V", "W", "X", "Y", "Z", "Delete", "Keypad0", "Keypad1", "Keypad2", "Keypad3", "Keypad4", "Keypad5", "Keypad6", "Keypad7", "Keypad8", "Keypad9", "KeypadPeriod", "KeypadDivide", "KeypadMultiply", "KeypadMinus", "KeypadPlus", "KeypadEnter", "KeypadEquals", "UpArrow", "DownArrow", "RightArrow", "LeftArrow", "Insert", "Home", "End", "PageUp", "PageDown", "F1", "F2", "F3", "F4", "F5", "F6", "F7", "F8", "F9", "F10", "F11", "F12", "F13", "F14", "F15", "Numlock", "CapsLock", "ScrollLock", "RightShift", "LeftShift", "RightControl", "LeftControl", "RightAlt", "LeftAlt", "RightCommand", "RightApple", "LeftCommand", "LeftApple", "LeftWindows", "RightWindows", "Print", "Menu")));
+                KeyboardButtons));
 
             ConfigInMin = Config.Bind("Controls",
              "Heal the injury",
              "K",
              new ConfigDescription(
                 "Removes the character injury",
-                new AcceptableValueList<string>("None", "Backspace", "Delete", "Tab", "Clear", "Return", "Pause", "Escape", "Space", "Quote", "Comma", "Minus", "Period", "Slash", "Alpha0", "Alpha1", "Alpha2", "Alpha3", "Alpha4", "Alpha5", "Alpha6", "Alpha7", "Alpha8", "Alpha9", "Semicolon", "Equals", "LeftBracket", "Backslash", "RightBracket", "BackQuote", "A", "B", "C", "D", "E", "F", "G", "H", "I", "J", "K", "L", "M", "N", "O", "P", "Q", "R", "S", "T", "U", "V", "W", "X", "Y", "Z", "Delete", "Keypad0", "Keypad1", "Keypad2", "Keypad3", "Keypad4", "Keypad5", "Keypad6", "Keypad7", "Keypad8", "Keypad9", "KeypadPeriod", "KeypadDivide", "KeypadMultiply", "KeypadMinus", "KeypadPlus", "KeypadEnter", "KeypadEquals", "UpArrow", "DownArrow", "RightArrow", "LeftArrow", "Insert", "Home", "End", "PageUp", "PageDown", "F1", "F2", "F3", "F4", "F5", "F6", "F7", "F8", "F9", "F10", "F11", "F12", "F13", "F14", "F15", "Numlock", "CapsLock", "ScrollLock", "RightShift", "LeftShift", "RightControl", "LeftControl", "RightAlt", "LeftAlt", "RightCommand", "RightApple", "LeftCommand", "LeftApple", "LeftWindows", "RightWindows", "Print", "Menu")));
+                KeyboardButtons));
 
             ConfigKOMax = Config.Bind("Controls",
              "Knock out a target",
              "C",
              new ConfigDescription(
                 "Instantly knock out (and DQ) a target",
-                new AcceptableValueList<string>("None", "Backspace", "Delete", "Tab", "Clear", "Return", "Pause", "Escape", "Space", "Quote", "Comma", "Minus", "Period", "Slash", "Alpha0", "Alpha1", "Alpha2", "Alpha3", "Alpha4", "Alpha5", "Alpha6", "Alpha7", "Alpha8", "Alpha9", "Semicolon", "Equals", "LeftBracket", "Backslash", "RightBracket", "BackQuote", "A", "B", "C", "D", "E", "F", "G", "H", "I", "J", "K", "L", "M", "N", "O", "P", "Q", "R", "S", "T", "U", "V", "W", "X", "Y", "Z", "Delete", "Keypad0", "Keypad1", "Keypad2", "Keypad3", "Keypad4", "Keypad5", "Keypad6", "Keypad7", "Keypad8", "Keypad9", "KeypadPeriod", "KeypadDivide", "KeypadMultiply", "KeypadMinus", "KeypadPlus", "KeypadEnter", "KeypadEquals", "UpArrow", "DownArrow", "RightArrow", "LeftArrow", "Insert", "Home", "End", "PageUp", "PageDown", "F1", "F2", "F3", "F4", "F5", "F6", "F7", "F8", "F9", "F10", "F11", "F12", "F13", "F14", "F15", "Numlock", "CapsLock", "ScrollLock", "RightShift", "LeftShift", "RightControl", "LeftControl", "RightAlt", "LeftAlt", "RightCommand", "RightApple", "LeftCommand", "LeftApple", "LeftWindows", "RightWindows", "Print", "Menu")));
+                KeyboardButtons));
 
             ConfigKOMin = Config.Bind("Controls",
              "Recover target from knockout",
              "V",
              new ConfigDescription(
                 "Recover target from knockout",
-                new AcceptableValueList<string>("None", "Backspace", "Delete", "Tab", "Clear", "Return", "Pause", "Escape", "Space", "Quote", "Comma", "Minus", "Period", "Slash", "Alpha0", "Alpha1", "Alpha2", "Alpha3", "Alpha4", "Alpha5", "Alpha6", "Alpha7", "Alpha8", "Alpha9", "Semicolon", "Equals", "LeftBracket", "Backslash", "RightBracket", "BackQuote", "A", "B", "C", "D", "E", "F", "G", "H", "I", "J", "K", "L", "M", "N", "O", "P", "Q", "R", "S", "T", "U", "V", "W", "X", "Y", "Z", "Delete", "Keypad0", "Keypad1", "Keypad2", "Keypad3", "Keypad4", "Keypad5", "Keypad6", "Keypad7", "Keypad8", "Keypad9", "KeypadPeriod", "KeypadDivide", "KeypadMultiply", "KeypadMinus", "KeypadPlus", "KeypadEnter", "KeypadEquals", "UpArrow", "DownArrow", "RightArrow", "LeftArrow", "Insert", "Home", "End", "PageUp", "PageDown", "F1", "F2", "F3", "F4", "F5", "F6", "F7", "F8", "F9", "F10", "F11", "F12", "F13", "F14", "F15", "Numlock", "CapsLock", "ScrollLock", "RightShift", "LeftShift", "RightControl", "LeftControl", "RightAlt", "LeftAlt", "RightCommand", "RightApple", "LeftCommand", "LeftApple", "LeftWindows", "RightWindows", "Print", "Menu")));
+                KeyboardButtons));
+
+            ConfigBlowUp = Config.Bind("Controls",
+             "Explode the target",
+             "B",
+             new ConfigDescription(
+                "Spawn an explosion on target",
+                KeyboardButtons));
 
 
 
@@ -163,137 +177,209 @@ namespace HealthCheats
             Harmony.UnpatchSelf();
             Logger.LogInfo($"Unloaded {PluginName}!");
         }
+        public int GetMainPlayerNum()
+        {
+            for (int j = 0; j <= HKJOAJOKOIJ.NGCNKGDDKGF; j++)
+            {
+                if (HKJOAJOKOIJ.NAADDLFFIHG[j].AHBNKMMMGFI > 0 && HKJOAJOKOIJ.NAADDLFFIHG[j].BPJFLJPKKJK >= 0 && HKJOAJOKOIJ.NAADDLFFIHG[j].FOAPDJMIFGP > 0 && HKJOAJOKOIJ.NAADDLFFIHG[j].FOAPDJMIFGP <= NJBJIIIACEP.NBBBLJDBLNM)
+                {
+                    return HKJOAJOKOIJ.NAADDLFFIHG[j].FOAPDJMIFGP;
+                }
+            }
+            return 0;
+        }
+
+        public enum CommandList
+        {
+            HealthMax,
+            HealthMin,
+            StunMax,
+            StunMin,
+            BlindMax,
+            BlindMin,
+            AdrenalineMax,
+            AdrenalineMin,
+            AdrenalineTimerMax,
+            AdrenalineTimerMin,
+            InjureMax,
+            InjureMin,
+            KOMax,
+            KOMin,
+            Explode
+        }
         private void Update()
         {
+
             try
             {
                 if (Input.GetKey(Ulil.GetKeyCode(ConfigTarget.Value))) //target
                 {
-                    if (Input.GetKey(Ulil.GetKeyCode(ConfigHMax.Value)))  //health max
-                    {
-                        NJBJIIIACEP.OAAMGFLINOB[NJBJIIIACEP.OAAMGFLINOB[NJBJIIIACEP.DCAFAIGGFCC[1].NNMDEFLLNBF].NNMDEFLLNBF].HLGALFAGDGC = int.MaxValue;
-                        NJBJIIIACEP.OAAMGFLINOB[NJBJIIIACEP.OAAMGFLINOB[NJBJIIIACEP.DCAFAIGGFCC[1].NNMDEFLLNBF].NNMDEFLLNBF].OIHGGHEDIFF = int.MaxValue;
-                    }
-                    if (Input.GetKey(Ulil.GetKeyCode(ConfigHMin.Value))) //health 0
-                    {
-                        NJBJIIIACEP.OAAMGFLINOB[NJBJIIIACEP.OAAMGFLINOB[NJBJIIIACEP.DCAFAIGGFCC[1].NNMDEFLLNBF].NNMDEFLLNBF].HLGALFAGDGC = 0;
-                        NJBJIIIACEP.OAAMGFLINOB[NJBJIIIACEP.OAAMGFLINOB[NJBJIIIACEP.DCAFAIGGFCC[1].NNMDEFLLNBF].NNMDEFLLNBF].OIHGGHEDIFF = 0;
-                    }
-                    if (Input.GetKey(Ulil.GetKeyCode(ConfigSMax.Value))) //stun max
-                    {
-                        NJBJIIIACEP.OAAMGFLINOB[NJBJIIIACEP.OAAMGFLINOB[NJBJIIIACEP.DCAFAIGGFCC[1].NNMDEFLLNBF].NNMDEFLLNBF].OKPAGLBJIOH = int.MaxValue;
-                    }
-                    if (Input.GetKey(Ulil.GetKeyCode(ConfigSMin.Value))) //stun 0
-                    {
-                        NJBJIIIACEP.OAAMGFLINOB[NJBJIIIACEP.OAAMGFLINOB[NJBJIIIACEP.DCAFAIGGFCC[1].NNMDEFLLNBF].NNMDEFLLNBF].OKPAGLBJIOH = 0;
-                    }
-                    if (Input.GetKey(Ulil.GetKeyCode(ConfigBMax.Value))) //blindness max
-                    {
-                        NJBJIIIACEP.OAAMGFLINOB[NJBJIIIACEP.OAAMGFLINOB[NJBJIIIACEP.DCAFAIGGFCC[1].NNMDEFLLNBF].NNMDEFLLNBF].FLOPBFFLLDE = int.MaxValue;
-                    }
-                    if (Input.GetKey(Ulil.GetKeyCode(ConfigBMin.Value))) //blindness 0
-                    {
-                        NJBJIIIACEP.OAAMGFLINOB[NJBJIIIACEP.OAAMGFLINOB[NJBJIIIACEP.DCAFAIGGFCC[1].NNMDEFLLNBF].NNMDEFLLNBF].FLOPBFFLLDE = 0;
-                    }
-                    if (Input.GetKey(Ulil.GetKeyCode(ConfigAMax.Value))) //adrenaline max
-                    {
-                        NJBJIIIACEP.OAAMGFLINOB[NJBJIIIACEP.OAAMGFLINOB[NJBJIIIACEP.DCAFAIGGFCC[1].NNMDEFLLNBF].NNMDEFLLNBF].BBBGPIILOBB = int.MaxValue;
-                    }
-                    if (Input.GetKey(Ulil.GetKeyCode(ConfigAMin.Value))) //adrenaline 0
-                    {
-                        NJBJIIIACEP.OAAMGFLINOB[NJBJIIIACEP.OAAMGFLINOB[NJBJIIIACEP.DCAFAIGGFCC[1].NNMDEFLLNBF].NNMDEFLLNBF].BBBGPIILOBB = 0;
-                    }
-                    if (Input.GetKey(Ulil.GetKeyCode(ConfigAtMax.Value))) //adr timer max
-                    {
-                        NJBJIIIACEP.OAAMGFLINOB[NJBJIIIACEP.OAAMGFLINOB[NJBJIIIACEP.DCAFAIGGFCC[1].NNMDEFLLNBF].NNMDEFLLNBF].LLGHFGNMCGF = int.MaxValue;
-                    }
-                    if (Input.GetKey(Ulil.GetKeyCode(ConfigAtMin.Value))) //adr timer 0
-                    {
-                        NJBJIIIACEP.OAAMGFLINOB[NJBJIIIACEP.OAAMGFLINOB[NJBJIIIACEP.DCAFAIGGFCC[1].NNMDEFLLNBF].NNMDEFLLNBF].LLGHFGNMCGF = 1;
-                    }
-                    if (Input.GetKeyDown(Ulil.GetKeyCode(ConfigInMax.Value))) //injure
-                    {
-                        Injure(NJBJIIIACEP.OAAMGFLINOB[NJBJIIIACEP.OAAMGFLINOB[NJBJIIIACEP.DCAFAIGGFCC[1].NNMDEFLLNBF].NNMDEFLLNBF]);
-                    }
-                    if (Input.GetKeyDown(Ulil.GetKeyCode(ConfigInMin.Value))) //heal
-                    {
-                        Heal(NJBJIIIACEP.OAAMGFLINOB[NJBJIIIACEP.OAAMGFLINOB[NJBJIIIACEP.DCAFAIGGFCC[1].NNMDEFLLNBF].NNMDEFLLNBF]);
-                    }
-                    if (Input.GetKeyDown(Ulil.GetKeyCode(ConfigKOMax.Value))) //KO
-                    {
-                        KnockOut(NJBJIIIACEP.OAAMGFLINOB[NJBJIIIACEP.OAAMGFLINOB[NJBJIIIACEP.DCAFAIGGFCC[1].NNMDEFLLNBF].NNMDEFLLNBF]);
-                    }
-                    if (Input.GetKeyDown(Ulil.GetKeyCode(ConfigKOMin.Value))) //recover
-                    {
-                        Recover(NJBJIIIACEP.OAAMGFLINOB[NJBJIIIACEP.OAAMGFLINOB[NJBJIIIACEP.DCAFAIGGFCC[1].NNMDEFLLNBF].NNMDEFLLNBF]);
-                    }
+                    SendCommand(true);
 
                 }
                 else //player
                 {
-                    if (Input.GetKey(Ulil.GetKeyCode(ConfigHMax.Value))) //health max
-                    {
-                        NJBJIIIACEP.OAAMGFLINOB[NJBJIIIACEP.DCAFAIGGFCC[1].NNMDEFLLNBF].HLGALFAGDGC = int.MaxValue;
-                        NJBJIIIACEP.OAAMGFLINOB[NJBJIIIACEP.DCAFAIGGFCC[1].NNMDEFLLNBF].OIHGGHEDIFF = int.MaxValue;
-                    }
-                    if (Input.GetKey(Ulil.GetKeyCode(ConfigHMin.Value))) //health 0
-                    {
-                        NJBJIIIACEP.OAAMGFLINOB[NJBJIIIACEP.DCAFAIGGFCC[1].NNMDEFLLNBF].HLGALFAGDGC = 0;
-                        NJBJIIIACEP.OAAMGFLINOB[NJBJIIIACEP.DCAFAIGGFCC[1].NNMDEFLLNBF].OIHGGHEDIFF = 0;
-                    }
-                    if (Input.GetKey(Ulil.GetKeyCode(ConfigSMax.Value))) //stun max
-                    {
-                        NJBJIIIACEP.OAAMGFLINOB[NJBJIIIACEP.DCAFAIGGFCC[1].NNMDEFLLNBF].OKPAGLBJIOH = int.MaxValue;
-                    }
-                    if (Input.GetKey(Ulil.GetKeyCode(ConfigSMin.Value))) //stun 0
-                    {
-                        NJBJIIIACEP.OAAMGFLINOB[NJBJIIIACEP.DCAFAIGGFCC[1].NNMDEFLLNBF].OKPAGLBJIOH = 0;
-                    }
-                    if (Input.GetKey(Ulil.GetKeyCode(ConfigBMax.Value))) //blindness max
-                    {
-                        NJBJIIIACEP.OAAMGFLINOB[NJBJIIIACEP.DCAFAIGGFCC[1].NNMDEFLLNBF].FLOPBFFLLDE = int.MaxValue;
-                    }
-                    if (Input.GetKey(Ulil.GetKeyCode(ConfigBMin.Value))) //blindness 0
-                    {
-                        NJBJIIIACEP.OAAMGFLINOB[NJBJIIIACEP.DCAFAIGGFCC[1].NNMDEFLLNBF].FLOPBFFLLDE = 0;
-                    }
-                    if (Input.GetKey(Ulil.GetKeyCode(ConfigAMax.Value))) //adrenaline max
-                    {
-                        NJBJIIIACEP.OAAMGFLINOB[NJBJIIIACEP.DCAFAIGGFCC[1].NNMDEFLLNBF].BBBGPIILOBB = int.MaxValue;
-                    }
-                    if (Input.GetKey(Ulil.GetKeyCode(ConfigAMin.Value))) //adrenaline 0
-                    {
-                        NJBJIIIACEP.OAAMGFLINOB[NJBJIIIACEP.DCAFAIGGFCC[1].NNMDEFLLNBF].BBBGPIILOBB = 0;
-                    }
-                    if (Input.GetKey(Ulil.GetKeyCode(ConfigAtMax.Value))) //adr timer max
-                    {
-                        NJBJIIIACEP.OAAMGFLINOB[NJBJIIIACEP.DCAFAIGGFCC[1].NNMDEFLLNBF].LLGHFGNMCGF = int.MaxValue;
-                    }
-                    if (Input.GetKey(Ulil.GetKeyCode(ConfigAtMin.Value))) //adr timer 0
-                    {
-                        NJBJIIIACEP.OAAMGFLINOB[NJBJIIIACEP.DCAFAIGGFCC[1].NNMDEFLLNBF].LLGHFGNMCGF = 1;
-                    }
-                    if (Input.GetKeyDown(Ulil.GetKeyCode(ConfigInMax.Value))) //injure
-                    {
-                        Injure(NJBJIIIACEP.OAAMGFLINOB[NJBJIIIACEP.DCAFAIGGFCC[1].NNMDEFLLNBF]);
-                    }
-                    if (Input.GetKeyDown(Ulil.GetKeyCode(ConfigInMin.Value))) //heal
-                    {
-                        Heal(NJBJIIIACEP.OAAMGFLINOB[NJBJIIIACEP.DCAFAIGGFCC[1].NNMDEFLLNBF]);
-                    }
-                    if (Input.GetKeyDown(Ulil.GetKeyCode(ConfigKOMax.Value))) //KO
-                    {
-                        KnockOut(NJBJIIIACEP.OAAMGFLINOB[NJBJIIIACEP.DCAFAIGGFCC[1].NNMDEFLLNBF]);
-                    }
-                    if (Input.GetKeyDown(Ulil.GetKeyCode(ConfigKOMin.Value))) //recover
-                    {
-                        Recover(NJBJIIIACEP.OAAMGFLINOB[NJBJIIIACEP.DCAFAIGGFCC[1].NNMDEFLLNBF]);
-                    }
+                    SendCommand(false);
                 }
             }
             catch (Exception e)
             {
 
+            }
+        }
+        public void SendCommand(bool targetInsteadOfSelf)
+        {
+            if (Input.GetKey(Ulil.GetKeyCode(ConfigHMax.Value)))  //health max
+            {
+                SendFurther(targetInsteadOfSelf, CommandList.HealthMax);
+            }
+            if (Input.GetKey(Ulil.GetKeyCode(ConfigHMin.Value))) //health 0
+            {
+                SendFurther(targetInsteadOfSelf, CommandList.HealthMin);
+            }
+            if (Input.GetKey(Ulil.GetKeyCode(ConfigSMax.Value))) //stun max
+            {
+                SendFurther(targetInsteadOfSelf, CommandList.StunMax);
+            }
+            if (Input.GetKey(Ulil.GetKeyCode(ConfigSMin.Value))) //stun 0
+            {
+                SendFurther(targetInsteadOfSelf, CommandList.StunMin);
+            }
+            if (Input.GetKey(Ulil.GetKeyCode(ConfigBMax.Value))) //blindness max
+            {
+                SendFurther(targetInsteadOfSelf, CommandList.BlindMax);
+            }
+            if (Input.GetKey(Ulil.GetKeyCode(ConfigBMin.Value))) //blindness 0
+            {
+                SendFurther(targetInsteadOfSelf, CommandList.BlindMin);
+            }
+            if (Input.GetKey(Ulil.GetKeyCode(ConfigAMax.Value))) //adrenaline max
+            {
+                SendFurther(targetInsteadOfSelf, CommandList.AdrenalineMax);
+            }
+            if (Input.GetKey(Ulil.GetKeyCode(ConfigAMin.Value))) //adrenaline 0
+            {
+                SendFurther(targetInsteadOfSelf, CommandList.AdrenalineMin);
+            }
+            if (Input.GetKey(Ulil.GetKeyCode(ConfigAtMax.Value))) //adr timer max
+            {
+                SendFurther(targetInsteadOfSelf, CommandList.AdrenalineTimerMax);
+            }
+            if (Input.GetKey(Ulil.GetKeyCode(ConfigAtMin.Value))) //adr timer 0
+            {
+                SendFurther(targetInsteadOfSelf, CommandList.AdrenalineTimerMin);
+            }
+            if (Input.GetKeyDown(Ulil.GetKeyCode(ConfigInMax.Value))) //injure
+            {
+                SendFurther(targetInsteadOfSelf, CommandList.InjureMax);
+            }
+            if (Input.GetKeyDown(Ulil.GetKeyCode(ConfigInMin.Value))) //heal
+            {
+                SendFurther(targetInsteadOfSelf, CommandList.InjureMin);
+            }
+            if (Input.GetKeyDown(Ulil.GetKeyCode(ConfigKOMax.Value))) //KO
+            {
+                SendFurther(targetInsteadOfSelf, CommandList.KOMax);
+            }
+            if (Input.GetKeyDown(Ulil.GetKeyCode(ConfigKOMin.Value))) //recover
+            {
+                SendFurther(targetInsteadOfSelf, CommandList.KOMin);
+            }
+            if (Input.GetKeyDown(Ulil.GetKeyCode(ConfigBlowUp.Value))) //Explode
+            {
+                SendFurther(targetInsteadOfSelf, CommandList.Explode);
+            }
+        }
+        public void SendFurther(bool targetInsteadOfSelf, CommandList command)
+        {
+            DFOGOCNBECG instance;
+            PlayerNum = GetMainPlayerNum();
+            if (PlayerNum == 0) return;
+            if(targetInsteadOfSelf)
+            {
+                if (NJBJIIIACEP.OAAMGFLINOB[PlayerNum].NNMDEFLLNBF == 0) return;
+                instance = NJBJIIIACEP.OAAMGFLINOB[NJBJIIIACEP.OAAMGFLINOB[PlayerNum].NNMDEFLLNBF];
+            }
+            else
+            {
+                instance = NJBJIIIACEP.OAAMGFLINOB[PlayerNum];
+            }
+            switch(command)
+            {
+                case CommandList.HealthMax: { Health(instance, true); break; }
+                case CommandList.HealthMin: { Health(instance, false); break; }
+                case CommandList.StunMax: { Stun(instance, true); break; }
+                case CommandList.StunMin: { Stun(instance, false); break; }
+                case CommandList.BlindMax: { Blind(instance, true); break; }
+                case CommandList.BlindMin: { Blind(instance, false); break; }
+                case CommandList.AdrenalineMax: { Adrenaline(instance, true); break; }
+                case CommandList.AdrenalineMin: { Adrenaline(instance, false); break; }
+                case CommandList.AdrenalineTimerMax: { AdrenalineTimer(instance, true); break; }
+                case CommandList.AdrenalineTimerMin: { AdrenalineTimer(instance, false); break; }
+                case CommandList.InjureMax: { Injure(instance); break; }
+                case CommandList.InjureMin: { Heal(instance); break; }
+                case CommandList.KOMax: { KnockOut(instance); break; }
+                case CommandList.KOMin: { Recover(instance); break; }
+                case CommandList.Explode: { BlowUp(instance); break; }
+            }
+
+
+        }
+        public static void Health(DFOGOCNBECG instance, bool max)
+        {
+            if (max)
+            {
+                instance.HLGALFAGDGC = int.MaxValue;
+                instance.OIHGGHEDIFF = int.MaxValue;
+            }
+            else
+            {
+                instance.HLGALFAGDGC = 0;
+                instance.OIHGGHEDIFF = 0;
+            }
+        }
+        public static void Stun(DFOGOCNBECG instance, bool max)
+        {
+            if (max)
+            {
+                instance.OKPAGLBJIOH = int.MaxValue;
+            }
+            else
+            {
+                instance.OKPAGLBJIOH = 0;
+            }
+        }
+        public static void Blind(DFOGOCNBECG instance, bool max)
+        {
+            if (max)
+            {
+                instance.FLOPBFFLLDE = int.MaxValue;
+            }
+            else
+            {
+                instance.FLOPBFFLLDE = 0;
+            }
+        }
+        public static void Adrenaline(DFOGOCNBECG instance, bool max)
+        {
+            if (max)
+            {
+                instance.BBBGPIILOBB = int.MaxValue;
+            }
+            else
+            {
+                instance.BBBGPIILOBB = 0;
+            }
+        }
+        public static void AdrenalineTimer(DFOGOCNBECG instance, bool max)
+        {
+            if (max)
+            {
+                instance.LLGHFGNMCGF = int.MaxValue;
+            }
+            else
+            {
+                instance.LLGHFGNMCGF = 1;
             }
         }
         public static void Injure(DFOGOCNBECG instance)
@@ -352,7 +438,6 @@ namespace HealthCheats
             {
                 FFCEGMEAIBP.NCAAOLGAGCG(instance.JNNBBJKLEFK, instance.PLFGKLGCOMD);
             }
-            instance.FIEMGOLBHIO = 0;
             instance.MGPDGDCIBGC = 1f;
 
 
@@ -369,6 +454,10 @@ namespace HealthCheats
         public static void Recover(DFOGOCNBECG instance)
         {
             instance.DMEDPMIPBAO = 0;
+        }
+        public static void BlowUp(DFOGOCNBECG instance)
+        {
+            ALIGLHEIAGO.MDFJMAEDJMG(3, 2, new UnityEngine.Color(10f, 10f, 10f), 5, null, instance.NJDGEELLAKG, (float)(instance.FNNBCDPJBIO + 2.5), instance.BMFDFFLPBOJ, 0f, 0f, 0f, 1);
         }
     }
         public static class Ulil
