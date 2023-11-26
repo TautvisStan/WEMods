@@ -1,0 +1,10 @@
+{
+  "namespace": "GeeEm",
+  "name": "MoreRingSizes",
+  "description": "Ring size can now be selected between 20%-165%",
+  "version_number": "1.0.0",
+  "dependencies": [
+    "BepInEx-BepInExPack-5.4.2100"
+  ],
+  "website_url": ""
+}
