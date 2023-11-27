@@ -1,7 +1,7 @@
 <Project Sdk="Microsoft.NET.Sdk">
 
     <PropertyGroup>
-        <AssemblyName>FullReversals</AssemblyName>
+        <AssemblyName>UnlimitedReversals</AssemblyName>
         <AssemblyVersion>1.0.0</AssemblyVersion>
         <ReleaseVersion>1.0.0</ReleaseVersion>
         <TargetFramework>netstandard2.0</TargetFramework>

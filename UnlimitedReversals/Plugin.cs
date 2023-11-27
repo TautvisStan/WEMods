@@ -3,15 +3,15 @@ using BepInEx.Logging;
 using HarmonyLib;
 using System.IO;
 
-namespace WrestlingEmpireTemplateMod
+namespace UnlimitedReversals
 {
     [BepInPlugin(PluginGuid, PluginName, PluginVer)]
     [HarmonyPatch]
     public class Plugin : BaseUnityPlugin
     {
-        public const string PluginGuid = "GeeEm.WrestlingEmpire.FullReversals";
-        public const string PluginName = "FullReversals";
-        public const string PluginVer = "0.1.0";
+        public const string PluginGuid = "GeeEm.WrestlingEmpire.UnlimitedReversals";
+        public const string PluginName = "UnlimitedReversals";
+        public const string PluginVer = "1.0.0";
 
         internal static ManualLogSource Log;
         internal readonly static Harmony Harmony = new(PluginGuid);
@@ -44,7 +44,6 @@ namespace WrestlingEmpireTemplateMod
         {
             if (ELPIOHCPOIJ.EMDMDLNJFKP.id != Characters.wrestler) return;
             DGJAEIBKLJO = int.MaxValue;
-           // UnityEngine.Debug.LogWarning("RISK COUNTER");
         }
         [HarmonyPatch(typeof(DFOGOCNBECG), nameof(DFOGOCNBECG.PCHGFNPPOEM))] 
         [HarmonyPrefix]  //risk reversal
@@ -52,7 +51,6 @@ namespace WrestlingEmpireTemplateMod
         {
             if (ELPIOHCPOIJ.EMDMDLNJFKP.id != Characters.wrestler) return;
             DGJAEIBKLJO = int.MaxValue;
-            //UnityEngine.Debug.LogWarning("RISK REVERSAL");
         }
 
         /*[HarmonyPatch(typeof(DFOGOCNBECG), nameof(DFOGOCNBECG.JPPFMOKHMNE))] 
@@ -69,7 +67,14 @@ namespace WrestlingEmpireTemplateMod
         {
             if (ELPIOHCPOIJ.EMDMDLNJFKP.id != Characters.wrestler) return;
             DGJAEIBKLJO = 0;
-            //UnityEngine.Debug.LogWarning("BREAK SUB");
+        }
+        [HarmonyPatch(typeof(DFOGOCNBECG), nameof(DFOGOCNBECG.NPOCCMLMFCL))]
+        [HarmonyPrefix]  //size difference
+        static bool DFOGOCNBECG_NPOCCMLMFCLPrefix(DFOGOCNBECG __instance, ref float __result, DFOGOCNBECG ELPIOHCPOIJ)
+        {
+            if (ELPIOHCPOIJ.EMDMDLNJFKP.id != Characters.wrestler) return true;
+            __result = 0;
+            return false;
         }
 
     }
