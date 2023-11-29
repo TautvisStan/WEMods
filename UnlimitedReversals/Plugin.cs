@@ -1,4 +1,5 @@
 using BepInEx;
+using BepInEx.Configuration;
 using BepInEx.Logging;
 using HarmonyLib;
 using System.IO;
@@ -17,6 +18,8 @@ namespace UnlimitedReversals
         internal readonly static Harmony Harmony = new(PluginGuid);
 
         internal static string PluginPath;
+
+        public static ConfigEntry<bool> DisableBotches;
         
 
         private void Awake()
@@ -24,6 +27,10 @@ namespace UnlimitedReversals
             Plugin.Log = base.Logger;
 
             PluginPath = Path.GetDirectoryName(Info.Location);
+            DisableBotches = Config.Bind("General",
+             "DisableBotches",
+             false,
+             "Move botching (when both wrestlers fall down) will be disabled");
         }
 
         private void OnEnable()
@@ -53,14 +60,16 @@ namespace UnlimitedReversals
             DGJAEIBKLJO = int.MaxValue;
         }
 
-        /*[HarmonyPatch(typeof(DFOGOCNBECG), nameof(DFOGOCNBECG.JPPFMOKHMNE))] 
-        [HarmonyPrefix]  //break  moves ?????
+        [HarmonyPatch(typeof(DFOGOCNBECG), nameof(DFOGOCNBECG.JPPFMOKHMNE))]
+        [HarmonyPrefix]  //break  moves
         static void DFOGOCNBECG_JPPFMOKHMNEPrefix(DFOGOCNBECG __instance, int FFFFLHENONC, ref int DGJAEIBKLJO)
         {
-			if (__instance.ELPIOHCPOIJ.EMDMDLNJFKP.id != Characters.wrestler) return;
-            DGJAEIBKLJO = int.MaxValue;
-            UnityEngine.Debug.LogWarning("BREAK MOVE");
-        }*/
+            if (DisableBotches.Value == false) return;
+            if ((__instance.ELPIOHCPOIJ.EMDMDLNJFKP.id == Characters.wrestler) || (__instance.EMDMDLNJFKP.id == Characters.wrestler))
+            {
+                DGJAEIBKLJO = int.MinValue;
+            }
+        }
         [HarmonyPatch(typeof(DFOGOCNBECG), nameof(DFOGOCNBECG.GEJEKGNJGFG))] 
         [HarmonyPrefix]  //break submissions
         static void DFOGOCNBECG_GEJEKGNJGFGPrefix(DFOGOCNBECG __instance, DFOGOCNBECG ELPIOHCPOIJ, ref float DGJAEIBKLJO)
