@@ -2,7 +2,7 @@
   "namespace": "GeeEm",
   "name": "UnlimitedParticles",
   "description": "This mod greatly increases particle limit (such as blood strains) and makes them never expire",
-  "version_number": "1.0.0",
+  "version_number": "1.0.1",
   "dependencies": [
     "BepInEx-BepInExPack-5.4.2100"
   ],

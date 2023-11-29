@@ -15,7 +15,7 @@ namespace UnlimitedParticles
     {
         public const string PluginGuid = "GeeEm.WrestlingEmpire.UnlimitedParticles";
         public const string PluginName = "UnlimitedParticles";
-        public const string PluginVer = "1.0.0";
+        public const string PluginVer = "1.0.1";
 
         internal static ManualLogSource Log;
         internal readonly static Harmony Harmony = new(PluginGuid);
@@ -31,7 +31,7 @@ namespace UnlimitedParticles
             PluginPath = Path.GetDirectoryName(Info.Location);
             configSize = Config.Bind("General",
              "New Limit",
-             5000,
+             10000,
              "New particles limit. Too many particles on screen might cause performance issues");
         }
 
@@ -78,6 +78,9 @@ namespace UnlimitedParticles
                 bool flag = __instance.BPJFLJPKKJK >= 0;
                 if (!flag)
                 {
+                    if (__instance.DDLDBDJEPJA <= 0) return;
+                    if (__instance.CAILAODIPDO <= 0) return;
+                    if (__instance.GKAKINIMLGA <= 0) return;
                     __instance.JPMOFJPKINC = 1;
                     float mcjhgehepmd = MBLIOKEDHHB.MCJHGEHEPMD;
                     int plfgklgcomd = __instance.PLFGKLGCOMD;
