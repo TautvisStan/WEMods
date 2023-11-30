@@ -3,6 +3,7 @@ using BepInEx.Logging;
 using HarmonyLib;
 using System;
 using System.IO;
+using UnityEngine.SceneManagement;
 
 namespace IncreasedCharacterLimit
 {
@@ -20,7 +21,7 @@ namespace IncreasedCharacterLimit
         internal static string PluginPath;
         public static float? oldHealth;
 
-
+        public static bool resized = false;
         private void Awake()
         {
             Plugin.Log = base.Logger;
@@ -41,39 +42,67 @@ namespace IncreasedCharacterLimit
         }
         [HarmonyPatch(typeof(AKFIIKOMPLL), nameof(AKFIIKOMPLL.ODONMLDCHHF))]
         [HarmonyPrefix]
-        private static void AKFIIKOMPLL_ODONMLDCHHFPrefix(AKFIIKOMPLL __instance, float __result, float CAAJBNHEFJJ, float OEGLNPMNEOE, float NOGFHHECJBM, float JBPAELFIDOP, ref float LKBOHHGFJFO, int LKJHMOHMKCM)
+        private static void AKFIIKOMPLL_ODONMLDCHHFPrefix_OPTIONS(AKFIIKOMPLL __instance, float __result, float CAAJBNHEFJJ, float OEGLNPMNEOE, float NOGFHHECJBM, float JBPAELFIDOP, ref float LKBOHHGFJFO, int LKJHMOHMKCM)
         {
+            if (SceneManager.GetActiveScene().name != "Options") return;
             if (LIPNHOMGGHF.CHLJMEPFJOK == 3 && LIPNHOMGGHF.PIEMLEPEDFN == 0)
             {
                 if(LIPNHOMGGHF.FKANHDIMMBJ[1] == __instance)
                 {
-                    LKBOHHGFJFO = 100;
+                    LKBOHHGFJFO = Characters.no_chars;
                 }
             }    
         }
         [HarmonyPatch(typeof(AKFIIKOMPLL), nameof(AKFIIKOMPLL.ODONMLDCHHF))]
-        [HarmonyPostfix]
-        private static void AKFIIKOMPLL_ODONMLDCHHFPostfix(AKFIIKOMPLL __instance, float __result, float CAAJBNHEFJJ, float OEGLNPMNEOE, float NOGFHHECJBM, float JBPAELFIDOP, ref float LKBOHHGFJFO, int LKJHMOHMKCM)
+        [HarmonyPrefix]
+        private static void AKFIIKOMPLL_ODONMLDCHHFPrefix_SETUP(AKFIIKOMPLL __instance, float __result, float CAAJBNHEFJJ, float OEGLNPMNEOE, float NOGFHHECJBM, float JBPAELFIDOP, ref float LKBOHHGFJFO, int LKJHMOHMKCM)
         {
-            if (LIPNHOMGGHF.CHLJMEPFJOK == 3 && LIPNHOMGGHF.PIEMLEPEDFN == 0)
+            if (SceneManager.GetActiveScene().name != "Match_Setup") return;
+            if (LIPNHOMGGHF.CHLJMEPFJOK == 1 && LIPNHOMGGHF.ODOAPLMOJPD == 2)
             {
                 if (LIPNHOMGGHF.FKANHDIMMBJ[1] == __instance)
                 {
-                    NJBJIIIACEP.KLDJKHPCDHM = (int)__result;
-                    ResizeRequiredArrays();
+                    if (LKBOHHGFJFO > 100) LKBOHHGFJFO = 100;
+                }
+                if (LIPNHOMGGHF.FKANHDIMMBJ[4] == __instance)
+                {
+                    if (LKBOHHGFJFO > 150) LKBOHHGFJFO = 150;
                 }
             }
         }
-        //TODO RESIZE ON GAME LOAD
+        [HarmonyPatch(typeof(Scene_Titles), nameof(Scene_Titles.Start))]
+        [HarmonyPostfix]
+        private static void TitlesPostfix(Scene_Titles __instance)
+        {
+            if(!resized)
+            {
+                ResizeRequiredArrays();
+                resized = true;
+            }
+        }
+
+            [HarmonyPatch(typeof(AKFIIKOMPLL), nameof(AKFIIKOMPLL.ODONMLDCHHF))]
+             [HarmonyPostfix]
+             private static void AKFIIKOMPLL_ODONMLDCHHFPostfix(AKFIIKOMPLL __instance, float __result, float CAAJBNHEFJJ, float OEGLNPMNEOE, float NOGFHHECJBM, float JBPAELFIDOP, ref float LKBOHHGFJFO, int LKJHMOHMKCM)
+             {
+                 if (LIPNHOMGGHF.CHLJMEPFJOK == 3 && LIPNHOMGGHF.PIEMLEPEDFN == 0)
+                 {
+                     if (LIPNHOMGGHF.FKANHDIMMBJ[1] == __instance)
+                     {
+                         NJBJIIIACEP.KLDJKHPCDHM = (int)__result;
+                     }
+                 }
+             }
         public static void ResizeRequiredArrays()
         {
-            Resize(ref FFCEGMEAIBP.NMMABDGIJNC, NJBJIIIACEP.KLDJKHPCDHM + 1);
-            Resize(ref FFCEGMEAIBP.DJCDPNPLICD, NJBJIIIACEP.KLDJKHPCDHM + 1);
-            Resize(ref FFCEGMEAIBP.EKKIPMFPMEE, NJBJIIIACEP.KLDJKHPCDHM + 1);
-            Resize(ref FFCEGMEAIBP.COIGEGPKLCP, NJBJIIIACEP.KLDJKHPCDHM + 1);
-            Resize(ref FFCEGMEAIBP.AJMAFHIBCGJ, NJBJIIIACEP.KLDJKHPCDHM + 1);
-            Resize(ref FFCEGMEAIBP.MHHLHMDOFBP, NJBJIIIACEP.KLDJKHPCDHM + 1);
-            if (FFCEGMEAIBP.EHIDHAPMAKG > NJBJIIIACEP.KLDJKHPCDHM) FFCEGMEAIBP.EHIDHAPMAKG = NJBJIIIACEP.KLDJKHPCDHM;
+            Resize(ref FFCEGMEAIBP.NMMABDGIJNC, Characters.no_chars + 1);
+            Resize(ref FFCEGMEAIBP.DJCDPNPLICD, Characters.no_chars + 1);
+            Resize(ref FFCEGMEAIBP.EKKIPMFPMEE, Characters.no_chars + 1);
+            Resize(ref FFCEGMEAIBP.COIGEGPKLCP, Characters.no_chars + 1);
+            Resize(ref FFCEGMEAIBP.AJMAFHIBCGJ, Characters.no_chars + 1);
+            Resize(ref FFCEGMEAIBP.MHHLHMDOFBP, Characters.no_chars + 1);
+            //FFCEGMEAIBP.EHIDHAPMAKG = Characters.no_chars;
+            NJBJIIIACEP.KLDJKHPCDHM = Characters.no_chars;
 
 
 
@@ -93,6 +122,5 @@ namespace IncreasedCharacterLimit
             Array.Copy(original, newArray, copysize);
             original = newArray;
         }
-        //TODO LOCK WEAPON FURNITURE SLIDERS
     }
 }

@@ -1,7 +1,7 @@
 {
   "namespace": "GeeEm",
-  "name": "NoFireFurnitureDamage",
-  "description": "Burning fire should no longer break furniture",
+  "name": "IncreasedCharacterLimit",
+  "description": "Lets you increase max character limit in matches",
   "version_number": "1.0.0",
   "dependencies": [
     "BepInEx-BepInExPack-5.4.2100"
