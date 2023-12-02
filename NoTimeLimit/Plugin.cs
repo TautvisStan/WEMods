@@ -11,7 +11,7 @@ namespace NoTimeLimits
     {
         public const string PluginGuid = "GeeEm.WrestlingEmpire.NoTimeLimits";
         public const string PluginName = "NoTimeLimits";
-        public const string PluginVer = "1.0.1";
+        public const string PluginVer = "1.0.2";
 
         internal static ManualLogSource Log;
         internal readonly static Harmony Harmony = new(PluginGuid);
@@ -47,7 +47,7 @@ namespace NoTimeLimits
             if (NAEEIFNFBBO.CBMHGKFFHJE == 1)
             {
                 //check not allowed stipulations
-                if (FFCEGMEAIBP.MINKNAEGMIH != 8 && FFCEGMEAIBP.BPJFLJPKKJK != 3 && FFCEGMEAIBP.BPJFLJPKKJK != 4)
+                if (FFCEGMEAIBP.MINKNAEGMIH != 8 && FFCEGMEAIBP.BPJFLJPKKJK != 3 && FFCEGMEAIBP.BPJFLJPKKJK != 4 && FFCEGMEAIBP.OLJFOJOLLOM >= 0)
                 {
                     FFCEGMEAIBP.NBAFIEALMHN = 0;
                 }
