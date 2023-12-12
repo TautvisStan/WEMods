@@ -1,0 +1,2 @@
+# JoinSpectators
+Pressing CapsLock (rebindable in the config file) will make CPU take control of the latest player controlled character. Works in career mode if you just want to spectate your own character in a CPU vs CPU match. Works even with multiple players. Note that if you're playing on keyboard you will not be able to rejoin the match unless you use the Join feature in MultiBind mod.
