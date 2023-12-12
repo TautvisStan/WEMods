@@ -14,18 +14,22 @@ namespace RumbleEntranceRandomize
     {
         public const string PluginGuid = "GeeEm.WrestlingEmpire.RumbleEntranceRandomize";
         public const string PluginName = "RumbleEntranceRandomize";
-        public const string PluginVer = "1.0.0";
+        public const string PluginVer = "1.0.1";
 
         internal static ManualLogSource Log;
         internal readonly static Harmony Harmony = new(PluginGuid);
         internal static string PluginPath;
-
+        public static ConfigEntry<bool> RandomizeInBookerExhibition;
 
         private void Awake()
         {
             Plugin.Log = base.Logger;
 
             PluginPath = Path.GetDirectoryName(Info.Location);
+            RandomizeInBookerExhibition = Config.Bind("General",
+             "Randomize In Booker and Exhibition",
+             false,
+             "Enable this if you want to also randomize booker and exhibition matches");
         }
 
         private void OnEnable()
@@ -52,6 +56,19 @@ namespace RumbleEntranceRandomize
                     FFCEGMEAIBP.NJPKCMBLMLG = 0; //removing promo
                 }
             }
+            if(RandomizeInBookerExhibition.Value == true)
+            {
+                if (NAEEIFNFBBO.CBMHGKFFHJE == 0 || NAEEIFNFBBO.CBMHGKFFHJE == 2)
+                {
+                    if (FFCEGMEAIBP.OLJFOJOLLOM < 0)
+                    {
+                        var rng = new System.Random();
+                        rng.ShuffleCharacters();
+                        //FFCEGMEAIBP.NJPKCMBLMLG = 0; //removing promo
+                    }
+                }    
+                    
+            }
         }
     }
     static class RandomExtensions
@@ -76,7 +93,7 @@ namespace RumbleEntranceRandomize
                     }
                     break;
                 }
-                //Debug.LogWarning("CHAR " + i + " " + Characters.c[FFCEGMEAIBP.NMMABDGIJNC[i]].name);
+               // Debug.LogWarning("CHAR " + i + " " + Characters.c[FFCEGMEAIBP.NMMABDGIJNC[i]].name);
             }
         }
     }
