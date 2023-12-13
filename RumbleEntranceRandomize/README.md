@@ -1,5 +1,5 @@
 # RumbleEntranceRandomize
-Now features a config toggle that lets you randomize countdown matches in booker and exhibition modes
+Now features a config toggle that lets you randomize countdown matches in booker and exhibition modes.
 
 In career mode, countdown (rumble) and gauntlet match entrance order will be randomized, meaning that your character will no longer be guaranteed to be the one starting the match. Note that your character might still be randomized to be starting wrestler. 
 

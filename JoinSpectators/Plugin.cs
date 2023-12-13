@@ -14,7 +14,7 @@ namespace JoinSpectators
     {
         public const string PluginGuid = "GeeEm.WrestlingEmpire.JoinSpectators";
         public const string PluginName = "JoinSpectators";
-        public const string PluginVer = "1.0.0";
+        public const string PluginVer = "1.0.1";
 
         internal static ManualLogSource Log;
         internal readonly static Harmony Harmony = new(PluginGuid);
@@ -57,6 +57,7 @@ namespace JoinSpectators
                     {
                         int num = HKJOAJOKOIJ.NAADDLFFIHG[j].FOAPDJMIFGP;
                         NJBJIIIACEP.OAAMGFLINOB[num].NLOOBNDGIKO.FOAPDJMIFGP = 0;
+                        NJBJIIIACEP.OAAMGFLINOB[num].NLOOBNDGIKO.AGEGHJOCFHG.SetActive(false);
                         NJBJIIIACEP.OAAMGFLINOB[num].OJAJENJLBMF = -1;
                         NJBJIIIACEP.OAAMGFLINOB[num].NLOOBNDGIKO = HKJOAJOKOIJ.IPDFOJEMPMM;
                         break;
