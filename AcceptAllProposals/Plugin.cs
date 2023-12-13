@@ -14,7 +14,7 @@ namespace AcceptAllProposals
     {
         public const string PluginGuid = "GeeEm.WrestlingEmpire.AcceptAllProposals";
         public const string PluginName = "AcceptAllProposals";
-        public const string PluginVer = "1.1.0";
+        public const string PluginVer = "1.1.1";
 
         internal static ManualLogSource Log;
         internal readonly static Harmony Harmony = new(PluginGuid);
@@ -74,12 +74,13 @@ namespace AcceptAllProposals
             }
             return true;
         }
+
         	 [HarmonyPatch(typeof(NEGAFEHECNL), nameof(NEGAFEHECNL.GBLGKLJIONK))]  //A bunch of new stuff GBLGKLJIONK??
             [HarmonyPostfix]
             static void NEGAFEHECNL_GBLGKLJIONK(ref int __result)
             {
                 if (Input.GetKey(KeyCode.N))
-                
+                { 
                     NEGAFEHECNL.PEJALFBEOKC = 1;
                     __result = 1;
                 }
