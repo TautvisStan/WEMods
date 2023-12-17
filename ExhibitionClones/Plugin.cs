@@ -7,7 +7,6 @@ using System.Collections.Generic;
 using System.IO;
 using UnityEngine;
 using UnityEngine.SceneManagement;
-using UnityEngine.UI;
 
 namespace ExhibitionClones
 {
@@ -17,7 +16,7 @@ namespace ExhibitionClones
     {
         public const string PluginGuid = "GeeEm.WrestlingEmpire.ExhibitionClones";
         public const string PluginName = "ExhibitionClones";
-        public const string PluginVer = "1.0.0";
+        public const string PluginVer = "1.0.1";
 
         internal static ManualLogSource Log;
         internal readonly static Harmony Harmony = new(PluginGuid);
@@ -51,6 +50,7 @@ namespace ExhibitionClones
         [HarmonyPostfix]
         private static void FFCEGMEAIBP_CADGOLBBAEC_Postfix(ref int __result, int GOOKPABIPBC)
         {
+            if (Characters.no_feds < Characters.fed) return;
             if (AllowClonesInBooker.Value == false)
             {
                 if (NAEEIFNFBBO.CBMHGKFFHJE == 0)

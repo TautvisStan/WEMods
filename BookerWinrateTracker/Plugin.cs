@@ -11,6 +11,7 @@ using System.Linq;
 using UnityEngine;
 using UnityEngine.SceneManagement;
 using UnityEngine.UI;
+using WECCL.Utils;
 
 namespace BookerWinrateTracker
 {
@@ -20,7 +21,7 @@ namespace BookerWinrateTracker
     {
         public const string PluginGuid = "GeeEm.WrestlingEmpire.BookerWinrateTracker";
         public const string PluginName = "BookerWinrateTracker";
-        public const string PluginVer = "1.0.4";
+        public const string PluginVer = "1.0.6";
 
         internal static ManualLogSource Log;
         internal readonly static Harmony Harmony = new(PluginGuid);
@@ -89,8 +90,17 @@ namespace BookerWinrateTracker
 
         private void OnEnable()
         {
-            Harmony.PatchAll();
-            Logger.LogInfo($"Loaded {PluginName}!");
+            try
+            {
+                Harmony.PatchAll();
+                Logger.LogInfo($"Loaded {PluginName}!");
+            }
+            catch (Exception e)
+            {
+                Log.LogError("An error was found! Winrate trackers now require WECCL, make sure you have it too! Error:");
+                Log.LogError(e);
+                this.enabled = false;
+            }
         }
 
         private void OnDisable()
@@ -137,6 +147,11 @@ namespace BookerWinrateTracker
             LoadWinrateFromFile();
             foreach (KeyValuePair<int, CharacterWinrate> characterWinrate in Winrates.ToList())
             {
+                if(characterWinrate.Key > Characters.no_chars)
+                {
+	                Winrates.Remove(characterWinrate.Key);
+                 continue;
+                }
                 if (Characters.c[characterWinrate.Key].fed != Characters.c[Characters.booker].fed)
                 {
                     Winrates.Remove(characterWinrate.Key);
@@ -187,6 +202,32 @@ namespace BookerWinrateTracker
             RateText.GetComponent<UnityEngine.UI.Text>().text = "W-D-L: x-x-x";
             RateText.transform.localPosition = new Vector3(128, 0, 0);
             RateText.transform.localScale = Characters.gProfile.transform.Find("Header/Name").localScale;
+        }
+        [HarmonyPatch(typeof(WECCL.Utils.CharacterUtils), nameof(CharacterUtils.DeleteCharacter))]  //move winrate id on char deletion
+        [HarmonyPrefix]
+        static void BWinrate_UpdateOnDelete(int id)
+        {
+            LoadWinrateFromFile();
+            if (Winrates.Count > 0)
+            {
+                if (Winrates.ContainsKey(id))
+                {
+                    Winrates.Remove(id);
+                }
+                foreach (var winrate in Winrates.ToList())
+                {
+                    if (id < winrate.Key)
+                    {
+                        int newId = winrate.Key - 1;
+                        var wins = winrate.Value;
+                        Winrates.Remove(winrate.Key);
+                        Winrates.Add(newId, wins);
+                    }
+                }
+
+
+            }
+            SaveWinrateToFile();
         }
         [HarmonyPatch(typeof(Scene_Select_Char), nameof(Scene_Select_Char.Start))]  //setup the game objects
         [HarmonyPostfix]

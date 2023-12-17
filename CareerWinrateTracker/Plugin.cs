@@ -12,6 +12,8 @@ using UnityEngine;
 using UnityEngine.SceneManagement;
 using UnityEngine.TextCore;
 using UnityEngine.UI;
+using WECCL.Utils;
+
 
 namespace CareerWinrateTracker
 {
@@ -21,7 +23,7 @@ namespace CareerWinrateTracker
     {
         public const string PluginGuid = "GeeEm.WrestlingEmpire.CareerWinrateTracker";
         public const string PluginName = "CareerWinrateTracker";
-        public const string PluginVer = "1.0.1";
+        public const string PluginVer = "1.0.3";
 
         internal static ManualLogSource Log;
         internal readonly static Harmony Harmony = new(PluginGuid);
@@ -83,11 +85,19 @@ namespace CareerWinrateTracker
              false,
              "Separate the winrate display into individual types (singles, teams, special)");
         }
-
         private void OnEnable()
         {
-            Harmony.PatchAll();
-            Logger.LogInfo($"Loaded {PluginName}!");
+            try
+            {
+                Harmony.PatchAll();
+                Logger.LogInfo($"Loaded {PluginName}!");
+            }
+            catch (Exception e)
+            {
+                Log.LogError("An error was found! Winrate trackers now require WECCL, make sure you have it too! Error:");
+                Log.LogError(e);
+                this.enabled = false;
+            }
         }
 
         private void OnDisable()
@@ -127,32 +137,30 @@ namespace CareerWinrateTracker
                 Log.LogError(e);
                 Winrates = new();
             }
+
         }
-        public static void ReloadCharacterWinrates()
+        public static void ReloadCharacterWinratesSingle()
         {
-            if (Characters.star == 0 || NAEEIFNFBBO.CBMHGKFFHJE != 1) return;
+            if (Characters.wrestler == 0 || NAEEIFNFBBO.CBMHGKFFHJE != 1) return;
             LoadWinrateFromFile();
-            foreach (KeyValuePair<int, CharacterWinrate> characterWinrate in Winrates.ToList())
+            if (!Winrates.ContainsKey(Characters.wrestler))
             {
-                if (Characters.c[characterWinrate.Key].id != Characters.star)
+                Winrates.Add(Characters.wrestler, new CharacterWinrate());
+            }
+            if(Winrates.Count > 1)
+            {
+                foreach (KeyValuePair<int, CharacterWinrate> characterWinrate in Winrates.ToList())
                 {
-                    Winrates.Remove(characterWinrate.Key);
+                    if (characterWinrate.Key != Characters.wrestler)
+                    {
+                        Winrates.Remove(characterWinrate.Key);
+                    }
                 }
             }
-            if(Characters.star != 0 && !Winrates.ContainsKey(Characters.star))
-            {
-                Winrates.Add(Characters.star, new CharacterWinrate());
-            }
-           /* foreach(int character in Characters.fedData[Characters.c[Characters.booker].fed].roster)
-            {
-                if(character != 0 && Characters.c[character].fed == Characters.c[Characters.booker].fed && !Winrates.ContainsKey(character))
-                {
-                    Winrates.Add(character, new CharacterWinrate());
-                }
-            }*/
             SaveWinrateToFile();
 
         }
+
         public static bool LoadWinrate(int id)
         {
             CharacterWinrate winrate;
@@ -189,19 +197,37 @@ namespace CareerWinrateTracker
             RateText.transform.localPosition = new Vector3(128, 0, 0);
             RateText.transform.localScale = Characters.gProfile.transform.Find("Header/Name").localScale;
         }
+        [HarmonyPatch(typeof(WECCL.Utils.CharacterUtils), nameof(CharacterUtils.DeleteCharacter))]  //move winrate id on char deletion
+        [HarmonyPrefix]
+        static void CWinrate_UpdateOnDelete(int id)
+        {
+            ReloadCharacterWinratesSingle();
+            if (Winrates.Count > 0)
+            {
+                if (id < Winrates.First().Key)
+                {
+                    int newId = Winrates.First().Key - 1;
+                    var wins = Winrates.First().Value;
+                    Winrates.Remove(Winrates.First().Key);
+                    Winrates.Add(newId, wins);
+                }
+                
+            }
+            SaveWinrateToFile();
+        }
         [HarmonyPatch(typeof(Scene_Select_Char), nameof(Scene_Select_Char.Start))]  //setup the game objects
         [HarmonyPostfix]
         static void Scene_Select_Char_Setup()
         {
             SetUpGameObjects();
-            ReloadCharacterWinrates();
+            ReloadCharacterWinratesSingle();
         }
         [HarmonyPatch(typeof(Scene_News), nameof(Scene_News.Start))]  //setup the game objects
         [HarmonyPostfix]
         static void Scene_News_Setup()
         {
             SetUpGameObjects();
-            ReloadCharacterWinrates();
+            ReloadCharacterWinratesSingle();
         }
         [HarmonyPatch(typeof(Scene_Calendar), nameof(Scene_Calendar.Start))]  //setup the game objects
         [HarmonyPostfix]
@@ -209,7 +235,7 @@ namespace CareerWinrateTracker
         {
             if(NAEEIFNFBBO.CBMHGKFFHJE != 1) return;
             SetUpGameObjects();
-            ReloadCharacterWinrates();
+            ReloadCharacterWinratesSingle();
         }
         [HarmonyPatch(typeof(Scene_Calendar), nameof(Scene_Calendar.Update))]  //Update the score
         [HarmonyPostfix]
@@ -329,7 +355,7 @@ namespace CareerWinrateTracker
         {
             if (Characters.star == 0 || NAEEIFNFBBO.CBMHGKFFHJE != 1) return;
             if (SceneManager.GetActiveScene().name != "Game") return;
-            ReloadCharacterWinrates();
+            ReloadCharacterWinratesSingle();
             foreach(int i in winners)
             {
                 if (Winrates.ContainsKey(i))

@@ -14,7 +14,7 @@ namespace MultiBind
     {
         public const string PluginGuid = "GeeEm.WrestlingEmpire.MultiBind";
         public const string PluginName = "MultiBind";
-        public const string PluginVer = "1.1.2";
+        public const string PluginVer = "1.1.3";
 
         internal static ManualLogSource Log;
         internal readonly static Harmony Harmony = new(PluginGuid);
@@ -271,6 +271,7 @@ namespace MultiBind
         }
         public static void HandleControls(BJMGCKGNCHO __instance, ControlScheme scheme)
         {
+            __instance.NHFPIIKCNFO();
             __instance.LMADDGDMBGB = Mathf.MoveTowards(__instance.LMADDGDMBGB, 0f, 1f * MBLIOKEDHHB.MCJHGEHEPMD);
             if (LIPNHOMGGHF.FAKHAFKOBPB == 50 && __instance.AHBNKMMMGFI > 0 && __instance.FOAPDJMIFGP > 0)
             {
@@ -338,12 +339,12 @@ namespace MultiBind
             if (Input.GetKey(Ulil.GetKeyCode(scheme.ConfigShift.Value)))  //LShoulder
             {
                 __instance.IOIJFFLMBCH[6] = -1;
-                __instance.FHBEOIPFFDA = 1;
+               if(ControllerMode) __instance.FHBEOIPFFDA = 1;
             }
             if (Input.GetKey(Ulil.GetKeyCode(scheme.ConfigControl.Value))) //RShoulder
             {
                 __instance.IOIJFFLMBCH[6] = 1;
-                __instance.OHEIJEDGKLJ = 1;
+                if (ControllerMode) __instance.OHEIJEDGKLJ = 1;
             }
             if (Input.GetKey(Ulil.GetKeyCode(scheme.ConfigTab.Value)))  //Right Trigger
             {
@@ -397,6 +398,10 @@ namespace MultiBind
             if (__instance.PLFGKLGCOMD > 0 && __instance.AHBNKMMMGFI > 0 && HKJOAJOKOIJ.EMLDNFEIKCK != __instance.PLFGKLGCOMD)
             {
                 __instance.BDCKBOLGDNB();
+            }
+            if (LIPNHOMGGHF.FAKHAFKOBPB == 50 && __instance.BPJFLJPKKJK >= 2 && __instance.AHBNKMMMGFI > 0 && __instance.FOAPDJMIFGP == 0 && __instance.DHBFOHLEFOD[2] > 0)
+            {
+                __instance.JIIMLBLGKAL(0);
             }
         }
         public static class Ulil
