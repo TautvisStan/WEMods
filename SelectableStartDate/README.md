@@ -1,0 +1,2 @@
+# SelectableStartDate
+Lets you select in the config the week you would like to start on (1-48). By default all new careers will start on the first week of the year. Works only if both wrestler and booker careers are not active.
