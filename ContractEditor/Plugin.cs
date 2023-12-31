@@ -16,14 +16,17 @@ namespace ContractEditor
     {
         public const string PluginGuid = "GeeEm.WrestlingEmpire.ContractEditor";
         public const string PluginName = "ContractEditor";
-        public const string PluginVer = "1.0.1";
+        public const string PluginVer = "1.0.2";
 
         internal static ManualLogSource Log;
         internal readonly static Harmony Harmony = new(PluginGuid);
 
         internal static string PluginPath;
         public static ConfigEntry<KeyCode> loadContractButton;
-        public struct ContractStruct
+        public static ConfigEntry<string> salary;
+        public static ConfigEntry<string> weeks;
+        public static ConfigEntry<string> clause;
+      /*  public struct ContractStruct
         {
             public int? salary { get; set; } = null;
             public int? weeks { get; set; } = null;
@@ -33,7 +36,7 @@ namespace ContractEditor
             {
 
             }
-        }
+        }*/
         private void Awake()
         {
             Plugin.Log = base.Logger;
@@ -43,6 +46,19 @@ namespace ContractEditor
              "Load custom contract",
              KeyCode.KeypadMinus,
              "Button that loads the custom contract");
+
+            salary = Config.Bind("Contract",
+             "Salary",
+             "",
+             "The weekly salary");
+            weeks = Config.Bind("Contract",
+             "Weeks",
+            "",
+             "Weeks on the contract");
+            clause = Config.Bind("Contract",
+             "Clause",
+            "",
+             "Number of the clause");
         }
 
         private void OnEnable()
@@ -65,7 +81,7 @@ namespace ContractEditor
                         Logger.LogInfo("Loading custom contract.");
                         try
                         {
-                            LoadCard();
+                            LoadContract();
                         }
                         catch (Exception e)
                         {
@@ -84,49 +100,91 @@ namespace ContractEditor
 
             }    
         }
-        public void LoadCard()
+        public void LoadContract()
         {
-            ContractStruct contract = new ContractStruct();
-            string[] lines = File.ReadAllLines(Path.Combine(PluginPath, "CustomContract.txt"));
-            foreach (string line in lines)
+            /*      ContractStruct contract = new ContractStruct();
+                  string[] lines = File.ReadAllLines(Path.Combine(PluginPath, "CustomContract.txt"));
+                  foreach (string line in lines)
+                  {
+                      if (line.Trim().Length == 0)
+                      {
+                          continue;
+                      }
+
+                      if (line.ToLower().StartsWith("salary:"))
+                      {
+                          contract.salary = int.Parse(line.Substring(7).Trim());
+                          continue;
+                      }
+                      if (line.ToLower().StartsWith("weeks:"))
+                      {
+                          contract.weeks = int.Parse(line.Substring(6).Trim());
+                          continue;
+                      }
+                      if (line.ToLower().StartsWith("clause:"))
+                      {
+                          contract.clause = int.Parse(line.Substring(7).Trim());
+                          continue;
+                      }
+                  }
+                  if (contract.weeks != null)
+                  {
+                      Logger.LogInfo("setting weeks " + contract.weeks);
+                      Characters.c[Characters.foc].contract = (int)contract.weeks;
+
+                  }
+                  if (contract.salary != null)
+                  {
+                      Logger.LogInfo("setting salary " + contract.salary);
+                      Characters.c[Characters.foc].salary = (int)contract.salary;
+
+                  }
+                  if (contract.clause != null)
+                  {
+                      Logger.LogInfo("setting clause " + contract.clause);
+                      Characters.c[Characters.foc].clause = (int)contract.clause;
+
+                  }*/
+            if (weeks.Value != "")
             {
-                if (line.Trim().Length == 0)
+                try
                 {
-                    continue;
+                    Logger.LogInfo("Setting weeks " + int.Parse(weeks.Value));
+                    Characters.c[Characters.foc].contract = int.Parse(weeks.Value);
                 }
-                
-                if (line.ToLower().StartsWith("salary:"))
+                catch (Exception e)
                 {
-                    contract.salary = int.Parse(line.Substring(7).Trim());
-                    continue;
+                    Logger.LogError("Error trying to parse weeks: " + weeks.Value);
+                    Logger.LogError(e);
                 }
-                if (line.ToLower().StartsWith("weeks:"))
-                {
-                    contract.weeks = int.Parse(line.Substring(6).Trim());
-                    continue;
-                }
-                if (line.ToLower().StartsWith("clause:"))
-                {
-                    contract.clause = int.Parse(line.Substring(7).Trim());
-                    continue;
-                }
-            }
-            if (contract.weeks != null)
-            {
-                Logger.LogInfo("setting weeks " + contract.weeks);
-                Characters.c[Characters.foc].contract = (int)contract.weeks;
-                
-            }
-            if (contract.salary != null)
-            {
-                Logger.LogInfo("setting salary " + contract.salary);
-                Characters.c[Characters.foc].salary = (int)contract.salary;
 
             }
-            if (contract.clause != null)
+            if (salary.Value != "")
             {
-                Logger.LogInfo("setting clause " + contract.clause);
-                Characters.c[Characters.foc].clause = (int)contract.clause;
+                try
+                { 
+                    Logger.LogInfo("Setting salary " + salary.Value);
+                    Characters.c[Characters.foc].salary = int.Parse(salary.Value);
+                }
+                catch (Exception e)
+                {
+                    Logger.LogError("Error trying to parse salary: " + salary.Value);
+                    Logger.LogError(e);
+                }
+
+            }
+            if (clause.Value != "")
+            {
+                try
+                {
+                    Logger.LogInfo("Setting clause " + clause.Value);
+                    Characters.c[Characters.foc].clause = int.Parse(clause.Value);
+                }
+                catch (Exception e)
+                {
+                    Logger.LogError("Error trying to parse clause: " + clause.Value);
+                    Logger.LogError(e);
+                }
 
             }
 
