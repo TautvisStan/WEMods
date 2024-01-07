@@ -12,7 +12,7 @@ using UnityEngine;
 using UnityEngine.SceneManagement;
 using UnityEngine.TextCore;
 using UnityEngine.UI;
-using WECCL.Utils;
+using WECCL.API.Events;
 
 
 namespace CareerWinrateTracker
@@ -23,7 +23,7 @@ namespace CareerWinrateTracker
     {
         public const string PluginGuid = "GeeEm.WrestlingEmpire.CareerWinrateTracker";
         public const string PluginName = "CareerWinrateTracker";
-        public const string PluginVer = "1.0.3";
+        public const string PluginVer = "1.0.4";
 
         internal static ManualLogSource Log;
         internal readonly static Harmony Harmony = new(PluginGuid);
@@ -84,6 +84,27 @@ namespace CareerWinrateTracker
              "AdvancedDisplay",
              false,
              "Separate the winrate display into individual types (singles, teams, special)");
+        }
+        private void Start()
+        {
+            try
+            {
+                CharacterEvents.RegisterAfterCharacterRemovedAction((CharacterRemovedEvent e) =>
+                {
+                    if (e.State == EventState.AfterSuccess)
+                    {
+                        CWinrate_UpdateOnDelete(e.CharId);
+                        Logger.LogInfo($"Character {e.Character.name} was removed, shifting winrates!");
+                    }
+                });
+                Log.LogInfo("Registered to WECCL AfterCharacterRemoved");
+            }
+            catch (Exception e)
+            {
+                Log.LogWarning("An error was found! Winrate trackers now require WECCL, make sure you have it too! Error:");
+                Log.LogError(e);
+                this.enabled = false;
+            }
         }
         private void OnEnable()
         {
@@ -197,8 +218,6 @@ namespace CareerWinrateTracker
             RateText.transform.localPosition = new Vector3(128, 0, 0);
             RateText.transform.localScale = Characters.gProfile.transform.Find("Header/Name").localScale;
         }
-        [HarmonyPatch(typeof(WECCL.Utils.CharacterUtils), nameof(CharacterUtils.DeleteCharacter))]  //move winrate id on char deletion
-        [HarmonyPrefix]
         static void CWinrate_UpdateOnDelete(int id)
         {
             ReloadCharacterWinratesSingle();

@@ -14,7 +14,7 @@ namespace PromotionEditorUnlock
     {
         public const string PluginGuid = "GeeEm.WrestlingEmpire.SelectableStartDate";
         public const string PluginName = "SelectableStartDate";
-        public const string PluginVer = "1.0.0";
+        public const string PluginVer = "1.0.1";
 
         internal static ManualLogSource Log;
         internal readonly static Harmony Harmony = new(PluginGuid);
@@ -48,12 +48,11 @@ namespace PromotionEditorUnlock
         [HarmonyPatch(typeof(Progress))]
         public static class ProgressPatch
         {
-            [HarmonyPrefix]
-            [HarmonyPatch(nameof(Progress.ICNGJHENMEN))]
-            public static bool Progress_ICNGJHENMEN_Patch(ref int __result, int BAOKKKGPCHF, int FMKCNPHBDME)
+            [HarmonyPostfix]
+            [HarmonyPatch(nameof(Progress.HEPPCLJCKHM))]
+            public static void Progress_ICNGJHENMEN_Patch()
             {
-                __result = StartDate.Value;
-                return false;
+                Progress.date = StartDate.Value;
             }
         }
     }

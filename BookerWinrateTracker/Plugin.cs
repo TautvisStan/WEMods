@@ -11,7 +11,7 @@ using System.Linq;
 using UnityEngine;
 using UnityEngine.SceneManagement;
 using UnityEngine.UI;
-using WECCL.Utils;
+using WECCL.API.Events;
 
 namespace BookerWinrateTracker
 {
@@ -21,7 +21,7 @@ namespace BookerWinrateTracker
     {
         public const string PluginGuid = "GeeEm.WrestlingEmpire.BookerWinrateTracker";
         public const string PluginName = "BookerWinrateTracker";
-        public const string PluginVer = "1.0.6";
+        public const string PluginVer = "1.0.7";
 
         internal static ManualLogSource Log;
         internal readonly static Harmony Harmony = new(PluginGuid);
@@ -83,13 +83,34 @@ namespace BookerWinrateTracker
              false,
              "Separate the winrate display into individual types (singles, teams, special)");
             SkipConfrontations = Config.Bind("General",
- "SkipConfrontations",
- false,
- "Ignore and don't track confrontation type matches");
+             "SkipConfrontations",
+             false,
+             "Ignore and don't track confrontation type matches");
         }
-
+        private void Start()
+        {
+            try
+            {
+                CharacterEvents.RegisterAfterCharacterRemovedAction((CharacterRemovedEvent e) =>
+                {
+                    if (e.State == EventState.AfterSuccess)
+                    {
+                        BWinrate_UpdateOnDelete(e.CharId);
+                        Logger.LogInfo($"Character {e.Character.name} was removed, shifting winrates!");
+                    }
+                });
+                Log.LogInfo("Registered to WECCL AfterCharacterRemoved");
+            }
+            catch (Exception e)
+            {
+                Log.LogWarning("An error was found! Winrate trackers now require WECCL, make sure you have it too! Error:");
+                Log.LogError(e);
+                this.enabled = false;
+            }
+        }
         private void OnEnable()
         {
+
             try
             {
                 Harmony.PatchAll();
@@ -97,7 +118,7 @@ namespace BookerWinrateTracker
             }
             catch (Exception e)
             {
-                Log.LogError("An error was found! Winrate trackers now require WECCL, make sure you have it too! Error:");
+                Log.LogError("An error was found! Winrate trackers now require WECCL, make sure you have it too! Error");
                 Log.LogError(e);
                 this.enabled = false;
             }
@@ -105,6 +126,7 @@ namespace BookerWinrateTracker
 
         private void OnDisable()
         {
+            
             Harmony.UnpatchSelf();
             Logger.LogInfo($"Unloaded {PluginName}!");
         }
@@ -152,6 +174,7 @@ namespace BookerWinrateTracker
 	                Winrates.Remove(characterWinrate.Key);
                  continue;
                 }
+
                 if (Characters.c[characterWinrate.Key].fed != Characters.c[Characters.booker].fed)
                 {
                     Winrates.Remove(characterWinrate.Key);
@@ -203,8 +226,9 @@ namespace BookerWinrateTracker
             RateText.transform.localPosition = new Vector3(128, 0, 0);
             RateText.transform.localScale = Characters.gProfile.transform.Find("Header/Name").localScale;
         }
-        [HarmonyPatch(typeof(WECCL.Utils.CharacterUtils), nameof(CharacterUtils.DeleteCharacter))]  //move winrate id on char deletion
-        [HarmonyPrefix]
+
+    //    [HarmonyPatch(typeof(WECCL.Utils.CharacterUtils), nameof(CharacterUtils.DeleteCharacter))]  //move winrate id on char deletion
+    //    [HarmonyPrefix]
         static void BWinrate_UpdateOnDelete(int id)
         {
             LoadWinrateFromFile();
@@ -214,16 +238,22 @@ namespace BookerWinrateTracker
                 {
                     Winrates.Remove(id);
                 }
+                Dictionary<int, CharacterWinrate> tempwinrates = new();
                 foreach (var winrate in Winrates.ToList())
                 {
                     if (id < winrate.Key)
                     {
                         int newId = winrate.Key - 1;
                         var wins = winrate.Value;
-                        Winrates.Remove(winrate.Key);
-                        Winrates.Add(newId, wins);
+                        //Winrates.Remove(winrate.Key);
+                        tempwinrates.Add(newId, wins);
+                    }
+                    else
+                    {
+                        tempwinrates.Add(winrate.Key, winrate.Value);
                     }
                 }
+                Winrates = tempwinrates;
 
 
             }
