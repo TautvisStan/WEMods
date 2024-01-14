@@ -1,7 +1,7 @@
 ﻿<Project Sdk="Microsoft.NET.Sdk">
 
     <PropertyGroup>
-        <AssemblyName>WrestlerMatchEditor</AssemblyName>
+        <AssemblyName>EpicArenaInBooker</AssemblyName>
         <AssemblyVersion>1.0.0</AssemblyVersion>
         <ReleaseVersion>1.0.0</ReleaseVersion>
         <TargetFramework>netstandard2.0</TargetFramework>
@@ -27,9 +27,6 @@
     <ItemGroup>
       <Reference Include="Assembly-CSharp">
         <HintPath>lib\Assembly-CSharp_public.dll</HintPath>
-      </Reference>
-      <Reference Include="WECCL">
-        <HintPath>WECCL.dll</HintPath>
       </Reference>
     </ItemGroup>
 

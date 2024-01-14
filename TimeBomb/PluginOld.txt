@@ -1,0 +1,233 @@
+using BepInEx;
+using BepInEx.Configuration;
+using BepInEx.Logging;
+using HarmonyLib;
+using System.Collections;
+using System.Collections.Generic;
+using System.IO;
+using UnityEngine;
+using UnityEngine.UIElements;
+
+namespace TimeBomb
+{
+    [BepInPlugin(PluginGuid, PluginName, PluginVer)]
+    [HarmonyPatch]
+    public class PluginOld : BaseUnityPlugin
+    {
+        public class Times
+        {
+            public int Minute;
+            public int Second;
+        }
+        public const string PluginGuid = "GeeEm.WrestlingEmpire.TimeBomb";
+        public const string PluginName = "TimeBomb";
+        public const string PluginVer = "0.1.0";
+ 
+        internal static ManualLogSource Log;
+        internal readonly static Harmony Harmony = new(PluginGuid);
+
+        internal static string PluginPath;
+        public static bool active = false;
+        public static ConfigEntry<float> configSize;
+        public static ConfigEntry<int> configBurstSize;
+        public static ConfigEntry<float> configTimeInBurst;
+        public static ConfigEntry<bool> configOnlyExplodingBarbedWire;
+        public static ConfigEntry<bool> configRepeat;
+        public static ConfigEntry<int> configSeconds;
+        public static ConfigEntry<bool> configMatch;
+        public static int LastExplosion = 0;
+
+        private void Awake()
+        {
+            Plugin.Log = base.Logger;
+
+            PluginPath = Path.GetDirectoryName(Info.Location);
+            configSize = Config.Bind("General",
+             "ExplosionSize",
+             30.5f,
+             "Base size of an explosion");
+            configBurstSize = Config.Bind("General",
+             "BurstSize",
+             2,
+             "Amount of spawned explosions in the burst");
+            configTimeInBurst = Config.Bind("General",
+             "BurstExplosionTime",
+             0.5f,
+             "Time between explosions in a single burst");
+            configOnlyExplodingBarbedWire = Config.Bind("General",
+             "Explosions Only In Exploding Barbed Wire Matches",
+             true,
+             "Make explosions happen only in exploding barbed wire matches");
+            configRepeat = Config.Bind("General",
+             "Repeat",
+             true,
+             "Repeat explosions on the interval");
+            configSeconds = Config.Bind("General",
+             "ExplosionInterval",
+             300,
+             "Time in seconds between explosions");
+            // nextExplosion = seconds;
+        }
+
+        private void OnEnable()
+        {
+            Harmony.PatchAll();
+            Logger.LogInfo($"Loaded {PluginName}!");
+        }
+
+        private void OnDisable()
+        {
+            Harmony.UnpatchSelf();
+            Logger.LogInfo($"Unloaded {PluginName}!");
+        }
+        private void Update()
+        {
+            if(active)
+            {
+
+                        if ((PHECEOMIMND.ICBENEHEIEN * 60 + PHECEOMIMND.CBOAMKCJCFJ) % configSeconds.Value == 0 && (PHECEOMIMND.ICBENEHEIEN * 60 + PHECEOMIMND.CBOAMKCJCFJ != LastExplosion))
+                        {
+                    LastExplosion = PHECEOMIMND.ICBENEHEIEN * 60 + PHECEOMIMND.CBOAMKCJCFJ;
+
+
+                            StartCoroutine(MakeExplosions());
+                            if(!configRepeat.Value)
+                            {
+                                active = false;
+                        LastExplosion = 0;
+                            }
+                        }
+            }
+        }
+        IEnumerator MakeExplosions()
+        {
+            for (int i = 0; i < configBurstSize.Value; i++)
+            {
+                CLJNCLLMLAO.MPPNGEHNAJL(1, 2, new Color(1f, 1f, 1f), Plugin.configSize.Value * World.ringSize, null, 0f, 15f, 0f, 0f, 0f, 0f, 1);
+                yield return new WaitForSeconds(configTimeInBurst.Value);
+            }
+        }
+   /*     public void ExplosionSquare()
+        {
+            
+            /*  float pos = 35.5f * World.ringSize * 0.4f;
+
+              CLJNCLLMLAO.MPPNGEHNAJL(1, 2, new Color(1f, 1f, 1f), 20 * World.ringSize, null, -pos, 12f, -pos, 0f, 0f, 0.1f, 1);
+              CLJNCLLMLAO.MPPNGEHNAJL(1, 2, new Color(1f, 1f, 1f), 20 * World.ringSize, null, -pos, 12f, pos, 0f, 0f, 0.1f, 1);
+              CLJNCLLMLAO.MPPNGEHNAJL(1, 2, new Color(1f, 1f, 1f), 20 * World.ringSize, null, pos, 12f, -pos, 0f, 0f, 0.1f, 1);
+              CLJNCLLMLAO.MPPNGEHNAJL(1, 2, new Color(1f, 1f, 1f), 20 * World.ringSize, null, pos, 12f, pos, 0f, 0f, 0.1f, 1);
+          
+        }*/
+    }
+    [HarmonyPatch(typeof(PHECEOMIMND))]   
+    public static class PHECEOMIMND_Patch   
+    {
+        [HarmonyPostfix]
+        [HarmonyPatch("NHPJFOBBCEF")]
+        public static void NHPJFOBBCEF_Patch()  //Match start
+        {
+            if (World.ringShape == 1 || World.ringShape == 2)
+            {
+                if ((Plugin.configOnlyExplodingBarbedWire.Value && World.ringRopes == -2) || !Plugin.configOnlyExplodingBarbedWire.Value)
+                {
+                    Plugin.active = true;
+                    Plugin.LastExplosion = 0;
+                }
+            }
+        }
+        [HarmonyPostfix]
+        [HarmonyPatch("HDKPGMAKCLO")]
+        public static void HDKPGMAKCLO_Patch()   //match end
+        {
+            Plugin.active = false;
+            Debug.LogWarning("MATCHENEDED");
+        }
+   /*     [HarmonyPostfix]
+        [HarmonyPatch("PNBFOHOPFGB")]
+        public static void PNBFOHOPFGB_Patch()  //Match interfere NOT WORK BECAUSE IT SET TOO EARLY
+        {
+            Debug.LogWarning("Inter");
+            if (World.ringShape == 1 || World.ringShape == 2)
+            {
+                Debug.LogWarning("ring exists");
+                if ((Plugin.configOnlyExplodingBarbedWire.Value && World.ringRopes == -2) || !Plugin.configOnlyExplodingBarbedWire.Value)
+                {
+                    Debug.LogWarning("settings correct");
+                    int num = 1;
+                    if ((PHECEOMIMND.ICBENEHEIEN * 60 + PHECEOMIMND.CBOAMKCJCFJ) > Plugin.configSeconds.Value)
+                    {
+                        Debug.LogWarning("too late");
+                        if (!Plugin.configRepeat.Value)
+                        {
+                            num = 0;
+                            Plugin.active = false;
+                            Debug.LogWarning("setting to false");
+                        }
+                    }
+                    if (num == 1)
+                    {
+                        Plugin.active = true;
+                        Plugin.LastExplosion = 0;
+                        Debug.LogWarning("setting to true");
+                    }
+                }
+            }
+        }*/
+        [HarmonyPostfix]
+        [HarmonyPatch("JLHIGPPGGDG")]
+        public static void JLHIGPPGGDG_Patch()   //match restart
+        {
+            Debug.LogWarning("restart");
+            if (World.ringShape == 1 || World.ringShape == 2)
+            {
+                Debug.LogWarning("ring exists");
+                if ((Plugin.configOnlyExplodingBarbedWire.Value && World.ringRopes == -2) || !Plugin.configOnlyExplodingBarbedWire.Value)
+                {
+                    Debug.LogWarning("settings correct");
+                    int num = 1;
+                    if ((PHECEOMIMND.ICBENEHEIEN * 60 + PHECEOMIMND.CBOAMKCJCFJ) > Plugin.configSeconds.Value)
+                    {
+                        Debug.LogWarning("too late");
+                        if (!Plugin.configRepeat.Value)
+                        {
+                            num = 0;
+                            Plugin.active = false;
+                            Debug.LogWarning("setting to false");
+                        }
+                    }
+                    if (num == 1)
+                    {
+                        Plugin.active = true;
+                        Plugin.LastExplosion = 0;
+                        Debug.LogWarning("setting to true");
+                    }
+                }
+            }
+        }
+    }
+    [HarmonyPatch(typeof(JJDCNALMPCI))]     
+    public static class JJDCNALMPCI_Patch
+    {
+        [HarmonyPrefix]
+        [HarmonyPatch(nameof(JJDCNALMPCI.NCIBLEAKGFH))]
+        public static void Prefix()
+        {
+
+            Plugin.active = false;
+            Debug.LogWarning("Was disabled");
+        }
+    }
+}
+//PHECEOMIMND::NHPJFOBBCEF() match start
+//HDKPGMAKCLO(int LBDCLOPBBJF) match end
+//PNBFOHOPFGB() interfere
+//JLHIGPPGGDG() match restart
+//World.ringShape == 1 square
+//World.ringShape == 2 hex
+//World.ringRopes == -2 expl barbed
+//int minutes = PHECEOMIMND.ICBENEHEIEN;
+//int seconds = PHECEOMIMND.CBOAMKCJCFJ;
+
+//Square ring bounds: 
+//float num = 35.5f * World.ringSize;
+//PHECEOMIMND.CCPMCEMAKBJ match length minutes

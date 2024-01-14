@@ -7,6 +7,7 @@ using System.Collections.Generic;
 using System.IO;
 using UnityEngine;
 using UnityEngine.SceneManagement;
+using WECCL.API;
 
 namespace WrestlerMatchEditor
 {
@@ -16,42 +17,52 @@ namespace WrestlerMatchEditor
     {
         public const string PluginGuid = "GeeEm.WrestlingEmpire.WrestlerMatchEditor";
         public const string PluginName = "WrestlerMatchEditor";
-        public const string PluginVer = "1.0.3";
+        public const string PluginVer = "1.1.0";
 
         internal static ManualLogSource Log;
         internal readonly static Harmony Harmony = new(PluginGuid);
 
         internal static string PluginPath;
-        public static ConfigEntry<KeyCode> loadMatchButton;
         public static ConfigEntry<string> showType;
         public static ConfigEntry<string> size;
         public static ConfigEntry<string> gimmick;
         public static ConfigEntry<string> opponent;
         public static ConfigEntry<string> match;
-   /*     public struct CardStruct
-        {
-            public int date { get; set; } = Progress.date;
-            public int type { get; set; } = -1;
-            public int size { get; set; } = -1;
-            public int gimmick { get; set; } = -1;
-            public int opponent { get; set; } = -1;
-            public int match { get; set; } = -1;
 
-            public CardStruct()
-            {
-
-            }
-        }*/
         private void Awake()
         {
             Plugin.Log = base.Logger;
 
             PluginPath = Path.GetDirectoryName(Info.Location);
-            loadMatchButton = Config.Bind("Controls",
-             "Load custom match",
-             KeyCode.KeypadPlus,
-             "Button that loads the custom match");
+            Buttons.RegisterCustomButton(this, "Load custom match", () =>
+            {
+                LoadCard();
+                return "Custom match loaded!";
+            });
 
+            Buttons.RegisterCustomButton(this, "Setup world title match", () =>
+            {
+                LoadWorldTitle();
+                return "Custom match loaded!";
+            });
+
+            Buttons.RegisterCustomButton(this, "Setup inter title match", () =>
+            {
+                LoadInterTitle();
+                return "Custom match loaded!";
+            });
+
+            Buttons.RegisterCustomButton(this, "Setup women title match", () =>
+            {
+                LoadWomenTitle();
+                return "Custom match loaded!";
+            });
+
+            Buttons.RegisterCustomButton(this, "Setup tag team title match", () =>
+            {
+                LoadTagTitle();
+                return "Custom match loaded!";
+            });
             showType = Config.Bind("Match",
              "Show type",
              "",
@@ -73,7 +84,46 @@ namespace WrestlerMatchEditor
              "",
              "Opponent ID");
         }
+        public void LoadWorldTitle()
+        {
+            Progress.gimmick[Progress.date] = 0;
+            Progress.match[Progress.date] = 2;
+            Progress.matchSize[Progress.date] = 2;
+            int opp = Characters.fedData[Characters.c[Characters.wrestler].fed].champ[1, 1];
+            Progress.opponent[Progress.date] = opp;
+            FFCEGMEAIBP.JMBGHDFADHN = 1;
 
+        }
+        public void LoadInterTitle()
+        {
+            Progress.gimmick[Progress.date] = 0;
+            Progress.match[Progress.date] = 2;
+            Progress.matchSize[Progress.date] = 2;
+            int opp = Characters.fedData[Characters.c[Characters.wrestler].fed].champ[2, 1];
+            Progress.opponent[Progress.date] = opp;
+            FFCEGMEAIBP.JMBGHDFADHN = 2;
+
+        }
+        public void LoadWomenTitle()
+        {
+            Progress.gimmick[Progress.date] = 0;
+            Progress.match[Progress.date] = 2;
+            Progress.matchSize[Progress.date] = 2;
+            int opp = Characters.fedData[Characters.c[Characters.wrestler].fed].champ[3, 1];
+            Progress.opponent[Progress.date] = opp;
+            FFCEGMEAIBP.JMBGHDFADHN = 3;
+
+        }
+        public void LoadTagTitle()
+        {
+            Progress.gimmick[Progress.date] = 0;
+            Progress.match[Progress.date] = 14;
+            Progress.matchSize[Progress.date] = 4;
+            int opp = Characters.fedData[Characters.c[Characters.wrestler].fed].champ[4, 1];
+            Progress.opponent[Progress.date] = opp;
+            FFCEGMEAIBP.JMBGHDFADHN = 4;
+
+        }
         private void OnEnable()
         {
             Harmony.PatchAll();
@@ -85,131 +135,8 @@ namespace WrestlerMatchEditor
             Harmony.UnpatchSelf();
             Logger.LogInfo($"Unloaded {PluginName}!");
         }
-        private void Update()
-        {
-            if(Input.GetKeyDown(loadMatchButton.Value))
-            {
-              //  Logger.LogInfo("Load custom match button has been pressed");
-                if (NAEEIFNFBBO.CBMHGKFFHJE == 1)
-                {
-                    if (SceneManager.GetActiveScene().name == "Calendar")
-                    {
-                        Logger.LogInfo("Loading custom match.");
-                        try
-                        {
-                            LoadCard();
-                        }
-                        catch (Exception e)
-                        {
-                            Logger.LogError("Error while loading custom match: ");
-                            Logger.LogError(e);
-                        }
-                        finally
-                        {
-                            Logger.LogInfo("Done loading custom match.");
-                        }
-                    }
-                    else
-                    {
-                        Logger.LogInfo("Didn't load, not in the calendar menu.");
-                    }
-                }
-                else
-                {
-                   // Logger.LogInfo("Didn't load, not in the wrestler mode.");
-                }
-
-            }    
-        }
         public void LoadCard()
         {
-            /*    CardStruct card = new CardStruct();
-                string[] lines = File.ReadAllLines(Path.Combine(PluginPath, "CustomMatch.txt"));
-                foreach (string line in lines)
-                {
-                    if (line.Trim().Length == 0)
-                    {
-                        continue;
-                    }
-                    if (line.ToLower().StartsWith("date:"))
-                    {
-                        if(line.Substring(5).Trim().ToLower() == "today")
-                        {
-                            card.date = Progress.date;
-                            continue;
-                        }
-                        if(line.Substring(5).Trim().ToLower() == "highlight")
-                        {
-                            card.date = Progress.focDate;
-                            continue;
-                        }
-                        if(int.TryParse(line.Substring(5).Trim().ToLower(), out int date))
-                        {
-                            if (date >= 1 && date <= 48)
-                            {
-                                card.date = date;
-                                continue;
-                            }
-                        }
-                        continue;
-                    }
-
-                    if (line.ToLower().StartsWith("show_type:"))
-                    {
-                        card.type = int.Parse(line.Substring(10).Trim());
-                        continue;
-                    }
-                    if (line.ToLower().StartsWith("match_type:"))
-                    {
-                        card.match = int.Parse(line.Substring(11).Trim());
-                        continue;
-                    }
-                    if (line.ToLower().StartsWith("match_size:"))
-                    {
-                        card.size = int.Parse(line.Substring(11).Trim());
-                        continue;
-                    }
-                    if (line.ToLower().StartsWith("gimmick:"))  
-                    {
-                        card.gimmick = int.Parse(line.Substring(8).Trim());
-                        continue;
-                    }
-                    if (line.ToLower().StartsWith("opponent:"))
-                    {
-                        card.opponent = int.Parse(line.Substring(9).Trim());
-                        continue;
-                    }
-                }
-                if (card.type != -1)
-                {
-                    Logger.LogInfo("setting show_type " + card.type);
-                    Progress.show[card.date] = card.type;
-
-                }
-                if (card.match != -1)
-                {
-                    Logger.LogInfo("setting match_type " + card.match);
-                    Progress.match[card.date] = card.match;
-
-                }
-                if (card.size != -1)
-                {
-                    Logger.LogInfo("setting match_size " + card.size);
-                    Progress.matchSize[card.date] = card.size;
-
-                }
-                if (card.gimmick != -1)
-                {
-                    Logger.LogInfo("setting gimmick " + card.gimmick);
-                    Progress.gimmick[card.date] = card.gimmick;
-
-                }
-                if (card.opponent != -1)
-                {
-                    Logger.LogInfo("setting opponent " + card.opponent);
-                    Progress.opponent[card.date] = card.opponent;
-
-                }*/
             if (showType.Value != "")
             {
                 try
