@@ -1,4 +1,4 @@
-//TODO: Exp barbed wire ropes?
+//TODO: Exp barbed wire ropes?; Fix the bomb timer applying? to career; Better timer display for bombs?
 
 using BepInEx;
 using BepInEx.Configuration;
@@ -30,7 +30,7 @@ namespace TimeBomb
         public static ConfigEntry<float> configSize;
         public static ConfigEntry<int> configBurstSize;
         public static ConfigEntry<float> configTimeInBurst;
-        public static ConfigEntry<bool> configRepeat;
+     //   public static ConfigEntry<bool> configRepeat;
      //   public static ConfigEntry<int> configSeconds;
         public static ConfigEntry<bool> configMatch;
         public static int LastExplosion = 0;
@@ -39,38 +39,40 @@ namespace TimeBomb
         public static bool active = false;
         public static int time;
         public static int oldtime;
+        public static Plugin plugin;
 
 
         public static int BombTimerButton = -1;
         public static int BombRepeatButton = -1;
         public static bool ButtonsActive = false;
 
-        public static int RepeatMinutes = 5;
+        public static int RepeatMinutes = 1;
         public static int RepeatSeconds = 0;
+        public static int RepeatExplosions = 1;
 
 
         private void Awake()
         {
             Plugin.Log = base.Logger;
-
+            plugin = this;
             PluginPath = Path.GetDirectoryName(Info.Location);
 
             configSize = Config.Bind("General",
              "ExplosionSize",
              30.5f,
-             "Base size of an explosion");
+             "Base size of an explosion (Scales with the ring size)");
             configBurstSize = Config.Bind("General",
              "BurstSize",
-             2,
+             3,
              "Amount of spawned explosions in the burst");
             configTimeInBurst = Config.Bind("General",
              "BurstExplosionTime",
              0.5f,
-             "Time between explosions in a single burst");
-            configRepeat = Config.Bind("General",
+             "Time in seconds between explosions in a single burst");
+  /*          configRepeat = Config.Bind("General",
              "Repeat",
              true,
-             "Repeat explosions on the interval");
+             "Repeat explosions on the interval");*/
  /*           configSeconds = Config.Bind("General",
              "ExplosionInterval",
              10,
@@ -96,9 +98,18 @@ namespace TimeBomb
             Harmony.UnpatchSelf();
             Logger.LogInfo($"Unloaded {PluginName}!");
         }
-       [HarmonyPatch(typeof(Scene_Match_Setup), nameof(Scene_Match_Setup.Update))]
-       [HarmonyPostfix]
-       public static void Scene_Match_Setup_Update()
+        [HarmonyPatch(typeof(FFCEGMEAIBP), nameof(FFCEGMEAIBP.DMJFCHKLEFH))]
+        [HarmonyPostfix]
+        public static void FFCEGMEAIBP_DMJFCHKLEFH()
+        {
+            if (FFCEGMEAIBP.CBIPLGLDCAG == TimeBombID)
+            {
+                active = true;
+            }
+        }
+        [HarmonyPatch(typeof(Scene_Match_Setup), nameof(Scene_Match_Setup.Update))]
+        [HarmonyPostfix]
+        public static void Scene_Match_Setup_Update()
         {
 
             if (FFCEGMEAIBP.CBIPLGLDCAG != TimeBombID)
@@ -147,17 +158,28 @@ namespace TimeBomb
                     RepeatSeconds = RepeatMinutes * 60;
                 }
                 LIPNHOMGGHF.FKANHDIMMBJ[BombTimerButton].FFCNPGPALPD = RepeatMinutes.ToString() + " minutes";
-                //repeat explosions
+                RepeatExplosions = Mathf.RoundToInt(LIPNHOMGGHF.FKANHDIMMBJ[BombRepeatButton].ODONMLDCHHF(RepeatExplosions, 1f, 10f, 0f, 1f, 1));
+                if (RepeatExplosions == 0)
+                {
+                    LIPNHOMGGHF.FKANHDIMMBJ[BombRepeatButton].FFCNPGPALPD = "No";
+                }
+                if (RepeatExplosions == 1)
+                {
+                    LIPNHOMGGHF.FKANHDIMMBJ[BombRepeatButton].FFCNPGPALPD = "Yes";
+                }
             }
             else
             {
                 ButtonsActive = false;
             }
         }
-        private void Update()
+        [HarmonyPatch(typeof(Scene_Game), nameof(Scene_Game.Update))]
+        [HarmonyPostfix]
+        private static void Scene_Game_Update()
         {
             if (FFCEGMEAIBP.CBIPLGLDCAG != TimeBombID) return;
-            if (FFCEGMEAIBP.LOBDMDPMFLK != 2) return;
+            if (!active) return;
+          //  if (FFCEGMEAIBP.LOBDMDPMFLK != 2) return;
             //FFCEGMEAIBP.LOBDMDPMFLK match state, 2 - in match
             int minutes = FFCEGMEAIBP.IBGAIDBHGED;
             int seconds = FFCEGMEAIBP.LCLHNINHLHO;
@@ -166,14 +188,19 @@ namespace TimeBomb
             {
                 if (time != oldtime)
                 {
-                    StartCoroutine(MakeExplosions());
-                    if (!configRepeat.Value)
+                    //if match time end, explosion happen after
+                    plugin.ModMakeExplosions();
+                    if (!Convert.ToBoolean(RepeatExplosions))
                     {
                         active = false;
                     }
                 }
             }
             oldtime = time;
+        }
+        public void ModMakeExplosions()
+        {
+           StartCoroutine(MakeExplosions());
         }
         [HarmonyPatch(typeof(FFCEGMEAIBP), nameof(FFCEGMEAIBP.JELMGJMKKEK))]
         [HarmonyPrefix]
@@ -204,10 +231,10 @@ namespace TimeBomb
                 FFCEGMEAIBP.DOLNEDHNKMM = 0;
                 FFCEGMEAIBP.GDKCEGBINCM = 0;
                 FFCEGMEAIBP.NBAFIEALMHN = 0;
-                RepeatMinutes = 5;
-                //RepeatMinutes
-                //RepeatBomb
-
+                RepeatMinutes = 1;
+                RepeatExplosions = 1;
+                FFCEGMEAIBP.JPBHIEOKODO = 0; //? refs
+                active = true;
 
 
                 if (FFCEGMEAIBP.NBAFIEALMHN > 0 && FFCEGMEAIBP.OLJFOJOLLOM >= 0)
@@ -235,6 +262,85 @@ namespace TimeBomb
 
             return true;
         }
+        [HarmonyPatch(typeof(FFCEGMEAIBP))]
+        public static class FFCEGMEAIBP_Patch
+        {
+            [HarmonyPrefix]
+            [HarmonyPatch("ANMHOOBBIPL")]
+            public static bool ANMHOOBBIPL_PrePatch(ref string __result, int DOEEMNKCGCA)
+            {
+                if (FFCEGMEAIBP.CBIPLGLDCAG == TimeBombID)
+                {
+                    string text = FFCEGMEAIBP.CMECDGMCMLC;
+                    string text2 = "";
+                    if (FFCEGMEAIBP.CBIPLGLDCAG >= 2 && FFCEGMEAIBP.CBIPLGLDCAG != 12 && ((FFCEGMEAIBP.FFABCMJINFF > 2 && FFCEGMEAIBP.OLJFOJOLLOM <= 0) || FFCEGMEAIBP.FFABCMJINFF > 5))
+                    {
+                        text2 = FFCEGMEAIBP.FFABCMJINFF + "-Man ";
+                        if (FFCEGMEAIBP.OLJFOJOLLOM == -2 && LIPNHOMGGHF.FAKHAFKOBPB != 50)
+                        {
+                            text2 = FFCEGMEAIBP.FFABCMJINFF * 2 + "-Man ";
+                        }
+                    }
+                    if (FFCEGMEAIBP.BPJFLJPKKJK < 5 && FFCEGMEAIBP.FFABCMJINFF > 2 && FFCEGMEAIBP.OLJFOJOLLOM == 0 && FFCEGMEAIBP.CBIPLGLDCAG != 12)
+                    {
+                        text2 = FFCEGMEAIBP.FFABCMJINFF + "-Way ";
+                    }
+                    if (text2 != "")
+                    {
+                        text = ((FFCEGMEAIBP.CBIPLGLDCAG != 2) ? (text2 + text) : text2.Replace(" ", ""));
+                        if ((FFCEGMEAIBP.CBIPLGLDCAG == 2 || FFCEGMEAIBP.CBIPLGLDCAG == 12) && FFCEGMEAIBP.OLJFOJOLLOM > 0)
+                        {
+                            if (FFCEGMEAIBP.OLJFOJOLLOM == 1)
+                            {
+                                text = text2 + "Team";
+                            }
+                            if (FFCEGMEAIBP.OLJFOJOLLOM == 2)
+                            {
+                                text = text2 + "Tag Team";
+                            }
+                        }
+                    }
+                    else if ((FFCEGMEAIBP.CBIPLGLDCAG == 2 || FFCEGMEAIBP.CBIPLGLDCAG == 12) && FFCEGMEAIBP.OLJFOJOLLOM > 0)
+                    {
+                        if (FFCEGMEAIBP.OLJFOJOLLOM == 1)
+                        {
+                            text = "Team";
+                        }
+                        if (FFCEGMEAIBP.OLJFOJOLLOM == 2)
+                        {
+                            text = "Tag Team";
+                        }
+                    }
+
+                    if (DOEEMNKCGCA > 0)
+                    {
+                        string text3 = FFCEGMEAIBP.IHGGIEKCDCB();
+                        if (text3 != "")
+                        {
+                            text = ((!(text == "Singles") && !(text == text3) && (!text.Contains("Team") || !text3.Contains("Team"))) ? ("'" + text3 + "' " + text) : ("'" + text3 + "'"));
+                            if (text.Contains("Championship"))
+                            {
+                                text = text.Replace("'", "");
+                            }
+                        }
+                        string text4 = NAEEIFNFBBO.GGEAMHLEAHN(text).ToLower();
+                        if (text4 != "fight" && text4 != "confrontation" && text4 != "signing" && text4 != "session" && text4 != "royal" && text4 != "contest" && text4 != "war")
+                        {
+                            text += " match";
+                        }
+                    }
+                    else
+                    {
+                        text = text2 + "Time Bomb Match";
+                    }
+
+                    __result = text;
+                    return false; // Skip the original method call
+                }
+
+                return true;
+            }
+        }
         /*       [HarmonyPatch(typeof(LIPNHOMGGHF), nameof(LIPNHOMGGHF.ICGNAJFLAHL))]
                [HarmonyPostfix]
                public static void ICGNAJFLAHL_Patch()
@@ -248,12 +354,14 @@ namespace TimeBomb
                        }
                    }
                }*/
-        IEnumerator MakeExplosions()
+        static IEnumerator MakeExplosions()
         {
             for (int i = 0; i < configBurstSize.Value; i++)
             {
                 ALIGLHEIAGO.MDFJMAEDJMG(1, 2, new Color(1f, 1f, 1f), Plugin.configSize.Value * World.ringSize, null, 0f, 15f, 0f, 0f, 0f, 0f, 1);
-                yield return new WaitForSeconds(configTimeInBurst.Value);
+                float waittime = configTimeInBurst.Value;
+                if (NAEEIFNFBBO.NAIJHIHKJOP < 2) waittime /= NAEEIFNFBBO.NAIJHIHKJOP;
+                yield return new WaitForSeconds(waittime);
             }
         }
     }
