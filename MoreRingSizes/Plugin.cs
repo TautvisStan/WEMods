@@ -12,7 +12,7 @@ namespace MoreRingSizes
     {
         public const string PluginGuid = "GeeEm.WrestlingEmpire.MoreRingSizes";
         public const string PluginName = "MoreRingSizes";
-        public const string PluginVer = "1.0.0";
+        public const string PluginVer = "1.0.1";
 
         internal static ManualLogSource Log;
         internal readonly static Harmony Harmony = new(PluginGuid);
@@ -45,7 +45,7 @@ namespace MoreRingSizes
         [HarmonyPrefix]
         private static bool World_MNCIAPLCFDMPrefix(ref float __result)
         {
-            if (World.location == 1 || World.location == 0 || World.location == -1)
+            if (World.location <= 1)
             {
                 __result = 1.65f;
                 return false;

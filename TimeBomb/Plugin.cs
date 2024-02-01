@@ -1,5 +1,5 @@
-//TODO: Exp barbed wire ropes?; Fix the bomb timer applying? to career; Better timer display for bombs?
-
+//TODO: Exp barbed wire ropes?; Fix the bomb timer applying? to career; Better timer display for bombs?; seconds in bomb timer?;
+//FIX: Bomb timer in countdown matches; bomb not exploding in countdown matches  -> custom timer using FFCEGMEAIBP.OKNLFAFHAAF (miliseconds?);
 using BepInEx;
 using BepInEx.Configuration;
 using BepInEx.Logging;
@@ -20,7 +20,7 @@ namespace TimeBomb
     {
         public const string PluginGuid = "GeeEm.WrestlingEmpire.TimeBomb";
         public const string PluginName = "TimeBomb";
-        public const string PluginVer = "1.0.0";
+        public const string PluginVer = "1.0.1";
 
         internal static ManualLogSource Log;
         internal readonly static Harmony Harmony = new(PluginGuid);
@@ -47,7 +47,7 @@ namespace TimeBomb
         public static bool ButtonsActive = false;
 
         public static int RepeatMinutes = 1;
-        public static int RepeatSeconds = 0;
+        public static int RepeatSeconds = 60;
         public static int RepeatExplosions = 1;
 
 
@@ -60,27 +60,27 @@ namespace TimeBomb
             configSize = Config.Bind("General",
              "ExplosionSize",
              30.5f,
-             "Base size of an explosion (Scales with the ring size)");
+             new ConfigDescription("Base size of an explosion (Scales with the ring size)")); //new AcceptableValueRange<float>(0.01f, float.MaxValue)));
             configBurstSize = Config.Bind("General",
              "BurstSize",
              3,
-             "Amount of spawned explosions in the burst");
+             new ConfigDescription("Amount of spawned explosions in the burst"));// new AcceptableValueRange<int>(1, int.MaxValue)));
             configTimeInBurst = Config.Bind("General",
              "BurstExplosionTime",
              0.5f,
-             "Time in seconds between explosions in a single burst");
-  /*          configRepeat = Config.Bind("General",
-             "Repeat",
-             true,
-             "Repeat explosions on the interval");*/
- /*           configSeconds = Config.Bind("General",
-             "ExplosionInterval",
-             10,
-             "Time in seconds between explosions");*/
+             new ConfigDescription("Time in seconds between explosions in a single burst (might be slightly inaccurate during long bursts)"));// new AcceptableValueRange<float>(0.01f, float.MaxValue)));
+            /*          configRepeat = Config.Bind("General",
+                       "Repeat",
+                       true,
+                       "Repeat explosions on the interval");*/
+            /*           configSeconds = Config.Bind("General",
+                        "ExplosionInterval",
+                        10,
+                        "Time in seconds between explosions");*/
         }
         private void Start()
         {
-            TimeBombID = WECCL.API.CustomMatch.RegisterCustomPreset("TimeBomb", true);
+            TimeBombID = CustomMatch.RegisterCustomPreset("TimeBomb", true);
             if (TimeBombID == null)
             {
                 Logger.LogError("Failed to connect to WECCL! Disabling mod.");
@@ -107,6 +107,18 @@ namespace TimeBomb
                 active = true;
             }
         }
+        public static void SetupButtons()
+        {
+            LIPNHOMGGHF.DFLLBNMHHIH();
+            LIPNHOMGGHF.FKANHDIMMBJ[LIPNHOMGGHF.HOAOLPGEBKJ].ICGNAJFLAHL(3, "Bomb Timer", -375f, 230f, 1.6f, 1.6f);
+            BombTimerButton = LIPNHOMGGHF.HOAOLPGEBKJ;
+
+            LIPNHOMGGHF.DFLLBNMHHIH();
+            LIPNHOMGGHF.FKANHDIMMBJ[LIPNHOMGGHF.HOAOLPGEBKJ].ICGNAJFLAHL(2, "Repeat Explosions", 375f, 230f, 1.6f, 1.6f);
+            BombRepeatButton = LIPNHOMGGHF.HOAOLPGEBKJ;
+
+            ButtonsActive = true;
+        }
         [HarmonyPatch(typeof(Scene_Match_Setup), nameof(Scene_Match_Setup.Update))]
         [HarmonyPostfix]
         public static void Scene_Match_Setup_Update()
@@ -126,23 +138,7 @@ namespace TimeBomb
             {
                 if(!ButtonsActive)
                 {
-                    LIPNHOMGGHF.DFLLBNMHHIH();
-                    LIPNHOMGGHF.FKANHDIMMBJ[LIPNHOMGGHF.HOAOLPGEBKJ].ICGNAJFLAHL(3, "Bomb Timer", -375f, 230f, 1.6f, 1.6f);
-                    LIPNHOMGGHF.DFLLBNMHHIH();
-                    LIPNHOMGGHF.FKANHDIMMBJ[LIPNHOMGGHF.HOAOLPGEBKJ].ICGNAJFLAHL(2, "Repeat Explosions", 375f, 230f, 1.6f, 1.6f);
-                    ButtonsActive = true;
-                    for(int i = 1; i < LIPNHOMGGHF.FKANHDIMMBJ.Count(); i++)
-                    {
-                        AKFIIKOMPLL menu = LIPNHOMGGHF.FKANHDIMMBJ[i];
-                        if (menu.NKEDCLBOOMJ == "Bomb Timer")
-                        {
-                            BombTimerButton = menu.PLFGKLGCOMD;
-                        }
-                        if (menu.NKEDCLBOOMJ == "Repeat Explosions")
-                        {
-                            BombRepeatButton = menu.PLFGKLGCOMD;
-                        }
-                    }
+                    SetupButtons();
                 }
 
 
@@ -232,6 +228,7 @@ namespace TimeBomb
                 FFCEGMEAIBP.GDKCEGBINCM = 0;
                 FFCEGMEAIBP.NBAFIEALMHN = 0;
                 RepeatMinutes = 1;
+                RepeatSeconds = 60;
                 RepeatExplosions = 1;
                 FFCEGMEAIBP.JPBHIEOKODO = 0; //? refs
                 active = true;
@@ -341,27 +338,40 @@ namespace TimeBomb
                 return true;
             }
         }
-        /*       [HarmonyPatch(typeof(LIPNHOMGGHF), nameof(LIPNHOMGGHF.ICGNAJFLAHL))]
-               [HarmonyPostfix]
-               public static void ICGNAJFLAHL_Patch()
+        [HarmonyPatch(typeof(LIPNHOMGGHF), nameof(LIPNHOMGGHF.ICGNAJFLAHL))]
+        [HarmonyPostfix]
+        public static void ICGNAJFLAHL_Patch()
+        {
+            ButtonsActive = false;
+            /*   if (LIPNHOMGGHF.FAKHAFKOBPB == 14)
                {
-                   if (LIPNHOMGGHF.FAKHAFKOBPB == 14)
-                   {
-                       if (LIPNHOMGGHF.CHLJMEPFJOK == 2)
+                    if (LIPNHOMGGHF.CHLJMEPFJOK == 2)
                        {
-                           LIPNHOMGGHF.DFLLBNMHHIH();
-                           LIPNHOMGGHF.FKANHDIMMBJ[LIPNHOMGGHF.HOAOLPGEBKJ].ICGNAJFLAHL(3, "Bomb timer", -260f, 230f, 1.6f, 1.6f);
-                       }
-                   }
+
+                     }
                }*/
+
+        }
         static IEnumerator MakeExplosions()
         {
+            
             for (int i = 0; i < configBurstSize.Value; i++)
             {
+                while (LIPNHOMGGHF.GCJKOBOBIGA == 1) yield return null;
                 ALIGLHEIAGO.MDFJMAEDJMG(1, 2, new Color(1f, 1f, 1f), Plugin.configSize.Value * World.ringSize, null, 0f, 15f, 0f, 0f, 0f, 0f, 1);
                 float waittime = configTimeInBurst.Value;
-                if (NAEEIFNFBBO.NAIJHIHKJOP < 2) waittime /= NAEEIFNFBBO.NAIJHIHKJOP;
+                if (Time.timeScale == 2) waittime *= 2;
                 yield return new WaitForSeconds(waittime);
+            }
+        }
+        [HarmonyPatch(typeof(LIPNHOMGGHF))]
+        public static class LIPNHOMGGHF_Patch
+        {
+            [HarmonyPrefix]
+            [HarmonyPatch(nameof(LIPNHOMGGHF.PMIIOCMHEAE))]
+            public static void Prefix()
+            {
+                Plugin.plugin.StopAllCoroutines();
             }
         }
     }
