@@ -1,5 +1,5 @@
 //TODO: Exp barbed wire ropes?; Fix the bomb timer applying? to career; Better timer display for bombs?; seconds in bomb timer?;
-//FIX: Bomb timer in countdown matches; bomb not exploding in countdown matches  -> custom timer using FFCEGMEAIBP.OKNLFAFHAAF (miliseconds?);
+//FIX: bomb not exploding in countdown matches  -> custom timer using FFCEGMEAIBP.OKNLFAFHAAF (miliseconds?);
 using BepInEx;
 using BepInEx.Configuration;
 using BepInEx.Logging;
@@ -20,7 +20,7 @@ namespace TimeBomb
     {
         public const string PluginGuid = "GeeEm.WrestlingEmpire.TimeBomb";
         public const string PluginName = "TimeBomb";
-        public const string PluginVer = "1.0.1";
+        public const string PluginVer = "1.0.2";
 
         internal static ManualLogSource Log;
         internal readonly static Harmony Harmony = new(PluginGuid);
@@ -50,7 +50,7 @@ namespace TimeBomb
         public static int RepeatSeconds = 60;
         public static int RepeatExplosions = 1;
 
-
+        public static int oldMatchState;
         private void Awake()
         {
             Plugin.Log = base.Logger;
@@ -69,14 +69,6 @@ namespace TimeBomb
              "BurstExplosionTime",
              0.5f,
              new ConfigDescription("Time in seconds between explosions in a single burst (might be slightly inaccurate during long bursts)"));// new AcceptableValueRange<float>(0.01f, float.MaxValue)));
-            /*          configRepeat = Config.Bind("General",
-                       "Repeat",
-                       true,
-                       "Repeat explosions on the interval");*/
-            /*           configSeconds = Config.Bind("General",
-                        "ExplosionInterval",
-                        10,
-                        "Time in seconds between explosions");*/
         }
         private void Start()
         {
@@ -177,22 +169,44 @@ namespace TimeBomb
             if (!active) return;
           //  if (FFCEGMEAIBP.LOBDMDPMFLK != 2) return;
             //FFCEGMEAIBP.LOBDMDPMFLK match state, 2 - in match
+
             int minutes = FFCEGMEAIBP.IBGAIDBHGED;
             int seconds = FFCEGMEAIBP.LCLHNINHLHO;
             time = minutes * 60 + seconds;
-            if (time % RepeatSeconds == 0 && time != 0)
+            if (FFCEGMEAIBP.OLJFOJOLLOM < 0)
             {
-                if (time != oldtime)
+                if (time % RepeatSeconds == 0 && (oldMatchState == 2 || oldMatchState < 0) && (FFCEGMEAIBP.LOBDMDPMFLK == 2 || FFCEGMEAIBP.LOBDMDPMFLK < 0))
                 {
-                    //if match time end, explosion happen after
-                    plugin.ModMakeExplosions();
-                    if (!Convert.ToBoolean(RepeatExplosions))
+                    if (time != oldtime)
                     {
-                        active = false;
+                        plugin.ModMakeExplosions();
+                        if (!Convert.ToBoolean(RepeatExplosions))
+                        {
+                            active = false;
+                        }
                     }
                 }
+
+                oldtime = time;
+                oldMatchState = FFCEGMEAIBP.LOBDMDPMFLK;
             }
-            oldtime = time;
+            else
+            {
+                if (time % RepeatSeconds == 0 && time != 0)
+                {
+                    if (time != oldtime)
+                    {
+                        plugin.ModMakeExplosions();
+                        if (!Convert.ToBoolean(RepeatExplosions))
+                        {
+                            active = false;
+                        }
+                    }
+                }
+
+                oldtime = time;
+                oldMatchState = FFCEGMEAIBP.LOBDMDPMFLK;
+            }
         }
         public void ModMakeExplosions()
         {
