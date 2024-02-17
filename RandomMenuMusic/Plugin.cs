@@ -18,7 +18,7 @@ namespace MenuMusicRandomizer
     {
         public const string PluginGuid = "GeeEm.WrestlingEmpire.MenuMusicRandomizer";
         public const string PluginName = "MenuMusicRandomizer";
-        public const string PluginVer = "1.0.0";
+        public const string PluginVer = "1.0.2";
 
         internal static ManualLogSource Log;
         internal readonly static Harmony Harmony = new(PluginGuid);
@@ -39,6 +39,7 @@ namespace MenuMusicRandomizer
         ".s3m"
     };
         public static ConfigEntry<bool> UseVanilla;
+        private static int OldSong;
         private void Awake()
         {
             Plugin.Log = base.Logger;
@@ -60,34 +61,9 @@ namespace MenuMusicRandomizer
         }
         private void Update()
         {
-            if (CHLPMKEGJBJ.LMLOGJBBKFH == -1 && !CHLPMKEGJBJ.OGCBMJIIKPP.isPlaying)
+            if (CHLPMKEGJBJ.LMLOGJBBKFH == -1 && SceneManager.GetActiveScene().name != "Game" && !CHLPMKEGJBJ.OGCBMJIIKPP.isPlaying)
             {
-                if (!UseVanilla.Value && AudioClips.Count == 0)
-                {
-                    CHLPMKEGJBJ.DGAGLLKPNJB(0, 0, 0);
-                    return;
-                }
-                int song;
-                if(!UseVanilla.Value) song = UnityEngine.Random.RandomRangeInt(0, AudioClips.Count);
-                else song = UnityEngine.Random.RandomRangeInt(-1, AudioClips.Count);
-                if (song == -1)
-                {
-                        if (CHLPMKEGJBJ.OOFPHCHKOBE[0] == null)
-                        {
-                            CHLPMKEGJBJ.OOFPHCHKOBE[0] = NAEEIFNFBBO.JFHPHDKKECG("Music", "Theme00") as AudioClip;
-                        }
-                        CHLPMKEGJBJ.OGCBMJIIKPP.clip = CHLPMKEGJBJ.OOFPHCHKOBE[0];
-                }
-                else
-                {
-                    CHLPMKEGJBJ.OGCBMJIIKPP.clip = AudioClips[song];
-                }
-                CHLPMKEGJBJ.LMLOGJBBKFH = -1;
-                CHLPMKEGJBJ.OGCBMJIIKPP.time = 0f;
-                CHLPMKEGJBJ.OGCBMJIIKPP.Play();
-                CHLPMKEGJBJ.CNNKEACKKCD = 0;
-                CHLPMKEGJBJ.GFJDCNMOMKD = 0;
-                return;
+                SetupMenuSong(-1, CHLPMKEGJBJ.OGCBMJIIKPP.pitch, 1);
             }
         }
         static void LoadAudioFiles()
@@ -131,36 +107,50 @@ namespace MenuMusicRandomizer
             }
             else
             {
-                CHLPMKEGJBJ.OGCBMJIIKPP.loop = false;
-                if (!UseVanilla.Value && AudioClips.Count == 0)
-                {
-                    CHLPMKEGJBJ.DGAGLLKPNJB(0, 0, 0);
-                    return;
-                }
-                int song;
-                if (!UseVanilla.Value) song = UnityEngine.Random.RandomRangeInt(0, AudioClips.Count);
-                else song = UnityEngine.Random.RandomRangeInt(-1, AudioClips.Count);
-                if (song == -1)
-                {
-                    if (CHLPMKEGJBJ.OOFPHCHKOBE[0] == null)
-                    {
-                        CHLPMKEGJBJ.OOFPHCHKOBE[0] = NAEEIFNFBBO.JFHPHDKKECG("Music", "Theme00") as AudioClip;
-                    }
-                    CHLPMKEGJBJ.OGCBMJIIKPP.clip = CHLPMKEGJBJ.OOFPHCHKOBE[0];
-                }
-                else
-                {
-                    CHLPMKEGJBJ.OGCBMJIIKPP.clip = AudioClips[song];
-                }
-                CHLPMKEGJBJ.LMLOGJBBKFH = -1;
-                CHLPMKEGJBJ.OGCBMJIIKPP.time = 0f;
-                CHLPMKEGJBJ.OGCBMJIIKPP.Play();
-                CHLPMKEGJBJ.CNNKEACKKCD = JJNMLJBGPAH;
-                CHLPMKEGJBJ.OGCBMJIIKPP.pitch = MCJHGEHEPMD;
-                CHLPMKEGJBJ.GFJDCNMOMKD = 0;
+                SetupMenuSong(JJNMLJBGPAH, MCJHGEHEPMD, CDNNGHGFALM);
                 return;
             }
 
+        }
+        public static void SetupMenuSong(int JJNMLJBGPAH, float MCJHGEHEPMD, float CDNNGHGFALM)
+        {
+            CHLPMKEGJBJ.OGCBMJIIKPP.loop = false;
+            if (!UseVanilla.Value && AudioClips.Count == 0)
+            {
+                CHLPMKEGJBJ.DGAGLLKPNJB(0, 0, 0);
+                return;
+            }
+            int song;
+            if (!UseVanilla.Value) song = UnityEngine.Random.RandomRangeInt(0, AudioClips.Count);
+            else song = UnityEngine.Random.RandomRangeInt(-1, AudioClips.Count);
+            if (song == OldSong)
+            {
+                song++;
+                if (song >= AudioClips.Count)
+                {
+                    song = -1;
+                    if (!UseVanilla.Value) song++;
+                }
+            }
+            if (song == -1)
+            {
+                if (CHLPMKEGJBJ.OOFPHCHKOBE[0] == null)
+                {
+                    CHLPMKEGJBJ.OOFPHCHKOBE[0] = NAEEIFNFBBO.JFHPHDKKECG("Music", "Theme00") as AudioClip;
+                }
+                CHLPMKEGJBJ.OGCBMJIIKPP.clip = CHLPMKEGJBJ.OOFPHCHKOBE[0];
+            }
+            else
+            {
+                CHLPMKEGJBJ.OGCBMJIIKPP.clip = AudioClips[song];
+            }
+            CHLPMKEGJBJ.LMLOGJBBKFH = -1;
+            CHLPMKEGJBJ.OGCBMJIIKPP.time = 0f;
+            CHLPMKEGJBJ.OGCBMJIIKPP.Play();
+            CHLPMKEGJBJ.CNNKEACKKCD = JJNMLJBGPAH;
+            CHLPMKEGJBJ.OGCBMJIIKPP.pitch = MCJHGEHEPMD;
+            CHLPMKEGJBJ.GFJDCNMOMKD = 0;
+            OldSong = song;
         }
 
     }
