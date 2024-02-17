@@ -20,7 +20,7 @@ namespace TimeBomb
     {
         public const string PluginGuid = "GeeEm.WrestlingEmpire.TimeBomb";
         public const string PluginName = "TimeBomb";
-        public const string PluginVer = "1.0.2";
+        public const string PluginVer = "1.0.3";
 
         internal static ManualLogSource Log;
         internal readonly static Harmony Harmony = new(PluginGuid);
@@ -51,6 +51,7 @@ namespace TimeBomb
         public static int RepeatExplosions = 1;
 
         public static int oldMatchState;
+        public static int oldMatchFormat;
         private void Awake()
         {
             Plugin.Log = base.Logger;
@@ -173,6 +174,7 @@ namespace TimeBomb
             int minutes = FFCEGMEAIBP.IBGAIDBHGED;
             int seconds = FFCEGMEAIBP.LCLHNINHLHO;
             time = minutes * 60 + seconds;
+
             if (FFCEGMEAIBP.OLJFOJOLLOM < 0)
             {
                 if (time % RepeatSeconds == 0 && (oldMatchState == 2 || oldMatchState < 0) && (FFCEGMEAIBP.LOBDMDPMFLK == 2 || FFCEGMEAIBP.LOBDMDPMFLK < 0))
@@ -187,12 +189,10 @@ namespace TimeBomb
                     }
                 }
 
-                oldtime = time;
-                oldMatchState = FFCEGMEAIBP.LOBDMDPMFLK;
             }
             else
             {
-                if (time % RepeatSeconds == 0 && time != 0)
+                if (time % RepeatSeconds == 0 && (time != 0 || (oldMatchFormat < 0 && FFCEGMEAIBP.OLJFOJOLLOM >= 0)))
                 {
                     if (time != oldtime)
                     {
@@ -204,9 +204,11 @@ namespace TimeBomb
                     }
                 }
 
-                oldtime = time;
-                oldMatchState = FFCEGMEAIBP.LOBDMDPMFLK;
             }
+
+            oldtime = time;
+            oldMatchState = FFCEGMEAIBP.LOBDMDPMFLK;
+            oldMatchFormat = FFCEGMEAIBP.OLJFOJOLLOM;
         }
         public void ModMakeExplosions()
         {
