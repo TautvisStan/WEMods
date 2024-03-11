@@ -183,7 +183,7 @@ namespace TextToSpeech
                 //    textesay = "<voice required='Name=Bernard'> bonjour, je suis Bernard. Léger, là-bas, expliqué <voice required='Name=Juliette'> Et moi, je me nome Juliette.";
                 //    vm.Say(textesay);
 
-                string voiceline = $"<voice required='Name={voiceSpeaker.Value}'>This is voice name {voiceSpeaker.Value}";
+                string voiceline = $"<voice required='Name={voiceSpeaker.Value}'><volume level=\"{voiceVolume.Value}\"/>This is voice name {voiceSpeaker.Value}";
                 vm.SayEX(voiceline, 1+2+8);
             }
         }
