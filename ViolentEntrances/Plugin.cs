@@ -13,7 +13,7 @@ namespace ViolentEntrances
     {
         public const string PluginGuid = "GeeEm.WrestlingEmpire.ViolentEntrances";
         public const string PluginName = "ViolentEntrances";
-        public const string PluginVer = "1.0.0";
+        public const string PluginVer = "1.0.2";
 
         internal static ManualLogSource Log;
         internal readonly static Harmony Harmony = new(PluginGuid);
@@ -42,6 +42,8 @@ namespace ViolentEntrances
 
         static int matchstate1 = 0;
         static int matchstate2 = 0;
+        private static bool entrance = false;
+        private static float oldvalue;
         [HarmonyPatch(typeof(DFOGOCNBECG))]
         public static class DFOGOCNBECGPatch
         {
@@ -50,8 +52,17 @@ namespace ViolentEntrances
             [HarmonyPatch(nameof(DFOGOCNBECG.JCAKMBCFLCK))]   
             static void Prefix_JCAKMBCFLCK(DFOGOCNBECG __instance)
             {
+                if (FFCEGMEAIBP.LOBDMDPMFLK == 1)
+                {
+                    Plugin.entrance = true;
+                }
                 if (FFCEGMEAIBP.LOBDMDPMFLK == 1 || FFCEGMEAIBP.LOBDMDPMFLK == 2)
                 {
+                    if (Plugin.entrance)
+                    {
+                        Plugin.oldvalue = __instance.OOFFPCOALKB;
+                        __instance.OOFFPCOALKB = 1f;
+                    }
                     Plugin.matchstate1 = FFCEGMEAIBP.LOBDMDPMFLK;
                     FFCEGMEAIBP.LOBDMDPMFLK = 2;
                 }
@@ -64,6 +75,11 @@ namespace ViolentEntrances
                 {
                     FFCEGMEAIBP.LOBDMDPMFLK = matchstate1;
                 }
+                if (Plugin.entrance)
+                {
+                    __instance.OOFFPCOALKB = Plugin.oldvalue;
+                }
+                Plugin.entrance = false;
             }
             //Make AI fight back during entrance (except for current entrant)
             [HarmonyPrefix]
@@ -91,7 +107,7 @@ namespace ViolentEntrances
             [HarmonyPatch(nameof(DFOGOCNBECG.LCAJNIOJAPG))]
             static void Prefix_LCAJNIOJAPG(DFOGOCNBECG __instance)
             {
-                if (__instance.AHBNKMMMGFI == 2) __instance.AHBNKMMMGFI = 3;
+                if (FFCEGMEAIBP.LOBDMDPMFLK == 1 && __instance.AHBNKMMMGFI == 2) __instance.AHBNKMMMGFI = 3;
             }
 
         }
