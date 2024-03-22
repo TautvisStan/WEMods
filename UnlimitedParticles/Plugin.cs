@@ -15,11 +15,12 @@ namespace UnlimitedParticles
     {
         public const string PluginGuid = "GeeEm.WrestlingEmpire.UnlimitedParticles";
         public const string PluginName = "UnlimitedParticles";
-        public const string PluginVer = "1.0.1";
+        public const string PluginVer = "1.0.2";
 
         internal static ManualLogSource Log;
         internal readonly static Harmony Harmony = new(PluginGuid);
         public static ConfigEntry<int> configSize;
+        public static ConfigEntry<bool> configScars;
         internal static string PluginPath;
         public static Dictionary<int, float> _overrideTimers = new Dictionary<int, float>();
         public static float PuddleSpeed = 0;
@@ -33,6 +34,10 @@ namespace UnlimitedParticles
              "New Limit",
              10000,
              "New particles limit. Too many particles on screen might cause performance issues");
+            configScars = Config.Bind("General",
+             "Preserve scars",
+             true,
+             "Having this enabled will also prevent body scars from disappearing");
         }
 
         private void OnEnable()
@@ -62,12 +67,62 @@ namespace UnlimitedParticles
             ALIGLHEIAGO.AABNMPIJODF = configSize.Value;
         }
 
-    /*    [HarmonyPatch(typeof(MEHJAJJNHLL), nameof(MEHJAJJNHLL.BLJNNEDCMEI))]
-        [HarmonyPostfix]
-        public static void NAEEIFNFBBO_NFKGHIGAMEI(MEHJAJJNHLL __instance, int CHMHJJNEMKB, Color OLMMBNEKBAJ, float EDCMPAAEHFO, GameObject JKCAPDICGGA, float DPBNKMPJJOJ, float NKEMECHAEEJ, float KLNFFHLCNKF, float EDEIGDNEICF = 0f, float LNJHLMLIHAI = 0f, float CMIKKPKKOBP = 0f, int CCELDFBKACJ = 1)
+
+
+
+        static int[] oldGEPLNBJEDLH = new int[17];
+        [HarmonyPatch(typeof(DFOGOCNBECG), nameof(DFOGOCNBECG.JEJGJPAOCBG))]
+        [HarmonyPrefix]
+        static void DFOGOCNBECG_JEJGJPAOCBG_Prefix(DFOGOCNBECG __instance)
         {
-            __instance.IMJHCHECCED = 1000;
-        }*/
+            if (configScars.Value)
+            {
+                for (int i = 1; i < 16; i++)
+                {
+                    oldGEPLNBJEDLH[i] = __instance.GEPLNBJEDLH[i];
+                }
+            }
+
+        }
+        [HarmonyPatch(typeof(DFOGOCNBECG), nameof(DFOGOCNBECG.JEJGJPAOCBG))]
+        [HarmonyPostfix]
+        static void DFOGOCNBECG_JEJGJPAOCBG_Postfix(DFOGOCNBECG __instance)
+        {
+            if (configScars.Value)
+            {
+                if (PFKAPGFJKHH.KBJJNCAJHFF() > 0)
+                {
+                    int num = 1;
+                    int num2 = 16;
+                    if (PFKAPGFJKHH.KBJJNCAJHFF() <= 1)
+                    {
+                        num = 3;
+                        num2 = 3;
+                    }
+                    for (int i = num; i <= num2; i++)
+                    {
+                        if (__instance.GEPLNBJEDLH[i] <= 3 && __instance.NLDPMDNKGIC != 120)
+                        {
+                            if (World.KMDDHMEINIO(__instance.EMKLFKIAFLF(i), __instance.DFINJNKKMFL(i), __instance.KNEIMEMEAGP(i)) > 0 || (__instance.NLDPMDNKGIC == 57 && i >= 9 && i <= 10) || (__instance.NLDPMDNKGIC == 57 && i >= 12 && i <= 13))
+                            {
+                                return;
+                            }
+                            else
+                            {
+                                if (__instance.GEPLNBJEDLH[i] != oldGEPLNBJEDLH[i])
+                                {
+                                    __instance.GEPLNBJEDLH[i] = oldGEPLNBJEDLH[i];
+                                }
+                            }
+                        }
+                    }
+                }
+            }
+        }
+
+
+
+
 
         [HarmonyPatch(typeof(MEHJAJJNHLL), nameof(MEHJAJJNHLL.DIJBHIAAIOF))]
         [HarmonyPostfix]
