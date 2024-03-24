@@ -13,7 +13,7 @@ namespace ViolentEntrances
     {
         public const string PluginGuid = "GeeEm.WrestlingEmpire.ViolentEntrances";
         public const string PluginName = "ViolentEntrances";
-        public const string PluginVer = "1.0.2";
+        public const string PluginVer = "1.0.3";
 
         internal static ManualLogSource Log;
         internal readonly static Harmony Harmony = new(PluginGuid);
@@ -116,11 +116,14 @@ namespace ViolentEntrances
         [HarmonyPostfix]
         static void Postfix_NCOEPCFFBJA(BJMGCKGNCHO __instance)
         {
-            if (__instance.IOIJFFLMBCH[5] == 1)
+            if (__instance.IOIJFFLMBCH != null && NJBJIIIACEP.OAAMGFLINOB != null)
             {
-                if(NJBJIIIACEP.OAAMGFLINOB[__instance.FOAPDJMIFGP].AHBNKMMMGFI == 0)
+                if (__instance.IOIJFFLMBCH[5] == 1)
                 {
-                    FFCEGMEAIBP.LPBCEGPJNMF = __instance.FOAPDJMIFGP;
+                    if (NJBJIIIACEP.OAAMGFLINOB[__instance.FOAPDJMIFGP].AHBNKMMMGFI == 0)
+                    {
+                        FFCEGMEAIBP.LPBCEGPJNMF = __instance.FOAPDJMIFGP;
+                    }
                 }
             }
         }
