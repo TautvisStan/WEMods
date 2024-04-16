@@ -1,0 +1,10 @@
+{
+  "namespace": "GeeEm",
+  "name": "BookerEditorUnlock",
+  "description": "This mod unlocks the ingame promotion editor",
+  "version_number": "1.0.2",
+  "dependencies": [
+    "BepInEx-BepInExPack-5.4.2100"
+  ],
+  "website_url": ""
+}
