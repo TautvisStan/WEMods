@@ -14,7 +14,7 @@ namespace DiscordRichPresence
     {
         public const string PluginGuid = "GeeEm.WrestlingEmpire.DiscordRichPresence";
         public const string PluginName = "DiscordRichPresence";
-        public const string PluginVer = "1.0.1";
+        public const string PluginVer = "1.0.2";
 
         internal static ManualLogSource Log;
         internal readonly static Harmony Harmony = new(PluginGuid);
@@ -107,13 +107,13 @@ namespace DiscordRichPresence
                         activity.State = "Free Roaming in " + World.CIHOMEHEECL(World.location);
                         break;
                     case 1:
-                        activity.State = "In Match Entrance";
+                        activity.State = "In " + FFCEGMEAIBP.IHGGIEKCDCB() + " " + FFCEGMEAIBP.ANMHOOBBIPL() + " Match Entrance";
                         break;
                     case 2:
-                        activity.State = "In Match";
+                        activity.State = "In " + FFCEGMEAIBP.IHGGIEKCDCB() + " " + FFCEGMEAIBP.ANMHOOBBIPL() + " Match";
                         break;
                     case <0:
-                        activity.State = "In Post Match";
+                        activity.State = "In Post " + FFCEGMEAIBP.IHGGIEKCDCB() + " " + FFCEGMEAIBP.ANMHOOBBIPL() + " Match";
                         break;
                 }
 
@@ -121,8 +121,8 @@ namespace DiscordRichPresence
                 if (PlayerNum != 0)
                 {
                     activity.Assets.LargeText = "Playing As: " + NJBJIIIACEP.OAAMGFLINOB[PlayerNum].EMDMDLNJFKP.name;
-
-                    activity.Assets.SmallText = "In: " + Characters.fedData[NJBJIIIACEP.OAAMGFLINOB[PlayerNum].EMDMDLNJFKP.fed].name;
+                    string champ = CheckChamp(NJBJIIIACEP.OAAMGFLINOB[PlayerNum].EMDMDLNJFKP);
+                    activity.Assets.SmallText = "In: " + Characters.fedData[NJBJIIIACEP.OAAMGFLINOB[PlayerNum].EMDMDLNJFKP.fed].name + " " + champ;
                     activity.Assets.SmallImage = "fed" + NJBJIIIACEP.OAAMGFLINOB[PlayerNum].EMDMDLNJFKP.fed.ToString("00");
                 }
                 else
@@ -133,6 +133,15 @@ namespace DiscordRichPresence
             else
             {
                 activity.Details = "In " + SceneManager.GetActiveScene().name + " Menu";
+                switch (SceneManager.GetActiveScene().name)
+                {
+                    case "Editor":
+                        activity.State = "Editing " + Characters.c[Characters.edit].name;
+                        break;
+                    case "Roster_Editor":
+                        activity.State = "Editing " + Characters.fedData[Characters.fed].name;
+                        break;
+                }
             }
 
 
@@ -147,6 +156,21 @@ namespace DiscordRichPresence
                     Log.LogError(res);
                 }
             });
+        }
+
+        public string CheckChamp(Character character)
+        {
+            Roster fed = Characters.fedData[character.fed];
+            for (int i = 0; i < fed.champ.GetLength(0); i++)
+            {
+                // Console.WriteLine(fed.champ[i, 1]);
+                if (fed.champ[i, 1] == character.id)
+                {
+
+                    return "As " + fed.beltName[i==5? 4 : i] + " Champion";
+                }
+            }
+            return "";
         }
         public int GetMainPlayerNum()
         {
