@@ -18,7 +18,7 @@ namespace MatchMusic
     {
         public const string PluginGuid = "GeeEm.WrestlingEmpire.MatchMusic";
         public const string PluginName = "MatchMusic";
-        public const string PluginVer = "1.0.0";
+        public const string PluginVer = "1.0.1";
 
         internal static ManualLogSource Log;
         internal readonly static Harmony Harmony = new(PluginGuid);
@@ -82,6 +82,16 @@ namespace MatchMusic
                 if (canBePlayed && !MatchMusic.isPlaying)
                 {
                     PlayMusic();
+                }
+
+
+                if(canBePlayed && CHLPMKEGJBJ.OGCBMJIIKPP.isPlaying)
+                {
+                    MatchMusic.volume = 0;
+                }
+                if (canBePlayed && !CHLPMKEGJBJ.OGCBMJIIKPP.isPlaying)
+                {
+                    MatchMusic.volume = CHLPMKEGJBJ.FGFOLDGNLND * CHLPMKEGJBJ.FGFOLDGNLND;
                 }
             }
         }
