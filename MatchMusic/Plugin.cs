@@ -18,7 +18,7 @@ namespace MatchMusic
     {
         public const string PluginGuid = "GeeEm.WrestlingEmpire.MatchMusic";
         public const string PluginName = "MatchMusic";
-        public const string PluginVer = "1.0.1";
+        public const string PluginVer = "1.0.2";
 
         internal static ManualLogSource Log;
         internal readonly static Harmony Harmony = new(PluginGuid);
@@ -127,23 +127,26 @@ namespace MatchMusic
 
         public static void PlayMusic()
         {
-            canBePlayed = true;
-            if (MatchMusicObject == null) { return; }
-            int song = UnityEngine.Random.RandomRangeInt(0, AudioClips.Count);
-            if (song == OldSong)
+            if (AudioClips.Count() != 0)
             {
-                song++;
-                if (song >= AudioClips.Count)
+                canBePlayed = true;
+                if (MatchMusicObject == null) { return; }
+                int song = UnityEngine.Random.RandomRangeInt(0, AudioClips.Count);
+                if (song == OldSong)
                 {
-                    song = 0;
+                    song++;
+                    if (song >= AudioClips.Count)
+                    {
+                        song = 0;
+                    }
                 }
-            }
 
-            MatchMusic.clip = AudioClips[song];
-            MatchMusic.volume = CHLPMKEGJBJ.FGFOLDGNLND * CHLPMKEGJBJ.FGFOLDGNLND;
-            MatchMusic.time = 0f;
-            MatchMusic.Play();
-            OldSong = song;
+                MatchMusic.clip = AudioClips[song];
+                MatchMusic.volume = CHLPMKEGJBJ.FGFOLDGNLND * CHLPMKEGJBJ.FGFOLDGNLND;
+                MatchMusic.time = 0f;
+                MatchMusic.Play();
+                OldSong = song;
+            }
         }
 
         public static void StopMusic()
