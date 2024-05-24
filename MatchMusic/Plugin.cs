@@ -18,7 +18,7 @@ namespace MatchMusic
     {
         public const string PluginGuid = "GeeEm.WrestlingEmpire.MatchMusic";
         public const string PluginName = "MatchMusic";
-        public const string PluginVer = "1.0.2";
+        public const string PluginVer = "1.0.3";
 
         internal static ManualLogSource Log;
         internal readonly static Harmony Harmony = new(PluginGuid);
@@ -172,8 +172,37 @@ namespace MatchMusic
         [HarmonyPostfix]
         public static void MatchStart()
         {
+            int num = 1;
+            if (World.ringShape > 0)
+            {
+                int i = 1;
+                while (i <= NJBJIIIACEP.NBBBLJDBLNM)
+                {
+                    DFOGOCNBECG dfogocnbecg = NJBJIIIACEP.OAAMGFLINOB[i];
+                    if (dfogocnbecg.AHBNKMMMGFI > 0f && dfogocnbecg.KGELHDKDHFM() > 0 && (dfogocnbecg.EKOHAKPAOGN != World.ringGround || (dfogocnbecg.NELODEMHJHN >= -148 && dfogocnbecg.NELODEMHJHN <= -131)))
+                    {
+                        num = 0;
+                        if (dfogocnbecg.OJAJENJLBMF < 0)
+                        {
+                            while (GIMNNPMAKNJ.MDLFHNCMFDO(dfogocnbecg.MOIMCJOBJME, dfogocnbecg.CEKNDFGOILP, 0f) == 0)
+                            {
+                                dfogocnbecg.MOIMCJOBJME = UnityEngine.Random.Range(-25f, 25f) * World.ringSize;
+                                dfogocnbecg.CEKNDFGOILP = UnityEngine.Random.Range(-25f, 25f) * World.ringSize;
+                                dfogocnbecg.PPLFGLIJPDJ = 0;
+                                dfogocnbecg.JIEOJJEHDDC = 0;
+                                dfogocnbecg.HNKLBKNDHMF = 0f;
+                                dfogocnbecg.FNKIIDCODDL = 0f;
+                            }
+                        }
+                    }
+                    i++;
+                }
+            }
+            if (num > 0 || FFCEGMEAIBP.CBIPLGLDCAG == 1)
+            {
+                PlayMusic();
+            }
 
-            PlayMusic();
         }
 
         [HarmonyPatch(typeof(FFCEGMEAIBP), nameof(FFCEGMEAIBP.EAAIHKLJFCM))]
