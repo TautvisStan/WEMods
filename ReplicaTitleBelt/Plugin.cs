@@ -17,7 +17,7 @@ namespace ReplicaTitleBelt
     {
         public const string PluginGuid = "GeeEm.WrestlingEmpire.ReplicaTitleBelt";
         public const string PluginName = "ReplicaTitleBelt";
-        public const string PluginVer = "1.0.0";
+        public const string PluginVer = "1.0.1";
 
         internal static ManualLogSource Log;
         internal readonly static Harmony Harmony = new(PluginGuid);
@@ -189,6 +189,13 @@ namespace ReplicaTitleBelt
                 array[num6].SetFloat("_Glossiness", 0.75f);
                 __instance.PCNHIIPBNEK.GetComponent<Renderer>().materials = array;
             }
+        }
+        //Ensure that the custom belt can be selected in the list
+        [HarmonyPatch(typeof(JFLEBEBCGFA), nameof(JFLEBEBCGFA.COMEDPJDBKM))]
+        [HarmonyPostfix]
+        public static void JFLEBEBCGFA_COMEDPJDBKM(int EOACDBFKAJN, ref int __result)
+        {
+            if (customBeltProps.ContainsKey(EOACDBFKAJN)) __result = 1;
         }
         //Prevent the custom belt from appearing randomly
         [HarmonyPatch(typeof(JFLEBEBCGFA), nameof(JFLEBEBCGFA.AGPMGEKLILB))]
