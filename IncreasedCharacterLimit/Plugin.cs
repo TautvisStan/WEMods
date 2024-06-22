@@ -13,7 +13,7 @@ namespace IncreasedCharacterLimit
     {
         public const string PluginGuid = "GeeEm.WrestlingEmpire.IncreasedCharacterLimit";
         public const string PluginName = "IncreasedCharacterLimit";
-        public const string PluginVer = "1.0.0";
+        public const string PluginVer = "1.0.1";
 
         internal static ManualLogSource Log;
         internal readonly static Harmony Harmony = new(PluginGuid);
@@ -22,6 +22,9 @@ namespace IncreasedCharacterLimit
         public static float? oldHealth;
 
         public static bool resized = false;
+
+
+        public static int hardocdedLimit = 99;
         private void Awake()
         {
             Plugin.Log = base.Logger;
@@ -49,7 +52,7 @@ namespace IncreasedCharacterLimit
             {
                 if(LIPNHOMGGHF.FKANHDIMMBJ[1] == __instance)
                 {
-                    LKBOHHGFJFO = Characters.no_chars;
+                    LKBOHHGFJFO = hardocdedLimit;
                 }
             }    
         }
@@ -95,14 +98,14 @@ namespace IncreasedCharacterLimit
              }
         public static void ResizeRequiredArrays()
         {
-            Resize(ref FFCEGMEAIBP.NMMABDGIJNC, Characters.no_chars + 1);
-            Resize(ref FFCEGMEAIBP.DJCDPNPLICD, Characters.no_chars + 1);
-            Resize(ref FFCEGMEAIBP.EKKIPMFPMEE, Characters.no_chars + 1);
-            Resize(ref FFCEGMEAIBP.COIGEGPKLCP, Characters.no_chars + 1);
-            Resize(ref FFCEGMEAIBP.AJMAFHIBCGJ, Characters.no_chars + 1);
-            Resize(ref FFCEGMEAIBP.MHHLHMDOFBP, Characters.no_chars + 1);
-            //FFCEGMEAIBP.EHIDHAPMAKG = Characters.no_chars;
-            NJBJIIIACEP.KLDJKHPCDHM = Characters.no_chars;
+            Resize(ref FFCEGMEAIBP.NMMABDGIJNC, hardocdedLimit + 1);
+            Resize(ref FFCEGMEAIBP.DJCDPNPLICD, hardocdedLimit + 1);
+            Resize(ref FFCEGMEAIBP.EKKIPMFPMEE, hardocdedLimit + 1);
+            Resize(ref FFCEGMEAIBP.COIGEGPKLCP, hardocdedLimit + 1);
+            Resize(ref FFCEGMEAIBP.AJMAFHIBCGJ, hardocdedLimit + 1);
+            Resize(ref FFCEGMEAIBP.MHHLHMDOFBP, hardocdedLimit + 1);
+            //FFCEGMEAIBP.EHIDHAPMAKG = hardocdedLimit;
+            NJBJIIIACEP.KLDJKHPCDHM = hardocdedLimit;
 
 
 
