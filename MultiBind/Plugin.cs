@@ -2,7 +2,9 @@ using BepInEx;
 using BepInEx.Configuration;
 using BepInEx.Logging;
 using HarmonyLib;
+using System;
 using System.IO;
+using System.Reflection;
 using UnityEngine;
 using UnityEngine.SceneManagement;
 
@@ -14,7 +16,7 @@ namespace MultiBind
     {
         public const string PluginGuid = "GeeEm.WrestlingEmpire.MultiBind";
         public const string PluginName = "MultiBind";
-        public const string PluginVer = "1.1.3";
+        public const string PluginVer = "1.1.5";
 
         internal static ManualLogSource Log;
         internal readonly static Harmony Harmony = new(PluginGuid);
@@ -166,8 +168,78 @@ namespace MultiBind
             SetupControls(Player[2], "Additional Player 2");
             SetupControls(Player[3], "Additional Player 3");
 
+
+            AddWECCLButtons();
+
+        }
+        private void AddWECCLButtons()
+        {
+            if (IsWECCLLoaded())
+            {
+                AddButtons();
+            }
+            else
+            {
+                Log.LogInfo("WECCL not found");
+            }
+        }
+        private bool IsWECCLLoaded()
+        {
+            try
+            {
+                // Try to load WECCL.dll assembly
+                Assembly.Load("WECCL");
+                return true;
+            }
+            catch (Exception)
+            {
+                return false;
+            }
         }
 
+        private void AddButtons()
+        {
+            try
+            {
+                // Use reflection to get the class type
+                Type ClassType = Type.GetType("WECCL.API.Buttons, WECCL");
+
+                // Check if the class type is found
+                if (ClassType != null)
+                {
+                    // Invoke the method from Class
+                    MethodInfo methodInfo = ClassType.GetMethod("RegisterCustomButton", BindingFlags.Static | BindingFlags.Public);
+                    Func<string> ButtonAdd = delegate() {
+                        string text = AddNewPlayer() ? "New keyboard player added" : "Failed to add new keyboard player";
+                        return text;
+                    };
+                    Func<string> ButtonRemove = delegate () {
+                        string text = RemovePlayer() ? "New keyboard player removed" : "Failed to remove new keyboard player";
+                        return text;
+                    };
+                    Func<string> ButtonToggle = delegate () {
+                        ToggleController();
+                        return "Controller mode toggled";
+                    };
+                    object[] parameters = new object[] { this, "Add new keyboard player", ButtonAdd, false };
+                    methodInfo.Invoke(null, parameters);
+
+                    object[] parameters2 = new object[] { this, "Remove new keyboard player", ButtonRemove, false };
+                    methodInfo.Invoke(null, parameters2);
+
+                    object[] parameters3 = new object[] { this, "Toggle Controller Mode", ButtonToggle, false };
+                    methodInfo.Invoke(null, parameters3);
+                }
+                else
+                {
+                    Log.LogError("WECCL.API.Buttons not found in WECCL");
+                }
+            }
+            catch (Exception ex)
+            {
+                Log.LogError($"Error calling method from WECCL: {ex.Message}");
+            }
+        }
         private void OnEnable()
         {
             Harmony.PatchAll();
@@ -179,93 +251,101 @@ namespace MultiBind
             Harmony.UnpatchSelf();
             Logger.LogInfo($"Unloaded {PluginName}!");
         }
-        private void Update()
+        private bool AddNewPlayer()
         {
-            if (SceneManager.GetActiveScene().name == "Controllers")
+            int i;
+            for (i = 1; i <= 3; i++)
             {
-                if (Input.GetKeyDown(Ulil.GetKeyCode(ConfigControllerMode.Value)))
+                if (KeyboardInstance[i] > HKJOAJOKOIJ.NGCNKGDDKGF)
                 {
-                    Debug.LogWarning("REFRESH");
-
-
+                    KeyboardInstance[i] = -1;
                 }
             }
+            for (i = 1; i <= 3; i++)
+            {
+                if (KeyboardInstance[i] == -1)
+                {
+                    int instance = HKJOAJOKOIJ.NGCNKGDDKGF + 1;
+                    HKJOAJOKOIJ.NAADDLFFIHG[instance] = new BJMGCKGNCHO();
+                    HKJOAJOKOIJ.NAADDLFFIHG[instance].PLFGKLGCOMD = i;  //playernumber
+                    KeyboardInstance[i] = instance;
+                    HKJOAJOKOIJ.NAADDLFFIHG[instance].AHBNKMMMGFI = 1;
+                    HKJOAJOKOIJ.NAADDLFFIHG[instance].BPJFLJPKKJK = 0;
+                    HKJOAJOKOIJ.NAADDLFFIHG[instance].CMECDGMCMLC = "Virtual";
+                    if (NAEEIFNFBBO.GAABAPFHBPM <= 1)
+                    {
+                        HKJOAJOKOIJ.NAADDLFFIHG[instance].BPJFLJPKKJK = ControllerModeInt;
+                        HKJOAJOKOIJ.NAADDLFFIHG[instance].CMECDGMCMLC = "FakeKeyboard";
+                    }
+                    HKJOAJOKOIJ.NGCNKGDDKGF++;
+                    CHLPMKEGJBJ.DNNPEAOCDOG(CHLPMKEGJBJ.IKONDJPBOGP[5], 1f, 1f);
+                    return true;
+                }
+            }
+            return false;
+        }
+        private bool RemovePlayer()
+        {
+            int i;
+            for (i = 1; i <= 3; i++)
+            {
+                if (KeyboardInstance[i] > HKJOAJOKOIJ.NGCNKGDDKGF)
+                {
+                    KeyboardInstance[i] = -1;
+                }
+            }
+            for (i = 3; i > 0; i--)
+            {
+                if (KeyboardInstance[i] != -1)
+                {
+                    HKJOAJOKOIJ.NGCNKGDDKGF--;
+                    KeyboardInstance[i] = -1;
+                    CHLPMKEGJBJ.DNNPEAOCDOG(CHLPMKEGJBJ.IKONDJPBOGP[5], 1f, 1f);
+                    return true;
+                }
+            }
+            return false;
+        }
+        private void ToggleController()
+        {
+            ControllerMode = !ControllerMode;
+            if (ControllerMode)
+            {
+                ControllerModeInt = 3;
+                MOIHOCAMOOE.BPJFLJPKKJK = 0;
+            }
+            else
+            {
+                ControllerModeInt = 1;
+                MOIHOCAMOOE.BPJFLJPKKJK = 1;
+            }
+            HKJOAJOKOIJ.NAADDLFFIHG[0].BPJFLJPKKJK = ControllerModeInt;
+            HKJOAJOKOIJ.NAADDLFFIHG[0].CMECDGMCMLC = "Keyboard";
+            HKJOAJOKOIJ.NAADDLFFIHG[0].AHBNKMMMGFI = 1;
+            for (int i = 0; i < 4; i++)
+            {
+                if (KeyboardInstance[i] != -1)
+                {
+                    HKJOAJOKOIJ.NAADDLFFIHG[KeyboardInstance[i]].BPJFLJPKKJK = ControllerModeInt;
+                }
+            }
+            CHLPMKEGJBJ.DNNPEAOCDOG(CHLPMKEGJBJ.IKONDJPBOGP[5], 1f, 1f);
+        }
+        private void Update()
+        {
             if (SceneManager.GetActiveScene().name == "Titles")
             {
                 if (Input.GetKeyDown(Ulil.GetKeyCode(ConfigRemove.Value)))
                 {
-                    int i;
-                    for (i = 1; i <= 3; i++)
-                    {
-                        if (KeyboardInstance[i] > HKJOAJOKOIJ.NGCNKGDDKGF)
-                        {
-                            KeyboardInstance[i] = -1;
-                        }
-                    }
-                    for (i = 3; i > 0; i--)
-                    {
-                        if (KeyboardInstance[i] != -1)
-                        {
-                            HKJOAJOKOIJ.NGCNKGDDKGF--;
-                            KeyboardInstance[i] = -1;
-                            break;
-                        }
-                    }
+                    RemovePlayer();
                 }
                 if (Input.GetKeyDown(Ulil.GetKeyCode(ConfigAdd.Value)))
                 {
-                    int i;
-                    for (i = 1; i <= 3; i++)
-                    {
-                        if (KeyboardInstance[i] > HKJOAJOKOIJ.NGCNKGDDKGF)
-                        {
-                            KeyboardInstance[i] = -1;
-                        }
-                    }
-                    for (i = 1; i <= 3; i++)
-                    {
-                        if (KeyboardInstance[i] == -1)
-                        {
-                            int instance = HKJOAJOKOIJ.NGCNKGDDKGF + 1;
-                            HKJOAJOKOIJ.NAADDLFFIHG[instance] = new BJMGCKGNCHO();
-                            HKJOAJOKOIJ.NAADDLFFIHG[instance].PLFGKLGCOMD = i;  //playernumber
-                            KeyboardInstance[i] = instance;
-                            HKJOAJOKOIJ.NAADDLFFIHG[instance].AHBNKMMMGFI = 1;
-                            HKJOAJOKOIJ.NAADDLFFIHG[instance].BPJFLJPKKJK = 0;
-                            HKJOAJOKOIJ.NAADDLFFIHG[instance].CMECDGMCMLC = "Virtual";
-                            if (NAEEIFNFBBO.GAABAPFHBPM <= 1)
-                            {
-                                HKJOAJOKOIJ.NAADDLFFIHG[instance].BPJFLJPKKJK = ControllerModeInt;
-                                HKJOAJOKOIJ.NAADDLFFIHG[instance].CMECDGMCMLC = "FakeKeyboard";
-                            }
-                            HKJOAJOKOIJ.NGCNKGDDKGF++;
-                            break;
-                        }
-                    }
+                    AddNewPlayer();
                 }
                 if (Input.GetKeyDown(Ulil.GetKeyCode(ConfigControllerMode.Value)))
                 {
-                    ControllerMode = !ControllerMode;
-                    if (ControllerMode)
-                    {
-                        ControllerModeInt = 3;
-                        MOIHOCAMOOE.BPJFLJPKKJK = 0;
-                    }
-                    else
-                    {
-                        ControllerModeInt = 1;
-                        MOIHOCAMOOE.BPJFLJPKKJK = 1;
-                    }
-                    HKJOAJOKOIJ.NAADDLFFIHG[0].BPJFLJPKKJK = ControllerModeInt;
-                    HKJOAJOKOIJ.NAADDLFFIHG[0].CMECDGMCMLC = "Keyboard";
-                    HKJOAJOKOIJ.NAADDLFFIHG[0].AHBNKMMMGFI = 1;
-                    for (int i = 0; i < 4; i++)
-                    {
-                        if (KeyboardInstance[i] != -1)
-                        {
-                            HKJOAJOKOIJ.NAADDLFFIHG[KeyboardInstance[i]].BPJFLJPKKJK = ControllerModeInt;
-                        }
-                    }
+                    ToggleController();
                 }
             }
         }

@@ -28,6 +28,9 @@
       <Reference Include="Assembly-CSharp">
         <HintPath>lib\Assembly-CSharp_public.dll</HintPath>
       </Reference>
+      <Reference Include="WECCL">
+        <HintPath>WECCL.dll</HintPath>
+      </Reference>
     </ItemGroup>
 
 </Project>
