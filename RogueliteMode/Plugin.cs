@@ -1,3 +1,4 @@
+//note disable playable check; disable additional controllers -> go through all chars, set them all to ai;
 using BepInEx;
 using BepInEx.Logging;
 using HarmonyLib;
@@ -24,13 +25,13 @@ namespace RogueliteMode
 
         static int RogueliteButton;
         static int RogueliteModeNum = 123654;
-        static int SelectedChar = 0;
+        public static int SelectedChar = 0;
 
-        static int[] origArray0;
+  /*      static int[] origArray0;
         static int[] origArray1;
         static int[] origArray2;
         static int[] origArray3;
-        static DFOGOCNBECG[] origArray4;
+        static DFOGOCNBECG[] origArray4;*/
 
         private void Awake()
         {
@@ -119,7 +120,7 @@ namespace RogueliteMode
             }
         }
 
-        //????
+        //Scene nav stuff
         [HarmonyPatch(typeof(LIPNHOMGGHF), nameof(LIPNHOMGGHF.PMIIOCMHEAE))]
         [HarmonyPrefix]
         public static void LIPNHOMGGHF_PMIIOCMHEAE_Patch(ref int KBEAJEIMNMI)
@@ -138,7 +139,7 @@ namespace RogueliteMode
             if (SceneManager.GetActiveScene().name == "Match_Setup" && NAEEIFNFBBO.CBMHGKFFHJE == RogueliteModeNum && KBEAJEIMNMI != 50)
             {
                 NAEEIFNFBBO.CBMHGKFFHJE = 0;
-                LIPNHOMGGHF.BCKLOCJPIMD = RogueliteModeNum;
+                LIPNHOMGGHF.BCKLOCJPIMD = 0;
                 KBEAJEIMNMI = 1;
                 return;
             }
@@ -148,11 +149,6 @@ namespace RogueliteMode
             {
                 NAEEIFNFBBO.CBMHGKFFHJE = RogueliteModeNum;
                 LIPNHOMGGHF.BCKLOCJPIMD = 0;
-                FFCEGMEAIBP.COIGEGPKLCP = (int[])origArray0.Clone();
-                FFCEGMEAIBP.NMMABDGIJNC = (int[])origArray1.Clone();
-                FFCEGMEAIBP.DJCDPNPLICD = (int[])origArray2.Clone();
-                FFCEGMEAIBP.EKKIPMFPMEE = (int[])origArray3.Clone();
-                NJBJIIIACEP.OAAMGFLINOB = (DFOGOCNBECG[])origArray4.Clone();
                 NJBJIIIACEP.NBBBLJDBLNM = 1;
                 FFCEGMEAIBP.EHIDHAPMAKG = 1;
                 KBEAJEIMNMI = 1;
@@ -192,29 +188,12 @@ namespace RogueliteMode
         //Set up the selected character
         public static void RemoveOpponents()
         {
+            Scene_Match_Setup code = UnityEngine.GameObject.Find("Code").GetComponent<Scene_Match_Setup>();
             for (int i = NJBJIIIACEP.NBBBLJDBLNM; i > 0; i--)
             {
-                Debug.Log("Deactivating P" + i.ToString());
-                FFCEGMEAIBP.NMMABDGIJNC[i] = -i;
-                for (int j = 0; j <= HKJOAJOKOIJ.NGCNKGDDKGF; j++)
-                {
-                    if (HKJOAJOKOIJ.NAADDLFFIHG[j].AHBNKMMMGFI > 0 && HKJOAJOKOIJ.NAADDLFFIHG[j].FOAPDJMIFGP == i)
-                    {
-                        HKJOAJOKOIJ.NAADDLFFIHG[j].FOAPDJMIFGP = 0;
-                    }
-                }
+                code.RemoveCast(i);
             }
         }
-
-        public static void AddPlayerChar(int id)
-        {
-            FFCEGMEAIBP.NMMABDGIJNC[1] = id;
-            FFCEGMEAIBP.DJCDPNPLICD[1] = 1;
-            FFCEGMEAIBP.EKKIPMFPMEE[1] = -1;
-           // FFCEGMEAIBP.EHIDHAPMAKG = 1;
-           // FFCEGMEAIBP.COIGEGPKLCP[1] = 1;
-        }
-
         //set up opponents
         public static void AddOpponents(int playerid)
         {
@@ -223,36 +202,113 @@ namespace RogueliteMode
                 chars[i-1] = i;
             var rng = new System.Random();
             rng.Shuffle(chars);
-            origArray0 = (int[])FFCEGMEAIBP.COIGEGPKLCP.Clone();
-            origArray1 = (int[])FFCEGMEAIBP.NMMABDGIJNC.Clone();
-            origArray2 = (int[])FFCEGMEAIBP.DJCDPNPLICD.Clone();
-            origArray3 = (int[])FFCEGMEAIBP.EKKIPMFPMEE.Clone();
-            origArray4 = (DFOGOCNBECG[])NJBJIIIACEP.OAAMGFLINOB.Clone();
-            Resize(ref FFCEGMEAIBP.COIGEGPKLCP, Characters.no_chars + 1);
-            Resize(ref FFCEGMEAIBP.NMMABDGIJNC, Characters.no_chars + 1);
-            Resize(ref FFCEGMEAIBP.DJCDPNPLICD, Characters.no_chars + 1);
-            Resize(ref FFCEGMEAIBP.EKKIPMFPMEE, Characters.no_chars + 1);
-            Resize(ref NJBJIIIACEP.OAAMGFLINOB, Characters.no_chars + 1);
             int j = 2;
-            for (int i = 1; i <= chars.Length; i++)
+            for (int i = 1; i <= NAEEIFNFBBO.ILLMCDIFFON - 1; i++)
             {
                 if (chars[i-1] != playerid)
                 {
-                    FFCEGMEAIBP.NMMABDGIJNC[j] = chars[i - 1];
-                    FFCEGMEAIBP.DJCDPNPLICD[j] = 1;
-                    FFCEGMEAIBP.EKKIPMFPMEE[j] = 0;
-                    NJBJIIIACEP.OAAMGFLINOB[j] = new DFOGOCNBECG();
-                    NJBJIIIACEP.OAAMGFLINOB[j].ICGNAJFLAHL(j, chars[i - 1], -1);
-                    NJBJIIIACEP.OAAMGFLINOB[j].AHBNKMMMGFI = 0;
-                   // NJBJIIIACEP.NBBBLJDBLNM++;
-                    FFCEGMEAIBP.EHIDHAPMAKG++;
+                    AddCharacter(chars[i - 1], 0);
                     j++;
                 }
             }
 
         }
 
+        [HarmonyPatch(typeof(Scene_Match_Setup), nameof(Scene_Match_Setup.Start))]
+        [HarmonyPostfix]
+        public static void Scene_Match_Setup_Start_Postfix(Scene_Match_Setup __instance)
+        {
+            if (NAEEIFNFBBO.CBMHGKFFHJE == RogueliteModeNum || LIPNHOMGGHF.BCKLOCJPIMD == RogueliteModeNum)
+            {
+                RemoveOpponents();
+                AddCharacter(SelectedChar, 0);
+            }
+        }
+        public static void AddCharacter(int id, int team)
+        {
+            Scene_Match_Setup code = UnityEngine.GameObject.Find("Code").GetComponent<Scene_Match_Setup>();
+            code.n = 0;
+            code.v = 1;
+            while (code.v <= NJBJIIIACEP.NBBBLJDBLNM)
+            {
+                if (NJBJIIIACEP.OAAMGFLINOB[code.v].AHBNKMMMGFI <= 0f)
+                {
+                    Debug.Log("Overwriting slot " + code.v.ToString() + " to add new");
+                    code.n = code.v;
+                    break;
+                }
+                code.v++;
+            }
+            if (code.n == 0 && FFCEGMEAIBP.EHIDHAPMAKG < NAEEIFNFBBO.ILLMCDIFFON && FFCEGMEAIBP.EHIDHAPMAKG < NJBJIIIACEP.KLDJKHPCDHM)
+            {
+                code.n = FFCEGMEAIBP.EHIDHAPMAKG + 1;
+                Debug.Log("Increasing cast to " + FFCEGMEAIBP.EHIDHAPMAKG.ToString() + " to add new");
+            }
+            CHLPMKEGJBJ.DNNPEAOCDOG(CHLPMKEGJBJ.DOIEFBGOCPA, 1f, 1f);
+            CHLPMKEGJBJ.DNNPEAOCDOG(CHLPMKEGJBJ.JMBMELDCIDA[1], 1f, 0.75f);
+            if (FFCEGMEAIBP.EHIDHAPMAKG < 1)
+            {
+                FFCEGMEAIBP.EHIDHAPMAKG = 1;
+                Debug.Log("Increasing castSize from 0 to 1");
+            }
+            if (code.n > FFCEGMEAIBP.EHIDHAPMAKG)
+            {
+                FFCEGMEAIBP.EHIDHAPMAKG = code.n;
+                Debug.Log("Increasing castSize to " + code.n.ToString());
+            }
+            int num = id;
+            int num2 = 1;
+            int num3 = team;
+            FFCEGMEAIBP.NMMABDGIJNC[code.n] = num;
+            FFCEGMEAIBP.DJCDPNPLICD[code.n] = num2;
+            FFCEGMEAIBP.EKKIPMFPMEE[code.n] = num3;
+            int num4 = 0;
+            int num5;
+            do
+            {
+                FFCEGMEAIBP.AJMAFHIBCGJ[code.n] = (float)UnityEngine.Random.Range(-20, 20) * World.ringSize;
+                if (num3 == 1)
+                {
+                    FFCEGMEAIBP.AJMAFHIBCGJ[code.n] = (float)UnityEngine.Random.Range(-20, -5) * World.ringSize;
+                }
+                if (num3 == 2)
+                {
+                    FFCEGMEAIBP.AJMAFHIBCGJ[code.n] = (float)UnityEngine.Random.Range(5, 20) * World.ringSize;
+                }
+                FFCEGMEAIBP.MHHLHMDOFBP[code.n] = (float)UnityEngine.Random.Range(-20, 20) * World.ringSize;
+                num4++;
+                num5 = 1;
+                if (Mathf.Abs(FFCEGMEAIBP.AJMAFHIBCGJ[code.n]) < 5f && FFCEGMEAIBP.MHHLHMDOFBP[code.n] > 0f && NAEEIFNFBBO.BNCCMMLOIML > 0)
+                {
+                    if (num2 != 3)
+                    {
+                        num5 = 0;
+                    }
+                }
+                else if (num2 == 3)
+                {
+                    num5 = 0;
+                }
+                for (int i = 1; i <= NJBJIIIACEP.NBBBLJDBLNM; i++)
+                {
+                    if (NJBJIIIACEP.OAAMGFLINOB[i].AHBNKMMMGFI > 0f && NAEEIFNFBBO.FHPCDHIGILG(FFCEGMEAIBP.AJMAFHIBCGJ[code.n], FFCEGMEAIBP.MHHLHMDOFBP[code.n], NJBJIIIACEP.OAAMGFLINOB[i].NJDGEELLAKG, NJBJIIIACEP.OAAMGFLINOB[i].BMFDFFLPBOJ) < 5f)
+                    {
+                        num5 = 0;
+                    }
+                }
+            }
+            while (num4 < 100 && num5 == 0);
+            Debug.Log("Assigning character " + FFCEGMEAIBP.NMMABDGIJNC[code.n].ToString() + " to slot " + code.n.ToString());
+            if (code.n <= NJBJIIIACEP.NBBBLJDBLNM)
+            {
+                NJBJIIIACEP.IIACAIINEKD(code.n, id, 1);
+            }
+            else
+            {
+                NJBJIIIACEP.DFLLBNMHHIH(id, 1);
+            }
 
+        }
         //Setting up the char selection button redirect
         [HarmonyPatch(typeof(Scene_Select_Char), nameof(Scene_Select_Char.EGPFEGLDMJM))]
         [HarmonyPostfix]
@@ -286,8 +342,7 @@ namespace RogueliteMode
 
                 //insert sound here
                 LIPNHOMGGHF.PMIIOCMHEAE(14);
-                RemoveOpponents();
-                AddPlayerChar(GOOKPABIPBC);
+
             }
         }
         public static void Resize<T>(ref T[] original, int newsize)
