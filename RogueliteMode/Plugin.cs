@@ -1,37 +1,29 @@
-//disable additional controllers -> go through all chars, set them all to ai;
 using BepInEx;
 using BepInEx.Logging;
 using HarmonyLib;
-using Mono.Cecil.Cil;
 using System;
 using System.IO;
 using UnityEngine;
 using UnityEngine.SceneManagement;
 
-namespace RogueliteMode
+namespace Slobberknocker
 {
     [BepInPlugin(PluginGuid, PluginName, PluginVer)]
     [HarmonyPatch]
     public class Plugin : BaseUnityPlugin
     {
-        public const string PluginGuid = "GeeEm.WrestlingEmpire.RogueliteMode";
-        public const string PluginName = "RogueliteMode";
-        public const string PluginVer = "0.0.1";
+        public const string PluginGuid = "GeeEm.WrestlingEmpire.Slobberknocker";
+        public const string PluginName = "Slobberknocker";
+        public const string PluginVer = "0.9.0";
 
         internal static ManualLogSource Log;
         internal readonly static Harmony Harmony = new(PluginGuid);
 
         internal static string PluginPath;
 
-        static int RogueliteButton;
-        static int RogueliteModeNum = -123654;
+        static int SlobberknockerButton;
+        static int SlobberknockerNum = -123654;
         public static int SelectedChar = 0;
-
-  /*      static int[] origArray0;
-        static int[] origArray1;
-        static int[] origArray2;
-        static int[] origArray3;
-        static DFOGOCNBECG[] origArray4;*/
 
         private void Awake()
         {
@@ -65,8 +57,8 @@ namespace RogueliteMode
                 if (LIPNHOMGGHF.ODOAPLMOJPD == 1)
                 {
                     LIPNHOMGGHF.DFLLBNMHHIH();
-                    LIPNHOMGGHF.FKANHDIMMBJ[LIPNHOMGGHF.HOAOLPGEBKJ].ICGNAJFLAHL(1, "Roguelite Mode", 0f, 0f, 1.5f, 1.5f);
-                    RogueliteButton = LIPNHOMGGHF.HOAOLPGEBKJ;
+                    LIPNHOMGGHF.FKANHDIMMBJ[LIPNHOMGGHF.HOAOLPGEBKJ].ICGNAJFLAHL(1, "Slobberknocker Mode", 0f, 0f, 1.5f, 1.5f);
+                    SlobberknockerButton = LIPNHOMGGHF.HOAOLPGEBKJ;
                 }
             }
         }
@@ -79,10 +71,10 @@ namespace RogueliteMode
         {
             if (LIPNHOMGGHF.PIEMLEPEDFN >= 5 && LIPNHOMGGHF.ODOAPLMOJPD == 1 && NAEEIFNFBBO.EKFJCKLKELN != 1)
             {
-                if (LIPNHOMGGHF.NNMDEFLLNBF == RogueliteButton)
+                if (LIPNHOMGGHF.NNMDEFLLNBF == SlobberknockerButton)
                 {
-                    NAEEIFNFBBO.CBMHGKFFHJE = RogueliteModeNum;
-                    LIPNHOMGGHF.BCKLOCJPIMD = RogueliteModeNum;
+                    NAEEIFNFBBO.CBMHGKFFHJE = SlobberknockerNum;
+                    LIPNHOMGGHF.BCKLOCJPIMD = SlobberknockerNum;
                     LIPNHOMGGHF.PMIIOCMHEAE(11);
                 }
             }
@@ -98,7 +90,7 @@ namespace RogueliteMode
         {
             if (LIPNHOMGGHF.PIEMLEPEDFN <= -5)
             {
-                if (LIPNHOMGGHF.BCKLOCJPIMD == RogueliteModeNum)
+                if (LIPNHOMGGHF.BCKLOCJPIMD == SlobberknockerNum)
                 {
                     NAEEIFNFBBO.CBMHGKFFHJE = 0;
                     LIPNHOMGGHF.BCKLOCJPIMD = 0;
@@ -113,9 +105,9 @@ namespace RogueliteMode
         [HarmonyPostfix]
         public static void FFCEGMEAIBP_NCAAOLGAGCG_Patch(int KJELLNJFNGO, int GKNIAFAOLJK)
         {
-            if(NAEEIFNFBBO.CBMHGKFFHJE == RogueliteModeNum || LIPNHOMGGHF.BCKLOCJPIMD == RogueliteModeNum)
+            if(NAEEIFNFBBO.CBMHGKFFHJE == SlobberknockerNum || LIPNHOMGGHF.BCKLOCJPIMD == SlobberknockerNum)
             {
-                if(GKNIAFAOLJK == 1) //TODO Replace with selected char id
+                if (NJBJIIIACEP.OAAMGFLINOB[GKNIAFAOLJK].GOOKPABIPBC == SelectedChar) 
                 {
                     FFCEGMEAIBP.BAGEPNPJPLD(KJELLNJFNGO);
                 }
@@ -128,16 +120,16 @@ namespace RogueliteMode
         public static void LIPNHOMGGHF_PMIIOCMHEAE_Patch(ref int KBEAJEIMNMI)
         {
             //Doing stuff when going match setup -> game
-            if(SceneManager.GetActiveScene().name == "Match_Setup" && NAEEIFNFBBO.CBMHGKFFHJE == RogueliteModeNum && KBEAJEIMNMI == 50)
+            if(SceneManager.GetActiveScene().name == "Match_Setup" && NAEEIFNFBBO.CBMHGKFFHJE == SlobberknockerNum && KBEAJEIMNMI == 50)
             {
                 NAEEIFNFBBO.CBMHGKFFHJE = 0;
-                LIPNHOMGGHF.BCKLOCJPIMD = RogueliteModeNum;
+                LIPNHOMGGHF.BCKLOCJPIMD = SlobberknockerNum;
                 AddOpponents(SelectedChar);
                 return;
             }
 
             //Doing stuff when exiting match setup
-            if (SceneManager.GetActiveScene().name == "Match_Setup" && NAEEIFNFBBO.CBMHGKFFHJE == RogueliteModeNum && KBEAJEIMNMI != 50)
+            if (SceneManager.GetActiveScene().name == "Match_Setup" && NAEEIFNFBBO.CBMHGKFFHJE == SlobberknockerNum && KBEAJEIMNMI != 50)
             {
                 NAEEIFNFBBO.CBMHGKFFHJE = 0;
                 LIPNHOMGGHF.BCKLOCJPIMD = 0;
@@ -146,7 +138,7 @@ namespace RogueliteMode
             }
 
             //Doing stuff when exiting match
-            if (SceneManager.GetActiveScene().name == "Game" && LIPNHOMGGHF.BCKLOCJPIMD == RogueliteModeNum)
+            if (SceneManager.GetActiveScene().name == "Game" && LIPNHOMGGHF.BCKLOCJPIMD == SlobberknockerNum)
             {
                 NAEEIFNFBBO.CBMHGKFFHJE = 0;
                 LIPNHOMGGHF.BCKLOCJPIMD = 0;
@@ -162,7 +154,7 @@ namespace RogueliteMode
         [HarmonyPostfix]
         public static void LIPNHOMGGHF_OPBBKBAJJHA_Patch()
         {
-            if (NAEEIFNFBBO.CBMHGKFFHJE == RogueliteModeNum || LIPNHOMGGHF.BCKLOCJPIMD == RogueliteModeNum)
+            if (NAEEIFNFBBO.CBMHGKFFHJE == SlobberknockerNum || LIPNHOMGGHF.BCKLOCJPIMD == SlobberknockerNum)
             {
                 if (LIPNHOMGGHF.ODOAPLMOJPD == 0)
                 {
@@ -176,7 +168,7 @@ namespace RogueliteMode
         [HarmonyPostfix]
         public static void Scene_Match_Setup_Update_Patch()
         {
-            if (NAEEIFNFBBO.CBMHGKFFHJE == RogueliteModeNum)
+            if (NAEEIFNFBBO.CBMHGKFFHJE == SlobberknockerNum)
             {
                 if (LIPNHOMGGHF.CHLJMEPFJOK == 2 || LIPNHOMGGHF.CHLJMEPFJOK == 4)
                 {
@@ -207,7 +199,7 @@ namespace RogueliteMode
         [HarmonyPostfix]
         public static void Scene_Match_Setup_Start_Postfix(Scene_Match_Setup __instance)
         {
-            if (NAEEIFNFBBO.CBMHGKFFHJE == RogueliteModeNum || LIPNHOMGGHF.BCKLOCJPIMD == RogueliteModeNum)
+            if (NAEEIFNFBBO.CBMHGKFFHJE == SlobberknockerNum || LIPNHOMGGHF.BCKLOCJPIMD == SlobberknockerNum)
             {
                 RemoveOpponents();
                 AddCharacter(SelectedChar, 0);
@@ -228,7 +220,8 @@ namespace RogueliteMode
                 {
                     j++;
                 }
-                AddCharacter(chars[j], 0);
+                int n = AddCharacter(chars[j], 0);
+                FFCEGMEAIBP.COIGEGPKLCP[NJBJIIIACEP.OAAMGFLINOB[n].PLFGKLGCOMD] = -1;
                 j++;
 
             }
@@ -239,7 +232,7 @@ namespace RogueliteMode
         [HarmonyPrefix]
         public static bool Scene_Match_Setup_AddRandom(Scene_Match_Setup __instance)
         {
-            if (NAEEIFNFBBO.CBMHGKFFHJE == RogueliteModeNum || LIPNHOMGGHF.BCKLOCJPIMD == RogueliteModeNum)
+            if (NAEEIFNFBBO.CBMHGKFFHJE == SlobberknockerNum || LIPNHOMGGHF.BCKLOCJPIMD == SlobberknockerNum)
             {
                 return false;
             }
@@ -249,7 +242,7 @@ namespace RogueliteMode
         [HarmonyPrefix]
         public static bool Scene_Match_Setup_RemoveCast(Scene_Match_Setup __instance,  int GKNIAFAOLJK)
         {
-            if (NAEEIFNFBBO.CBMHGKFFHJE == RogueliteModeNum || LIPNHOMGGHF.BCKLOCJPIMD == RogueliteModeNum)
+            if (NAEEIFNFBBO.CBMHGKFFHJE == SlobberknockerNum || LIPNHOMGGHF.BCKLOCJPIMD == SlobberknockerNum)
             {
                 return false;
             }
@@ -298,7 +291,7 @@ namespace RogueliteMode
                 }
             }
         }
-        public static void AddCharacter(int id, int team)
+        public static int AddCharacter(int id, int team)
         {
             Scene_Match_Setup code = UnityEngine.GameObject.Find("Code").GetComponent<Scene_Match_Setup>();
             code.n = 0;
@@ -381,37 +374,40 @@ namespace RogueliteMode
             {
                 NJBJIIIACEP.DFLLBNMHHIH(id, 1);
             }
+            return code.n;
 
         }
 
 
-        //fixing the character controls
+/*        //fixing the character controls
         [HarmonyPatch(typeof(Scene_Game), nameof(Scene_Game.Start))]
         [HarmonyPostfix]
         public static void Scene_Game_Start()
         {
-            if (NAEEIFNFBBO.CBMHGKFFHJE == RogueliteModeNum || LIPNHOMGGHF.BCKLOCJPIMD == RogueliteModeNum)
+            if (NAEEIFNFBBO.CBMHGKFFHJE == SlobberknockerNum || LIPNHOMGGHF.BCKLOCJPIMD == SlobberknockerNum)
             {
                 for (int i = 1; i < NJBJIIIACEP.OAAMGFLINOB.Length; i++)
                 {
                     UnityEngine.Debug.LogWarning(i + " " + NJBJIIIACEP.OAAMGFLINOB[i].EMDMDLNJFKP.name + " " + NJBJIIIACEP.OAAMGFLINOB[i].NLOOBNDGIKO.BPJFLJPKKJK + " " + NJBJIIIACEP.OAAMGFLINOB[i].NLOOBNDGIKO.CMECDGMCMLC);
                     if (NJBJIIIACEP.OAAMGFLINOB[i].GOOKPABIPBC == SelectedChar)
                     {
-                        Debug.LogWarning("SETTING");
-                        NJBJIIIACEP.OAAMGFLINOB[i].NLOOBNDGIKO.FOAPDJMIFGP = 1;
+
+                       // NJBJIIIACEP.OAAMGFLINOB[i].NLOOBNDGIKO.FOAPDJMIFGP = 1;
                     }
                     else
                     {
-                        Debug.LogWarning("Disabling " + i + " " + NJBJIIIACEP.OAAMGFLINOB[i].EMDMDLNJFKP.name + " " + NJBJIIIACEP.OAAMGFLINOB[i].NLOOBNDGIKO.BPJFLJPKKJK + " " + NJBJIIIACEP.OAAMGFLINOB[i].NLOOBNDGIKO.CMECDGMCMLC);
+                              Debug.LogWarning("Disabling " + i + " " + NJBJIIIACEP.OAAMGFLINOB[i].EMDMDLNJFKP.name + " " + NJBJIIIACEP.OAAMGFLINOB[i].NLOOBNDGIKO.BPJFLJPKKJK + " " + NJBJIIIACEP.OAAMGFLINOB[i].NLOOBNDGIKO.CMECDGMCMLC);
 
-                        NJBJIIIACEP.OAAMGFLINOB[i].NLOOBNDGIKO.FOAPDJMIFGP = 0;
+                              NJBJIIIACEP.OAAMGFLINOB[i].NLOOBNDGIKO.FOAPDJMIFGP = 0;
+                              NJBJIIIACEP.OAAMGFLINOB[i].OJAJENJLBMF = -1;
+                              NJBJIIIACEP.OAAMGFLINOB[i].NLOOBNDGIKO = HKJOAJOKOIJ.IPDFOJEMPMM;
                         NJBJIIIACEP.OAAMGFLINOB[i].OJAJENJLBMF = -1;
-                        NJBJIIIACEP.OAAMGFLINOB[i].NLOOBNDGIKO = HKJOAJOKOIJ.IPDFOJEMPMM;
+                        FFCEGMEAIBP.COIGEGPKLCP[NJBJIIIACEP.OAAMGFLINOB[i].PLFGKLGCOMD] = -1;
                     }
                 }
 
             }
-        }
+        }*/
 
 
         //Setting up the char selection button redirect
@@ -419,7 +415,7 @@ namespace RogueliteMode
         [HarmonyPostfix]
         public static void Scene_Select_Char_EGPFEGLDMJM_Patch(Scene_Select_Char __instance, int GOOKPABIPBC)
         {
-            if (LIPNHOMGGHF.BCKLOCJPIMD == RogueliteModeNum)
+            if (LIPNHOMGGHF.BCKLOCJPIMD == SlobberknockerNum)
             {
                 SelectedChar = GOOKPABIPBC;
 
