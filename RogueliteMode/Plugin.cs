@@ -1,4 +1,4 @@
-//note disable playable check; disable additional controllers -> go through all chars, set them all to ai;
+//disable additional controllers -> go through all chars, set them all to ai;
 using BepInEx;
 using BepInEx.Logging;
 using HarmonyLib;
@@ -24,7 +24,7 @@ namespace RogueliteMode
         internal static string PluginPath;
 
         static int RogueliteButton;
-        static int RogueliteModeNum = 123654;
+        static int RogueliteModeNum = -123654;
         public static int SelectedChar = 0;
 
   /*      static int[] origArray0;
@@ -100,6 +100,8 @@ namespace RogueliteMode
             {
                 if (LIPNHOMGGHF.BCKLOCJPIMD == RogueliteModeNum)
                 {
+                    NAEEIFNFBBO.CBMHGKFFHJE = 0;
+                    LIPNHOMGGHF.BCKLOCJPIMD = 0;
                     LIPNHOMGGHF.PMIIOCMHEAE(1);
                 }
             }
@@ -131,7 +133,6 @@ namespace RogueliteMode
                 NAEEIFNFBBO.CBMHGKFFHJE = 0;
                 LIPNHOMGGHF.BCKLOCJPIMD = RogueliteModeNum;
                 AddOpponents(SelectedChar);
-                Debug.LogWarning(NJBJIIIACEP.NBBBLJDBLNM);
                 return;
             }
 
@@ -147,15 +148,15 @@ namespace RogueliteMode
             //Doing stuff when exiting match
             if (SceneManager.GetActiveScene().name == "Game" && LIPNHOMGGHF.BCKLOCJPIMD == RogueliteModeNum)
             {
-                NAEEIFNFBBO.CBMHGKFFHJE = RogueliteModeNum;
+                NAEEIFNFBBO.CBMHGKFFHJE = 0;
                 LIPNHOMGGHF.BCKLOCJPIMD = 0;
-                NJBJIIIACEP.NBBBLJDBLNM = 1;
-                FFCEGMEAIBP.EHIDHAPMAKG = 1;
+          //      NJBJIIIACEP.NBBBLJDBLNM = 1;
+           //     FFCEGMEAIBP.EHIDHAPMAKG = 1;
                 KBEAJEIMNMI = 1;
                 return;
             }
-        }
 
+        }
         //disable interference and simulate buttons;
         [HarmonyPatch(typeof(LIPNHOMGGHF), nameof(LIPNHOMGGHF.OPBBKBAJJHA))]
         [HarmonyPostfix]
@@ -163,8 +164,11 @@ namespace RogueliteMode
         {
             if (NAEEIFNFBBO.CBMHGKFFHJE == RogueliteModeNum || LIPNHOMGGHF.BCKLOCJPIMD == RogueliteModeNum)
             {
-                LIPNHOMGGHF.FKANHDIMMBJ[3].AHBNKMMMGFI = 0;
-                LIPNHOMGGHF.FKANHDIMMBJ[4].AHBNKMMMGFI = 0;
+                if (LIPNHOMGGHF.ODOAPLMOJPD == 0)
+                {
+                    LIPNHOMGGHF.FKANHDIMMBJ[3].AHBNKMMMGFI = 0;
+                    LIPNHOMGGHF.FKANHDIMMBJ[4].AHBNKMMMGFI = 0;
+                }
             }
         }
         //disable tabs in the match setup
@@ -181,17 +185,32 @@ namespace RogueliteMode
                         LIPNHOMGGHF.FKANHDIMMBJ[i].AHBNKMMMGFI = 0;
                     }
                 }
+                if (LIPNHOMGGHF.CHLJMEPFJOK == 3)
+                {
+                    NJBJIIIACEP.OAAMGFLINOB[1].AHBNKMMMGFI = 0;
+                }
+                else
+                {
+                    NJBJIIIACEP.OAAMGFLINOB[1].AHBNKMMMGFI = 1;
+                }
             }
         }
-        //disable adding/removing characters in the menu
-
         //Set up the selected character
         public static void RemoveOpponents()
         {
-            Scene_Match_Setup code = UnityEngine.GameObject.Find("Code").GetComponent<Scene_Match_Setup>();
             for (int i = NJBJIIIACEP.NBBBLJDBLNM; i > 0; i--)
             {
-                code.RemoveCast(i);
+                RemoveCharacter(i);
+            }
+        }
+        [HarmonyPatch(typeof(Scene_Match_Setup), nameof(Scene_Match_Setup.Start))]
+        [HarmonyPostfix]
+        public static void Scene_Match_Setup_Start_Postfix(Scene_Match_Setup __instance)
+        {
+            if (NAEEIFNFBBO.CBMHGKFFHJE == RogueliteModeNum || LIPNHOMGGHF.BCKLOCJPIMD == RogueliteModeNum)
+            {
+                RemoveOpponents();
+                AddCharacter(SelectedChar, 0);
             }
         }
         //set up opponents
@@ -202,26 +221,81 @@ namespace RogueliteMode
                 chars[i-1] = i;
             var rng = new System.Random();
             rng.Shuffle(chars);
-            int j = 2;
+            int j = 0;
             for (int i = 1; i <= NAEEIFNFBBO.ILLMCDIFFON - 1; i++)
             {
-                if (chars[i-1] != playerid)
+                if (chars[j] == playerid)
                 {
-                    AddCharacter(chars[i - 1], 0);
                     j++;
                 }
+                AddCharacter(chars[j], 0);
+                j++;
+
             }
 
         }
-
-        [HarmonyPatch(typeof(Scene_Match_Setup), nameof(Scene_Match_Setup.Start))]
-        [HarmonyPostfix]
-        public static void Scene_Match_Setup_Start_Postfix(Scene_Match_Setup __instance)
+        //disable cast tab buttons
+        [HarmonyPatch(typeof(Scene_Match_Setup), nameof(Scene_Match_Setup.AddRandom))]
+        [HarmonyPrefix]
+        public static bool Scene_Match_Setup_AddRandom(Scene_Match_Setup __instance)
         {
             if (NAEEIFNFBBO.CBMHGKFFHJE == RogueliteModeNum || LIPNHOMGGHF.BCKLOCJPIMD == RogueliteModeNum)
             {
-                RemoveOpponents();
-                AddCharacter(SelectedChar, 0);
+                return false;
+            }
+            return true;
+        }
+        [HarmonyPatch(typeof(Scene_Match_Setup), nameof(Scene_Match_Setup.RemoveCast))]
+        [HarmonyPrefix]
+        public static bool Scene_Match_Setup_RemoveCast(Scene_Match_Setup __instance,  int GKNIAFAOLJK)
+        {
+            if (NAEEIFNFBBO.CBMHGKFFHJE == RogueliteModeNum || LIPNHOMGGHF.BCKLOCJPIMD == RogueliteModeNum)
+            {
+                return false;
+            }
+            return true;
+        }
+        public static void RemoveCharacter(int id)
+        {
+            Scene_Match_Setup code = UnityEngine.GameObject.Find("Code").GetComponent<Scene_Match_Setup>();
+            Debug.Log("Attempting to remove P" + id.ToString());
+            if (id == 0)
+            {
+                for (int i = 1; i <= NJBJIIIACEP.NBBBLJDBLNM; i++)
+                {
+                    if (NJBJIIIACEP.OAAMGFLINOB[i].AHBNKMMMGFI > 0f)
+                    {
+                        id = i;
+                    }
+                }
+            }
+            if (id > 0)
+            {
+                Debug.Log("Deactivating P" + id.ToString());
+            //    CHLPMKEGJBJ.DNNPEAOCDOG(CHLPMKEGJBJ.AKLKPBJBEBK, 1f, 1f);
+                DFOGOCNBECG dfogocnbecg = NJBJIIIACEP.OAAMGFLINOB[id];
+                dfogocnbecg.AHBNKMMMGFI = -1f;
+                dfogocnbecg.PCNHIIPBNEK[0].SetActive(false);
+                if (dfogocnbecg.IFOCOECLBAF != null)
+                {
+                    dfogocnbecg.IFOCOECLBAF.SetActive(false);
+                }
+                FFCEGMEAIBP.NMMABDGIJNC[id] = -id;
+                if (code.castFoc == id)
+                {
+                    code.castFoc = 0;
+                }
+                if (code.moveFoc == id)
+                {
+                    code.moveFoc = 0;
+                }
+                for (int j = 0; j <= HKJOAJOKOIJ.NGCNKGDDKGF; j++)
+                {
+                    if (HKJOAJOKOIJ.NAADDLFFIHG[j].AHBNKMMMGFI > 0 && HKJOAJOKOIJ.NAADDLFFIHG[j].FOAPDJMIFGP == id)
+                    {
+                        HKJOAJOKOIJ.NAADDLFFIHG[j].FOAPDJMIFGP = 0;
+                    }
+                }
             }
         }
         public static void AddCharacter(int id, int team)
@@ -244,8 +318,8 @@ namespace RogueliteMode
                 code.n = FFCEGMEAIBP.EHIDHAPMAKG + 1;
                 Debug.Log("Increasing cast to " + FFCEGMEAIBP.EHIDHAPMAKG.ToString() + " to add new");
             }
-            CHLPMKEGJBJ.DNNPEAOCDOG(CHLPMKEGJBJ.DOIEFBGOCPA, 1f, 1f);
-            CHLPMKEGJBJ.DNNPEAOCDOG(CHLPMKEGJBJ.JMBMELDCIDA[1], 1f, 0.75f);
+        //    CHLPMKEGJBJ.DNNPEAOCDOG(CHLPMKEGJBJ.DOIEFBGOCPA, 1f, 1f);
+         //   CHLPMKEGJBJ.DNNPEAOCDOG(CHLPMKEGJBJ.JMBMELDCIDA[1], 1f, 0.75f);
             if (FFCEGMEAIBP.EHIDHAPMAKG < 1)
             {
                 FFCEGMEAIBP.EHIDHAPMAKG = 1;
@@ -309,6 +383,37 @@ namespace RogueliteMode
             }
 
         }
+
+
+        //fixing the character controls
+        [HarmonyPatch(typeof(Scene_Game), nameof(Scene_Game.Start))]
+        [HarmonyPostfix]
+        public static void Scene_Game_Start()
+        {
+            if (NAEEIFNFBBO.CBMHGKFFHJE == RogueliteModeNum || LIPNHOMGGHF.BCKLOCJPIMD == RogueliteModeNum)
+            {
+                for (int i = 1; i < NJBJIIIACEP.OAAMGFLINOB.Length; i++)
+                {
+                    UnityEngine.Debug.LogWarning(i + " " + NJBJIIIACEP.OAAMGFLINOB[i].EMDMDLNJFKP.name + " " + NJBJIIIACEP.OAAMGFLINOB[i].NLOOBNDGIKO.BPJFLJPKKJK + " " + NJBJIIIACEP.OAAMGFLINOB[i].NLOOBNDGIKO.CMECDGMCMLC);
+                    if (NJBJIIIACEP.OAAMGFLINOB[i].GOOKPABIPBC == SelectedChar)
+                    {
+                        Debug.LogWarning("SETTING");
+                        NJBJIIIACEP.OAAMGFLINOB[i].NLOOBNDGIKO.FOAPDJMIFGP = 1;
+                    }
+                    else
+                    {
+                        Debug.LogWarning("Disabling " + i + " " + NJBJIIIACEP.OAAMGFLINOB[i].EMDMDLNJFKP.name + " " + NJBJIIIACEP.OAAMGFLINOB[i].NLOOBNDGIKO.BPJFLJPKKJK + " " + NJBJIIIACEP.OAAMGFLINOB[i].NLOOBNDGIKO.CMECDGMCMLC);
+
+                        NJBJIIIACEP.OAAMGFLINOB[i].NLOOBNDGIKO.FOAPDJMIFGP = 0;
+                        NJBJIIIACEP.OAAMGFLINOB[i].OJAJENJLBMF = -1;
+                        NJBJIIIACEP.OAAMGFLINOB[i].NLOOBNDGIKO = HKJOAJOKOIJ.IPDFOJEMPMM;
+                    }
+                }
+
+            }
+        }
+
+
         //Setting up the char selection button redirect
         [HarmonyPatch(typeof(Scene_Select_Char), nameof(Scene_Select_Char.EGPFEGLDMJM))]
         [HarmonyPostfix]
@@ -340,7 +445,6 @@ namespace RogueliteMode
                 FFCEGMEAIBP.AEKLGCEFIHM = 0;
 
 
-                //insert sound here
                 LIPNHOMGGHF.PMIIOCMHEAE(14);
 
             }
