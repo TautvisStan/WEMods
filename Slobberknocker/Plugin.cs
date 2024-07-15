@@ -14,7 +14,7 @@ namespace Slobberknocker
     {
         public const string PluginGuid = "GeeEm.WrestlingEmpire.Slobberknocker";
         public const string PluginName = "Slobberknocker";
-        public const string PluginVer = "0.9.0";
+        public const string PluginVer = "1.0.0";
 
         internal static ManualLogSource Log;
         internal readonly static Harmony Harmony = new(PluginGuid);
@@ -22,7 +22,7 @@ namespace Slobberknocker
         internal static string PluginPath;
 
         static int SlobberknockerButton;
-        static int SlobberknockerNum = -123654;
+        static readonly int SlobberknockerNum = -123654;
         public static int SelectedChar = 0;
 
         private void Awake()
@@ -57,7 +57,7 @@ namespace Slobberknocker
                 if (LIPNHOMGGHF.ODOAPLMOJPD == 1)
                 {
                     LIPNHOMGGHF.DFLLBNMHHIH();
-                    LIPNHOMGGHF.FKANHDIMMBJ[LIPNHOMGGHF.HOAOLPGEBKJ].ICGNAJFLAHL(1, "Slobberknocker Mode", 0f, 0f, 1.5f, 1.5f);
+                    LIPNHOMGGHF.FKANHDIMMBJ[LIPNHOMGGHF.HOAOLPGEBKJ].ICGNAJFLAHL(1, "Slobberknocker", -200f, -300f, 1.5f, 1.5f);
                     SlobberknockerButton = LIPNHOMGGHF.HOAOLPGEBKJ;
                 }
             }
@@ -142,8 +142,6 @@ namespace Slobberknocker
             {
                 NAEEIFNFBBO.CBMHGKFFHJE = 0;
                 LIPNHOMGGHF.BCKLOCJPIMD = 0;
-          //      NJBJIIIACEP.NBBBLJDBLNM = 1;
-           //     FFCEGMEAIBP.EHIDHAPMAKG = 1;
                 KBEAJEIMNMI = 1;
                 return;
             }
@@ -379,37 +377,6 @@ namespace Slobberknocker
         }
 
 
-/*        //fixing the character controls
-        [HarmonyPatch(typeof(Scene_Game), nameof(Scene_Game.Start))]
-        [HarmonyPostfix]
-        public static void Scene_Game_Start()
-        {
-            if (NAEEIFNFBBO.CBMHGKFFHJE == SlobberknockerNum || LIPNHOMGGHF.BCKLOCJPIMD == SlobberknockerNum)
-            {
-                for (int i = 1; i < NJBJIIIACEP.OAAMGFLINOB.Length; i++)
-                {
-                    UnityEngine.Debug.LogWarning(i + " " + NJBJIIIACEP.OAAMGFLINOB[i].EMDMDLNJFKP.name + " " + NJBJIIIACEP.OAAMGFLINOB[i].NLOOBNDGIKO.BPJFLJPKKJK + " " + NJBJIIIACEP.OAAMGFLINOB[i].NLOOBNDGIKO.CMECDGMCMLC);
-                    if (NJBJIIIACEP.OAAMGFLINOB[i].GOOKPABIPBC == SelectedChar)
-                    {
-
-                       // NJBJIIIACEP.OAAMGFLINOB[i].NLOOBNDGIKO.FOAPDJMIFGP = 1;
-                    }
-                    else
-                    {
-                              Debug.LogWarning("Disabling " + i + " " + NJBJIIIACEP.OAAMGFLINOB[i].EMDMDLNJFKP.name + " " + NJBJIIIACEP.OAAMGFLINOB[i].NLOOBNDGIKO.BPJFLJPKKJK + " " + NJBJIIIACEP.OAAMGFLINOB[i].NLOOBNDGIKO.CMECDGMCMLC);
-
-                              NJBJIIIACEP.OAAMGFLINOB[i].NLOOBNDGIKO.FOAPDJMIFGP = 0;
-                              NJBJIIIACEP.OAAMGFLINOB[i].OJAJENJLBMF = -1;
-                              NJBJIIIACEP.OAAMGFLINOB[i].NLOOBNDGIKO = HKJOAJOKOIJ.IPDFOJEMPMM;
-                        NJBJIIIACEP.OAAMGFLINOB[i].OJAJENJLBMF = -1;
-                        FFCEGMEAIBP.COIGEGPKLCP[NJBJIIIACEP.OAAMGFLINOB[i].PLFGKLGCOMD] = -1;
-                    }
-                }
-
-            }
-        }*/
-
-
         //Setting up the char selection button redirect
         [HarmonyPatch(typeof(Scene_Select_Char), nameof(Scene_Select_Char.EGPFEGLDMJM))]
         [HarmonyPostfix]
@@ -469,9 +436,7 @@ namespace Slobberknocker
             while (n > 1)
             {
                 int k = rng.Next(n--);
-                T temp = array[n];
-                array[n] = array[k];
-                array[k] = temp;
+                (array[k], array[n]) = (array[n], array[k]);
             }
         }
     }
