@@ -1,7 +1,7 @@
-﻿<Project Sdk="Microsoft.NET.Sdk">
+<Project Sdk="Microsoft.NET.Sdk">
 
     <PropertyGroup>
-        <AssemblyName>Slobberknocker</AssemblyName>
+        <AssemblyName>Roguelite</AssemblyName>
         <AssemblyVersion>1.0.0</AssemblyVersion>
         <ReleaseVersion>1.0.0</ReleaseVersion>
         <TargetFramework>netstandard2.0</TargetFramework>
@@ -13,6 +13,12 @@
         <OutputPath Condition=" '$(SolutionDir)' == '' ">$(ProjectDir)bin\$(Configuration)\$(MSBuildProjectName)\</OutputPath>
         <AppendTargetFrameworkToOutputPath>false</AppendTargetFrameworkToOutputPath>
     </PropertyGroup>
+
+    <ItemGroup>
+      <Compile Remove="Old\**" />
+      <EmbeddedResource Remove="Old\**" />
+      <None Remove="Old\**" />
+    </ItemGroup>
 
     <ItemGroup>
         <PackageReference Include="BepInEx.Analyzers" Version="1.*" PrivateAssets="all" />
@@ -27,9 +33,6 @@
     <ItemGroup>
       <Reference Include="Assembly-CSharp">
         <HintPath>lib\Assembly-CSharp_public.dll</HintPath>
-      </Reference>
-      <Reference Include="UnityEngine.UI">
-        <HintPath>UnityEngine.UI.dll</HintPath>
       </Reference>
     </ItemGroup>
 
