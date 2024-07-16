@@ -6,6 +6,10 @@ using System.IO;
 using UnityEngine;
 using UnityEngine.UI;
 using UnityEngine.SceneManagement;
+using BepInEx.Configuration;
+using System.Security.Cryptography;
+using System.Text;
+using System.Collections.Generic;
 
 namespace Slobberknocker
 {
@@ -15,7 +19,7 @@ namespace Slobberknocker
     {
         public const string PluginGuid = "GeeEm.WrestlingEmpire.Slobberknocker";
         public const string PluginName = "Slobberknocker";
-        public const string PluginVer = "1.0.1";
+        public const string PluginVer = "1.0.2";
 
         internal static ManualLogSource Log;
         internal readonly static Harmony Harmony = new(PluginGuid);
@@ -28,6 +32,10 @@ namespace Slobberknocker
 
         public static int elims = 0;
 
+        public static ConfigEntry<bool> MatchRulesOverride;
+
+        public static ConfigEntry<string> RandomizerSeed;
+
         private void Awake()
         {
             Plugin.Log = base.Logger;
@@ -35,7 +43,15 @@ namespace Slobberknocker
             PluginPath = Path.GetDirectoryName(Info.Location);
 
 
+            MatchRulesOverride = Config.Bind("General",
+                 "Match Rules Override",
+                 false,
+                 "If enabled, will let you customize the match rules.");
 
+            RandomizerSeed = Config.Bind("General",
+                 "Randomizer Seed",
+                 "",
+                 "If you set a seed here, the characters you fight should always be the same based on the seed, as long as you pick the same character and have the same total number of characters. Leave empty for no set seed.");
         }
 
         private void OnEnable()
@@ -101,8 +117,17 @@ namespace Slobberknocker
                 }
             }
         }
-
-
+        //adding stat numbers next to the timer
+        [HarmonyPatch(typeof(FFCEGMEAIBP), nameof(FFCEGMEAIBP.HLEDBJJDLIA))]
+        [HarmonyPostfix]
+        public static void FFCEGMEAIBP_HLEDBJJDLIA_Patch()
+        {
+            if (NAEEIFNFBBO.CBMHGKFFHJE == SlobberknockerNum || LIPNHOMGGHF.BCKLOCJPIMD == SlobberknockerNum)
+            {
+                if(FFCEGMEAIBP.PDEHCNAKBCG.text != "")
+                    FFCEGMEAIBP.PDEHCNAKBCG.text = "Time: " + FFCEGMEAIBP.PDEHCNAKBCG.text + " | <color=Orange>Score: " + elims + "-" + (FFCEGMEAIBP.LAOPDIJDEGM -1) + "</color>";
+            }
+        }
         //ending after player loses
         [HarmonyPatch(typeof(FFCEGMEAIBP), nameof(FFCEGMEAIBP.NCAAOLGAGCG))]
         [HarmonyPostfix]
@@ -121,6 +146,17 @@ namespace Slobberknocker
                 FFCEGMEAIBP.PGPFHDLODFG[3].text = elims + " wrestlers defeated!";
             }
         }
+        //adding text after player wins
+        [HarmonyPatch(typeof(FFCEGMEAIBP), nameof(FFCEGMEAIBP.BAGEPNPJPLD))]
+        [HarmonyPostfix]
+        public static void FFCEGMEAIBP_BAGEPNPJPLD_Patch(int KJELLNJFNGO)
+        {
+            if (NAEEIFNFBBO.CBMHGKFFHJE == SlobberknockerNum || LIPNHOMGGHF.BCKLOCJPIMD == SlobberknockerNum)
+            {
+                FFCEGMEAIBP.PGPFHDLODFG[3].text = elims + " wrestlers defeated!";
+            }
+        }
+
 
         //Scene nav stuff
         [HarmonyPatch(typeof(LIPNHOMGGHF), nameof(LIPNHOMGGHF.PMIIOCMHEAE))]
@@ -178,7 +214,7 @@ namespace Slobberknocker
         {
             if (NAEEIFNFBBO.CBMHGKFFHJE == SlobberknockerNum)
             {
-                if (LIPNHOMGGHF.CHLJMEPFJOK == 2 || LIPNHOMGGHF.CHLJMEPFJOK == 4)
+                if ((LIPNHOMGGHF.CHLJMEPFJOK == 2 || LIPNHOMGGHF.CHLJMEPFJOK == 4) && MatchRulesOverride.Value == false)
                 {
                     for (int i = 1; i <= LIPNHOMGGHF.HOAOLPGEBKJ; i++)
                     {
@@ -216,24 +252,33 @@ namespace Slobberknocker
         //set up opponents
         public static void AddOpponents(int playerid)
         {
-            int[] chars = new int[Characters.no_chars];
-            for (int i = 1; i <= chars.Length; i++)
-                chars[i-1] = i;
-            var rng = new System.Random();
-            rng.Shuffle(chars);
-            int j = 0;
-            for (int i = 1; i <= NAEEIFNFBBO.ILLMCDIFFON - 1; i++)
+            List<int> chars = new List<int>();
+            for (int i = 1; i <= Characters.no_chars; i++)
             {
-                if (chars[j] == playerid)
-                {
-                    j++;
-                }
-                int n = AddCharacter(chars[j], 0);
-                FFCEGMEAIBP.COIGEGPKLCP[NJBJIIIACEP.OAAMGFLINOB[n].PLFGKLGCOMD] = -1;
-                j++;
-
+                if(i != playerid)
+                    chars.Add(i);
             }
-
+            System.Random rng;
+            Log.LogInfo("Starting new slobber knocker run.");
+            Log.LogInfo("Selected character id: " + playerid + " (" + Characters.c[playerid].name + "), total characters: " + Characters.no_chars);
+            if(RandomizerSeed.Value != "")
+            {
+                int hashseed = GetSeedFromString(RandomizerSeed.Value);
+                rng = new System.Random(hashseed);
+                Log.LogInfo("Using custom seed \"" + RandomizerSeed.Value + "\", corresponds to default seed: " + hashseed);
+            }
+            else
+            {
+                int defaultSeed = (int)DateTime.Now.Ticks & 0xFFFFFFF;
+                rng = new System.Random(defaultSeed);
+                Log.LogInfo("Using default seed: " + defaultSeed);
+            }
+            rng.Shuffle(chars);
+            for (int i = 0; i < NAEEIFNFBBO.ILLMCDIFFON - 1; i++)
+            {
+                int n = AddCharacter(chars[i], 0);
+                FFCEGMEAIBP.COIGEGPKLCP[NJBJIIIACEP.OAAMGFLINOB[n].PLFGKLGCOMD] = -1;
+            }
         }
         //disable cast tab buttons
         [HarmonyPatch(typeof(Scene_Match_Setup), nameof(Scene_Match_Setup.AddRandom))]
@@ -399,23 +444,15 @@ namespace Slobberknocker
                 FFCEGMEAIBP.JELMGJMKKEK(22);
 
 
-                   FFCEGMEAIBP.LCCCCENGFOK = 4;
-                   FFCEGMEAIBP.JPBHIEOKODO = 0;
-                   FFCEGMEAIBP.BPJFLJPKKJK = 5;
-                   FFCEGMEAIBP.CADLONHABMC = 2;
-                   FFCEGMEAIBP.OLJFOJOLLOM = -1;
-                   FFCEGMEAIBP.LGHMLHICAFL = 2;
-                   FFCEGMEAIBP.DOLNEDHNKMM = 0;
-                   FFCEGMEAIBP.GDKCEGBINCM = 2;
-                   FFCEGMEAIBP.NBAFIEALMHN = 0;
-                   FFCEGMEAIBP.JMBGHDFADHN = -1;
 
-                FFCEGMEAIBP.OHBEGHIIHJB = 0;
-                FFCEGMEAIBP.LOBDMDPMFLK = 1;
+                FFCEGMEAIBP.NBAFIEALMHN = 0;
+                FFCEGMEAIBP.JMBGHDFADHN = -1;
 
-              //  NAEEIFNFBBO.CBMHGKFFHJE = 0;//?????????
-                FFCEGMEAIBP.EBMPAEBEMNE = 0;
-                FFCEGMEAIBP.AEKLGCEFIHM = 0;
+                //probably not needed
+                //       FFCEGMEAIBP.OHBEGHIIHJB = 0;
+                //        FFCEGMEAIBP.LOBDMDPMFLK = 1;
+                //        FFCEGMEAIBP.EBMPAEBEMNE = 0;
+                //        FFCEGMEAIBP.AEKLGCEFIHM = 0;
 
 
                 LIPNHOMGGHF.PMIIOCMHEAE(14);
@@ -437,6 +474,18 @@ namespace Slobberknocker
             Array.Copy(original, newArray, copysize);
             original = newArray;
         }
+        public static int GetSeedFromString(string text)
+        {
+            int seed = 0;
+            if(int.TryParse(text, out seed))
+            {
+                return seed;
+            }
+            MD5 md5Hasher = MD5.Create();
+            var hashed = md5Hasher.ComputeHash(Encoding.UTF8.GetBytes(text));
+            var ivalue = BitConverter.ToInt32(hashed, 0);
+            return ivalue;
+        }
     }
     static class RandomExtensions
     {
@@ -447,6 +496,15 @@ namespace Slobberknocker
             {
                 int k = rng.Next(n--);
                 (array[k], array[n]) = (array[n], array[k]);
+            }
+        }
+        public static void Shuffle<T>(this System.Random rng, List<T> list)
+        {
+            int n = list.Count;
+            while (n > 1)
+            {
+                int k = rng.Next(n--);
+                (list[k], list[n]) = (list[n], list[k]);
             }
         }
     }
