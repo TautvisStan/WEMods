@@ -1,3 +1,5 @@
+//todo better menu navigation, remember player character
+
 using BepInEx;
 using BepInEx.Logging;
 using HarmonyLib;

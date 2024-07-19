@@ -1,10 +1,118 @@
 ﻿using System;
 using System.Collections.Generic;
+using System.Linq;
 using System.Text;
 using UnityEngine;
+using UnityEngine.TextCore;
 
 namespace Roguelite
 {
+    public static class MatchRules
+    {
+        public static (int, int)[] format =
+        {
+           (0, 0), //individuals
+           (1, 0), //teams
+           (2, 0) //tag teams
+        };
+        public static (int, int)[] rules = 
+        { 
+           (2, 40), //strict
+           (1, 40), //leninet
+           (0, 20) //hardcore
+        };
+
+        public static (int, int)[] falls =
+        {
+    //       (0, 10), //none
+           (1, 15), //pins 
+           (2, 60), //p & s
+           (3, 15) //submissions
+        };
+
+        public static (int, int)[] stoppage =
+        {
+           (-1, 10), //smashes
+           (0, 40), //none 
+           (1, 20), //no health
+           (2, 15), //10 count
+           (3, 15) //blood
+        };
+
+        public static (int, int)[] countouts =
+        {
+           (0, 40), //none
+           (1, 20), //fast 
+           (2, 20), //slow
+           (3, 20), //elimination
+           (4, 0) //victory
+        };
+
+        public static (int, int)[] ring =
+        {
+           (0, 5), //none
+           (1, 70), //square 
+           (2, 25) //hexagon
+        };
+
+        public static (int, int)[] cage =
+        {
+           (0, 80), //none
+           (1, 20) //yes 
+        };
+
+        public static (int, int)[] ropes =
+        {
+           (0, 20), //none
+           (1, 60), //white 
+           (-1, 15), //barbed 
+           (-2, 5), //exploding 
+
+        };
+
+        public static (int, int)[] venue =
+        {
+           (0, 80), //default arenas
+           (1, 20) //other locations
+        };
+
+        public static int[] arenas =
+            { -2, -1, 0, 1 };
+
+        public static int[] otherlocs =
+            { 2, 3, 4, 5, 6, 7, 8, 9, 10, 11, 12, 13, 14, 15, 16, 21, 27};
+
+
+        //public static RandomMatch
+    }
+    public class RandomMatch
+    {
+        public int venue;   
+        public int format; 
+        public int rules;  
+        public int falls;  
+        public int stoppage;  
+        public int countouts; 
+        public int ringshape; 
+        public int cage;  
+        public int ropes; 
+        public List<int> opponents;
+        public List<int> teammate;
+        public RandomMatch()
+        {
+            opponents = new();
+            teammate = new();
+        }
+        public override string ToString()
+        {
+            string opps = "";
+            string team = "";
+            foreach (int i in opponents) opps = string.Join(" ", opps, i);
+            foreach (int i in teammate) team = string.Join(" ", team, i);
+
+            return string.Join(" ", venue, format, rules, falls, stoppage, countouts, ringshape, cage, ropes, opps, team);
+        }
+    }
     public static class MatchGenerator
     {
         public static void RemoveCharacter(int id)
@@ -147,7 +255,266 @@ namespace Roguelite
 
         public static void SetupMatchRules()
         {
-            FFCEGMEAIBP.JELMGJMKKEK(3);
+          //  FFCEGMEAIBP.JELMGJMKKEK(3);
         }
+        public static List<int> RandomizeOpponents(int playerchar, Randomizer rng)
+        {
+            List<int> Opponents = new();
+            for (int i = 1; i <= Characters.no_chars; i++)
+            {
+                if (i != playerchar) Opponents.Add(i);
+            }
+            rng.Shuffle(Opponents);
+            return Opponents;
+        }
+        public static List<RandomMatch> GenerateRandomMatches(List<int> opponentPool, Randomizer rng)
+        {
+            List<RandomMatch> matches = new();
+            List<int> teammatePool = new();
+            int i = 1;
+            while (opponentPool.Count > 0) 
+            {
+                RandomMatch match = new();
+                match.venue = GenerateVenue(rng);
+                match.format = GenerateFormat(rng, i);
+                match.ringshape = GenerateRingshape(rng, match.venue);
+                match.cage = GenerateCage(rng, match.ringshape);
+                match.rules = GenerateRules(rng, match.ringshape);
+                match.ropes = GenerateRopes(rng, match.ringshape);
+                match.falls = GenerateFalls(rng);
+                match.stoppage = GenerateStoppage(rng, match.rules, match.cage);
+                match.countouts = GenerateCountouts(rng, match.rules, match.cage, match.ringshape);
+
+                if(i % 5 == 0 && i % 10 != 0)
+                {
+                    int index = rng.Range(1, teammatePool.Count);
+                    match.teammate.Add(teammatePool[index]);
+                    teammatePool.RemoveAt(index);
+                }
+                match.opponents.Add(opponentPool.First());
+                teammatePool.Add(opponentPool.First());
+                opponentPool.Remove(opponentPool.First());
+
+                if(i%5 == 0 && opponentPool.Count != 0)
+                {
+                    match.opponents.Add(opponentPool.First());
+                    teammatePool.Add(opponentPool.First());
+                    opponentPool.Remove(opponentPool.First());
+                }
+                matches.Add(match);
+                i++;
+            }
+
+
+            return matches;
+        }
+        public static int GenerateVenue(Randomizer rng)
+        {
+            ProportionalRandomSelector<int> randomSelectorType = new(rng);
+            foreach ((int i, int proc) in MatchRules.venue)
+            {
+                randomSelectorType.AddPercentageItem(i, proc);
+            }
+            int venueType = randomSelectorType.SelectItem();
+            if(venueType == 0) 
+            {
+                ProportionalRandomSelector<int> randomSelectorArena = new(rng);
+                foreach (int i in MatchRules.arenas)
+                {
+                    randomSelectorArena.AddPercentageItem(i, 1);
+                }
+                return randomSelectorArena.SelectItem();
+            }
+            else
+            {
+                ProportionalRandomSelector<int> randomSelectorOtherLocs = new(rng);
+                foreach (int i in MatchRules.otherlocs)
+                {
+                    randomSelectorOtherLocs.AddPercentageItem(i, 1);
+                }
+                return randomSelectorOtherLocs.SelectItem();
+            }
+        }
+        public static int GenerateFormat(Randomizer rng, int i)
+        {
+            if (i % 20 == 0)
+            {
+                return 1; // teams
+            }
+            if(i % 10 == 0)
+            {
+                return 2; //tag teams
+            }
+            if(i % 5 == 0)
+            {
+                ProportionalRandomSelector<int> randomSelectorFormat = new(rng);
+                randomSelectorFormat.AddPercentageItem(1, 50);
+                randomSelectorFormat.AddPercentageItem(2, 50);
+                return randomSelectorFormat.SelectItem();
+            }
+            return 0; //individuals
+        }
+        public static int GenerateRingshape(Randomizer rng, int venue)
+        {
+            int[] noRingVenues = { 4, 6, 7, 9, 11, 13, 15, 21, 27 };
+            if (Array.Exists(noRingVenues, element => element == venue))
+            {
+                return 0; //no ring
+            }
+            else
+            {
+                ProportionalRandomSelector<int> randomSelectorRing = new(rng);
+                foreach ((int i, int proc) in MatchRules.ring)
+                {
+                    randomSelectorRing.AddPercentageItem(i, proc);
+                }
+                int result = randomSelectorRing.SelectItem();
+                return result;
+            }
+        }
+        public static int GenerateCage(Randomizer rng, int ring)
+        {
+            if (ring == 0)
+            {
+                return 0; //no cage
+            }
+            else
+            {
+                ProportionalRandomSelector<int> randomSelectorCage = new(rng);
+                foreach ((int i, int proc) in MatchRules.cage)
+                {
+                    randomSelectorCage.AddPercentageItem(i, proc);
+                }
+                return randomSelectorCage.SelectItem();
+            }
+        }
+        public static int GenerateRopes(Randomizer rng, int ring)
+        {
+            if (ring == 0)
+            {
+                return 0; //no ropes
+            }
+            else
+            {
+                ProportionalRandomSelector<int> randomSelectorRope = new(rng);
+                foreach ((int i, int proc) in MatchRules.ropes)
+                {
+                    randomSelectorRope.AddPercentageItem(i, proc);
+                }
+                return randomSelectorRope.SelectItem();
+            }
+        }
+        public static int GenerateRules(Randomizer rng, int ring)
+        {
+            if (ring == 0)
+            {
+                return 0; //hardcore
+            }
+            else
+            {
+                ProportionalRandomSelector<int> randomSelectorRules = new(rng);
+                foreach ((int i, int proc) in MatchRules.rules)
+                {
+                    randomSelectorRules.AddPercentageItem(i, proc);
+                }
+                return randomSelectorRules.SelectItem();
+            }
+        }
+        public static int GenerateFalls(Randomizer rng)
+        {
+            ProportionalRandomSelector<int> randomSelectorFalls = new(rng);
+            foreach ((int i, int proc) in MatchRules.falls)
+            {
+                randomSelectorFalls.AddPercentageItem(i, proc);
+            }
+            return randomSelectorFalls.SelectItem();
+        }
+        public static int GenerateStoppage(Randomizer rng, int rules, int cage)
+        {
+            ProportionalRandomSelector<int> randomSelectorStoppage = new(rng);
+            randomSelectorStoppage.AddPercentageItem(0, 50); // none
+            randomSelectorStoppage.AddPercentageItem(1, 20); // no health
+            randomSelectorStoppage.AddPercentageItem(2, 20); // 10 count
+            if(rules == 0) // hardcore
+            {
+                randomSelectorStoppage.AddPercentageItem(3, 10); // none
+            }
+            if(cage == 0)  //no cage
+            {
+                randomSelectorStoppage.AddPercentageItem(-1, 10); // smashes
+            }
+            return randomSelectorStoppage.SelectItem();
+
+        }
+        public static int GenerateCountouts(Randomizer rng, int rules, int cage, int ringshape)
+        {
+            ProportionalRandomSelector<int> randomSelectorCountouts = new(rng);
+            randomSelectorCountouts.AddPercentageItem(0, 40); // none
+            if (ringshape != 0 && rules != 0)
+            {
+                randomSelectorCountouts.AddPercentageItem(1, 20); // slow
+                randomSelectorCountouts.AddPercentageItem(2, 20); // fast
+            }
+            if (ringshape != 0)
+            {
+                randomSelectorCountouts.AddPercentageItem(3, 20); // elimination
+            }
+            if (cage != 0)
+            {
+                randomSelectorCountouts.AddPercentageItem(4, 75); // victory
+            }
+            return randomSelectorCountouts.SelectItem();
+
+        }
+
+
+    }
+    public class ProportionalRandomSelector<T>
+    {
+
+        private readonly Dictionary<T, int> percentageItemsDict;
+        private Randomizer random;
+        public ProportionalRandomSelector(Randomizer rnd)
+        {
+            percentageItemsDict = new();
+            random = rnd;
+        }
+
+        public void AddPercentageItem(T item, int percentage) => percentageItemsDict.Add(item, percentage);
+
+        public T SelectItem()
+        {
+
+            // Calculate the summa of all portions.
+            int poolSize = 0;
+            foreach (int i in percentageItemsDict.Values)
+            {
+                poolSize += i;
+            }
+
+            // Get a random integer from 1 to PoolSize.
+            int randomNumber = random.Range(1, poolSize);
+
+            // Detect the item, which corresponds to current random number.
+            int accumulatedProbability = 0;
+            foreach (KeyValuePair<T, int> pair in percentageItemsDict)
+            {
+                accumulatedProbability += pair.Value;
+                if (randomNumber <= accumulatedProbability)
+                    return pair.Key;
+            }
+
+            return default;  // this code will never come while you use this programm right :)
+
+        }
+
     }
 }
+
+
+//strict = no blood stoppage
+//no ring = no cage
+//cage = countout victory instead of elim
+//every 5th match = team format;
+//every 10 match = handicap tag;
+//every 20 match = handicap team;

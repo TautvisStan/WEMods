@@ -3,10 +3,15 @@
 
 
 using BepInEx;
+using BepInEx.Configuration;
 using BepInEx.Logging;
 using HarmonyLib;
+using System;
 using System.Collections.Generic;
+using System.Diagnostics;
 using System.IO;
+using System.Security.Cryptography;
+using System.Text;
 using UnityEngine.SceneManagement;
 
 namespace Roguelite
@@ -30,11 +35,19 @@ namespace Roguelite
 
         public static RogueliteSave save = null;
 
+        public static ConfigEntry<string> RandomizerSeed;
+
         private void Awake()
         {
             Plugin.Log = base.Logger;
 
             PluginPath = Path.GetDirectoryName(Info.Location);
+
+            RandomizerSeed = Config.Bind("General",
+             "Randomizer Seed",
+             "",
+             "If you set a seed here, the characters you fight should always be the same based on the seed, as long as you pick the same character and have the same total number of characters. Leave empty for no set seed.");
+
         }
 
         private void OnEnable()
@@ -82,10 +95,6 @@ namespace Roguelite
                     else
                     {
                         //?
-                        FFCEGMEAIBP.OHBEGHIIHJB = 0;
-                        FFCEGMEAIBP.LOBDMDPMFLK = 1;
-                        FFCEGMEAIBP.EBMPAEBEMNE = 0;
-                        FFCEGMEAIBP.AEKLGCEFIHM = 0;
 
                         MatchGenerator.SetupMatchRules();
 
@@ -218,8 +227,25 @@ namespace Roguelite
                 FFCEGMEAIBP.EBMPAEBEMNE = 0;
                 FFCEGMEAIBP.AEKLGCEFIHM = 0;
 
-                MatchGenerator.SetupMatchRules();
+                Randomizer rng;
+                if (RandomizerSeed.Value != "")
+                {
+                    rng = new(RandomizerSeed.Value);
+                }
+                else
+                {
+                    rng = new();
+                }
 
+
+                List<int> opponents = MatchGenerator.RandomizeOpponents(GOOKPABIPBC, rng);
+                save.matches = MatchGenerator.GenerateRandomMatches(opponents, rng);
+
+
+                foreach(RandomMatch m in save.matches)
+                {
+                    UnityEngine.Debug.LogWarning(m.ToString());
+                }
                 LIPNHOMGGHF.PMIIOCMHEAE(14);  //match setup
 
             }
@@ -237,27 +263,6 @@ namespace Roguelite
             }
         }
 
-    }
-    static class RandomExtensions
-    {
-        public static void Shuffle<T>(this System.Random rng, T[] array)
-        {
-            int n = array.Length;
-            while (n > 1)
-            {
-                int k = rng.Next(n--);
-                (array[k], array[n]) = (array[n], array[k]);
-            }
-        }
 
-        public static void Shuffle<T>(this System.Random rng, List<T> list)
-        {
-            int n = list.Count;
-            while (n > 1)
-            {
-                int k = rng.Next(n--);
-                (list[k], list[n]) = (list[n], list[k]);
-            }
-        }
     }
 }
