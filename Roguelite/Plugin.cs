@@ -6,7 +6,6 @@ using HarmonyLib;
 using Newtonsoft.Json;
 using System;
 using System.Collections.Generic;
-using System.Diagnostics;
 using System.IO;
 using System.Security.Cryptography;
 using System.Text;
@@ -34,7 +33,7 @@ namespace Roguelite
         public static RogueliteSave save = null;
 
         public static ConfigEntry<string> RandomizerSeed;
-        public static Randomizer rng;
+        public static Randomizer rng = null;
 
         private void Awake()
         {
@@ -94,10 +93,11 @@ namespace Roguelite
                         LIPNHOMGGHF.PMIIOCMHEAE(11); //char select
                     else
                     {
-                        rng = new(save.seed.ToString());
-                        rng.CatchUp(save.nums);
-
-                        MatchGenerator.SetupMatchRules();
+                        if (rng == null)
+                        {
+                            rng = new(save.seed.ToString());
+                            rng.CatchUp(save.nums);
+                        }
 
                         LIPNHOMGGHF.PMIIOCMHEAE(14); //match setup
                     }
@@ -256,8 +256,9 @@ namespace Roguelite
         {
             if (NAEEIFNFBBO.CBMHGKFFHJE == RogueliteNum || LIPNHOMGGHF.BCKLOCJPIMD == RogueliteNum)
             {
-                MatchGenerator.RemoveOpponents();
-                MatchGenerator.AddCharacter(save.SelectedCharacter, 0);
+                UnityEngine.Debug.LogWarning("A");
+                MatchGenerator.SetupMatchRules(save.matches[0]);
+                MatchGenerator.SetupParticipants(save.SelectedCharacter, save.matches[0]);
             }
         }
 

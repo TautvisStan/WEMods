@@ -4,9 +4,8 @@
 using System;
 using System.Collections.Generic;
 using System.Linq;
-using System.Text;
 using UnityEngine;
-using UnityEngine.TextCore;
+
 
 namespace Roguelite
 {
@@ -264,9 +263,39 @@ namespace Roguelite
             }
         }
 
-        public static void SetupMatchRules()
+        public static void SetupMatchRules(RandomMatch match)
         {
-          //  FFCEGMEAIBP.JELMGJMKKEK(3);
+            World.libraryFoc = Array.IndexOf(World.library, match.venue);
+            World.location = match.venue;
+            FFCEGMEAIBP.OLJFOJOLLOM = match.format;
+            FFCEGMEAIBP.CADLONHABMC = match.rules;
+            FFCEGMEAIBP.BPJFLJPKKJK = match.aim;
+            FFCEGMEAIBP.LGHMLHICAFL = match.falls;
+            FFCEGMEAIBP.DOLNEDHNKMM = match.stoppage;
+            FFCEGMEAIBP.GDKCEGBINCM = match.countouts;
+            World.ringShape = match.ringshape;
+            World.arenaCage = match.cage;
+            World.ringRopes = match.ropes;
+            World.ICGNAJFLAHL(1); //location
+            World.DBKOAJKLBIF(1); //ring
+            //fog
+            World.EFNENMKELIA();
+            World.CJMBGNBDOFI();
+            //apply cage??????????
+
+        }
+        public static void SetupParticipants(int player, RandomMatch match)
+        {
+            RemoveOpponents();
+            AddCharacter(player, 1);
+            foreach (int opponent in match.opponents)
+            {
+                AddCharacter(opponent, 2);
+            }
+            foreach (int teammate in match.teammate)
+            {
+                AddCharacter(teammate, 1);
+            }
         }
         public static List<int> RandomizeOpponents(int playerchar, Randomizer rng)
         {

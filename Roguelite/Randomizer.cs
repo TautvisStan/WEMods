@@ -31,7 +31,6 @@ namespace Roguelite
         {
             for (int i = 0; i < nums; i++)
             {
-                nums++;
                 rng.Next(1);
             }
         }
