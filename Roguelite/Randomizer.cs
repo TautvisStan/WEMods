@@ -1,4 +1,7 @@
-﻿using System;
+﻿// use implementation at https://gist.github.com/macklinb/a00be6b616cbf20fa95e4227575fe50b ?
+
+
+using System;
 using System.Collections.Generic;
 using System.Security.Cryptography;
 using System.Text;
@@ -7,21 +10,30 @@ namespace Roguelite
 {
     public class Randomizer
     {
-        public System.Random rng;
-        public int seed;
-        int nums = 0;
+        public System.Random rng { get; set; }
+        public int seed { get; set; }
+        public int nums { get; set; }
         public Randomizer()
         {
             seed = (int)DateTime.Now.Ticks & 0xFFFFFFF;
             rng = new System.Random(seed);
             Plugin.Log.LogInfo("Using default random seed: " + seed);
+            nums = 0;
         }
         public Randomizer(string customSeed)
         {
             seed = GetSeedFromString(customSeed);
             rng = new System.Random(seed);
             Plugin.Log.LogInfo("Using custom seed \"" + customSeed+ "\", corresponds to default random seed: " + seed);
-
+            nums = 0;
+        }
+        public void CatchUp(int nums)
+        {
+            for (int i = 0; i < nums; i++)
+            {
+                nums++;
+                rng.Next(1);
+            }
         }
         public int Next(int max)
         {
@@ -52,7 +64,7 @@ namespace Roguelite
             int n = list.Count;
             while (n > 1)
             {
-                int k = this.rng.Next(n--);
+                int k = rng.Next(n--);
                 (list[k], list[n]) = (list[n], list[k]);
             }
         }

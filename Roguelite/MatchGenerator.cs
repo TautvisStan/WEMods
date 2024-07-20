@@ -1,4 +1,7 @@
-﻿using System;
+﻿//todo bo3 falls, elim in team, 
+
+
+using System;
 using System.Collections.Generic;
 using System.Linq;
 using System.Text;
@@ -28,6 +31,13 @@ namespace Roguelite
            (1, 15), //pins 
            (2, 60), //p & s
            (3, 15) //submissions
+        };
+
+        public static (int, int)[] aim =
+        {
+           (1, 75), //first fall wins 
+           (2, 25), //best of 3
+           (5, 0) //elimination
         };
 
         public static (int, int)[] stoppage =
@@ -87,17 +97,18 @@ namespace Roguelite
     }
     public class RandomMatch
     {
-        public int venue;   
-        public int format; 
-        public int rules;  
-        public int falls;  
-        public int stoppage;  
-        public int countouts; 
-        public int ringshape; 
-        public int cage;  
-        public int ropes; 
-        public List<int> opponents;
-        public List<int> teammate;
+        public int venue { get; set; }   
+        public int format { get; set; }
+        public int rules { get; set; }
+        public int aim { get; set; }
+        public int falls { get; set; }
+        public int stoppage { get; set; }
+        public int countouts { get; set; }
+        public int ringshape { get; set; }
+        public int cage { get; set; }
+        public int ropes { get; set; }
+        public List<int> opponents { get; set; }
+        public List<int> teammate { get; set; }
         public RandomMatch()
         {
             opponents = new();
@@ -110,7 +121,7 @@ namespace Roguelite
             foreach (int i in opponents) opps = string.Join(" ", opps, i);
             foreach (int i in teammate) team = string.Join(" ", team, i);
 
-            return string.Join(" ", venue, format, rules, falls, stoppage, countouts, ringshape, cage, ropes, opps, team);
+            return string.Join(" ", venue, format, rules, aim, falls, stoppage, countouts, ringshape, cage, ropes, opps, team);
         }
     }
     public static class MatchGenerator
@@ -280,6 +291,7 @@ namespace Roguelite
                 match.ringshape = GenerateRingshape(rng, match.venue);
                 match.cage = GenerateCage(rng, match.ringshape);
                 match.rules = GenerateRules(rng, match.ringshape);
+                match.aim = GenerateAim(rng, i);
                 match.ropes = GenerateRopes(rng, match.ringshape);
                 match.falls = GenerateFalls(rng);
                 match.stoppage = GenerateStoppage(rng, match.rules, match.cage);
@@ -353,6 +365,18 @@ namespace Roguelite
                 return randomSelectorFormat.SelectItem();
             }
             return 0; //individuals
+        }
+        public static int GenerateAim(Randomizer rng, int i)
+        {
+            ProportionalRandomSelector<int> randomSelectorAim = new(rng);
+            randomSelectorAim.AddPercentageItem(1, 75);
+            randomSelectorAim.AddPercentageItem(2, 25);
+
+            if (i % 5 == 0)
+            {
+                randomSelectorAim.AddPercentageItem(5, 50);
+            }
+            return randomSelectorAim.SelectItem();
         }
         public static int GenerateRingshape(Randomizer rng, int venue)
         {

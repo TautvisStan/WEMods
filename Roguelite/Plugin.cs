@@ -1,11 +1,9 @@
-//Saving & loading progress; prevent being able to reroll generated matches by going back to titles;
-
-
-
+//apllying match rules; progression between matches; removing save when defeated; disable venue options
 using BepInEx;
 using BepInEx.Configuration;
 using BepInEx.Logging;
 using HarmonyLib;
+using Newtonsoft.Json;
 using System;
 using System.Collections.Generic;
 using System.Diagnostics;
@@ -22,7 +20,7 @@ namespace Roguelite
     {
         public const string PluginGuid = "GeeEm.WrestlingEmpire.Roguelite";
         public const string PluginName = "Roguelite";
-        public const string PluginVer = "0.0.0";
+        public const string PluginVer = "0.0.1";
 
         internal static ManualLogSource Log;
         internal readonly static Harmony Harmony = new(PluginGuid);
@@ -36,6 +34,7 @@ namespace Roguelite
         public static RogueliteSave save = null;
 
         public static ConfigEntry<string> RandomizerSeed;
+        public static Randomizer rng;
 
         private void Awake()
         {
@@ -90,11 +89,13 @@ namespace Roguelite
                     NAEEIFNFBBO.CBMHGKFFHJE = RogueliteNum;
                     LIPNHOMGGHF.BCKLOCJPIMD = RogueliteNum;
 
+                    save = LoadFromFile("RogueliteSave.json");
                     if (save == null)
                         LIPNHOMGGHF.PMIIOCMHEAE(11); //char select
                     else
                     {
-                        //?
+                        rng = new(save.seed.ToString());
+                        rng.CatchUp(save.nums);
 
                         MatchGenerator.SetupMatchRules();
 
@@ -222,12 +223,11 @@ namespace Roguelite
                 save = new(GOOKPABIPBC);
 
                 //?
-                FFCEGMEAIBP.OHBEGHIIHJB = 0;
-                FFCEGMEAIBP.LOBDMDPMFLK = 1;
-                FFCEGMEAIBP.EBMPAEBEMNE = 0;
-                FFCEGMEAIBP.AEKLGCEFIHM = 0;
+               // FFCEGMEAIBP.OHBEGHIIHJB = 0;
+               // FFCEGMEAIBP.LOBDMDPMFLK = 1;
+               // FFCEGMEAIBP.EBMPAEBEMNE = 0;
+               // FFCEGMEAIBP.AEKLGCEFIHM = 0;
 
-                Randomizer rng;
                 if (RandomizerSeed.Value != "")
                 {
                     rng = new(RandomizerSeed.Value);
@@ -236,16 +236,14 @@ namespace Roguelite
                 {
                     rng = new();
                 }
+                save.seed = rng.seed;
 
 
                 List<int> opponents = MatchGenerator.RandomizeOpponents(GOOKPABIPBC, rng);
                 save.matches = MatchGenerator.GenerateRandomMatches(opponents, rng);
 
+                SaveToFile(save, "RogueliteSave.json");
 
-                foreach(RandomMatch m in save.matches)
-                {
-                    UnityEngine.Debug.LogWarning(m.ToString());
-                }
                 LIPNHOMGGHF.PMIIOCMHEAE(14);  //match setup
 
             }
@@ -263,6 +261,40 @@ namespace Roguelite
             }
         }
 
-
+        public static void SaveToFile(RogueliteSave save, string filename)
+        {
+            save.nums = rng.nums;
+            save.seed = rng.seed;
+            using (StreamWriter file = File.CreateText(Path.Combine(Paths.ConfigPath, filename)))
+            {
+                JsonSerializer serializer = new JsonSerializer();
+                serializer.Serialize(file, save);
+            }
+        }
+        public static RogueliteSave LoadFromFile(string filename)
+        {
+            RogueliteSave save = null;
+            try
+            {
+                if (File.Exists(Path.Combine(Paths.ConfigPath, filename)))
+                {
+                    using (StreamReader file = File.OpenText(Path.Combine(Paths.ConfigPath, filename)))
+                    {
+                        JsonSerializer serializer = new JsonSerializer();
+                        save = (RogueliteSave)serializer.Deserialize(file, typeof(RogueliteSave));
+                        if (save == null)
+                        {
+                            Log.LogError("Failed to load the save file for an unknown reason.");
+                        }
+                    }
+                }
+            }
+            catch (Exception e)
+            {
+                Log.LogError("An error has occured while trying to load the save.");
+                Log.LogError(e);
+            }
+            return save;
+        }
     }
 }
