@@ -266,6 +266,25 @@ namespace Roguelite
             FFCEGMEAIBP.NLPNEAAANMO(0);
             World.libraryFoc = Array.IndexOf(World.library, match.venue);
             World.location = match.venue;
+            Scene_Match_Setup code = UnityEngine.GameObject.Find("Code").GetComponent<Scene_Match_Setup>();
+            int num = 0;
+            if (World.location <= 1 && code.oldArena <= 1)
+            {
+                num = 1;
+            }
+            if (World.location == -2 || code.oldArena == -2)
+            {
+                num = 0;
+            }
+            if (num > 0)
+            {
+                World.KELMLPGMAPC(1);
+            }
+            else
+            {
+                World.ICGNAJFLAHL(1);
+            }
+            code.oldArena = match.venue;
             FFCEGMEAIBP.OLJFOJOLLOM = match.format;
             FFCEGMEAIBP.CADLONHABMC = match.rules;
             FFCEGMEAIBP.BPJFLJPKKJK = match.aim;
@@ -283,8 +302,18 @@ namespace Roguelite
             FFCEGMEAIBP.JMBGHDFADHN = -1;
             //fog
             World.EFNENMKELIA();
-            World.CJMBGNBDOFI();
+            World.CJMBGNBDOFI(1);
 
+            if(match.rules <= 1)
+            {
+                JFLEBEBCGFA.CCFGHKNBOEL *= 2;
+                JFLEBEBCGFA.LGPEMCGEEPN = 0;
+            }
+
+            if (match.stoppage == -1)
+            {
+                HAPFAOIMGOL.CCFGHKNBOEL *= 2;
+            }
 
         }
         public static void SetupParticipants(int player, RandomMatch match)
