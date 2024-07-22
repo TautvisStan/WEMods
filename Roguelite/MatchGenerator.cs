@@ -1,7 +1,4 @@
-﻿//todo bo3 falls, elim in team, 
-
-
-using System;
+﻿using System;
 using System.Collections.Generic;
 using System.Linq;
 using UnityEngine;
@@ -265,6 +262,8 @@ namespace Roguelite
 
         public static void SetupMatchRules(RandomMatch match)
         {
+            FFCEGMEAIBP.JELMGJMKKEK(2);
+            FFCEGMEAIBP.NLPNEAAANMO(0);
             World.libraryFoc = Array.IndexOf(World.library, match.venue);
             World.location = match.venue;
             FFCEGMEAIBP.OLJFOJOLLOM = match.format;
@@ -278,10 +277,14 @@ namespace Roguelite
             World.ringRopes = match.ropes;
             World.ICGNAJFLAHL(1); //location
             World.DBKOAJKLBIF(1); //ring
+            World.crowdSize = 1;
+            World.ringSize = World.MNCIAPLCFDM();
+            FFCEGMEAIBP.NBAFIEALMHN = 0;
+            FFCEGMEAIBP.JMBGHDFADHN = -1;
             //fog
             World.EFNENMKELIA();
             World.CJMBGNBDOFI();
-            //apply cage??????????
+
 
         }
         public static void SetupParticipants(int player, RandomMatch match)

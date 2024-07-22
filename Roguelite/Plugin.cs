@@ -1,4 +1,4 @@
-//apllying match rules; progression between matches; removing save when defeated; disable venue options
+//proper end when no more matches; delete save button in settings; some kind of match counter; fill up the ring on hardcore/smash matches; better menu nav;
 using BepInEx;
 using BepInEx.Configuration;
 using BepInEx.Logging;
@@ -9,6 +9,7 @@ using System.Collections.Generic;
 using System.IO;
 using System.Security.Cryptography;
 using System.Text;
+using System.Text.RegularExpressions;
 using UnityEngine.SceneManagement;
 
 namespace Roguelite
@@ -19,7 +20,7 @@ namespace Roguelite
     {
         public const string PluginGuid = "GeeEm.WrestlingEmpire.Roguelite";
         public const string PluginName = "Roguelite";
-        public const string PluginVer = "0.0.1";
+        public const string PluginVer = "0.9.0";
 
         internal static ManualLogSource Log;
         internal readonly static Harmony Harmony = new(PluginGuid);
@@ -34,7 +35,6 @@ namespace Roguelite
 
         public static ConfigEntry<string> RandomizerSeed;
         public static Randomizer rng = null;
-
         private void Awake()
         {
             Plugin.Log = base.Logger;
@@ -153,6 +153,30 @@ namespace Roguelite
                 }
             }
         }
+        //Fixing the match aim
+        [HarmonyPatch(typeof(FFCEGMEAIBP), nameof(FFCEGMEAIBP.APHBIDDCMGP))]
+        [HarmonyPrefix]
+        public static void FFCEGMEAIBP_APHBIDDCMGP_Patch()
+        {
+            if (NAEEIFNFBBO.CBMHGKFFHJE == RogueliteNum || LIPNHOMGGHF.BCKLOCJPIMD == RogueliteNum)
+            {
+                FFCEGMEAIBP.LCCCCENGFOK = save.matches[0].opponents.Count + save.matches[0].teammate.Count + 1;
+            }
+        }
+        //Progressing once the player wins
+        [HarmonyPatch(typeof(FFCEGMEAIBP), nameof(FFCEGMEAIBP.BAGEPNPJPLD))]
+        [HarmonyPostfix]
+        public static void FFCEGMEAIBP_BAGEPNPJPLD_Patch(int KJELLNJFNGO)
+        {
+            if (NAEEIFNFBBO.CBMHGKFFHJE == RogueliteNum || LIPNHOMGGHF.BCKLOCJPIMD == RogueliteNum)
+            {
+                if (NJBJIIIACEP.OAAMGFLINOB[KJELLNJFNGO].LBCFAJGDKJP == 1 || NJBJIIIACEP.OAAMGFLINOB[KJELLNJFNGO].GOOKPABIPBC == save.SelectedCharacter)
+                {
+                    save.matches.RemoveAt(0);
+                    SaveToFile(save, "RogueliteSave.json");
+                }
+            }
+        }
         //disable interference and simulate buttons;
         [HarmonyPatch(typeof(LIPNHOMGGHF), nameof(LIPNHOMGGHF.OPBBKBAJJHA))]
         [HarmonyPostfix]
@@ -174,7 +198,7 @@ namespace Roguelite
         {
             if (NAEEIFNFBBO.CBMHGKFFHJE == RogueliteNum)
             {
-                if (LIPNHOMGGHF.CHLJMEPFJOK == 2 || LIPNHOMGGHF.CHLJMEPFJOK == 4)
+                if (LIPNHOMGGHF.CHLJMEPFJOK == 1 || LIPNHOMGGHF.CHLJMEPFJOK == 2 || LIPNHOMGGHF.CHLJMEPFJOK == 4)
                 {
                     for (int i = 1; i <= LIPNHOMGGHF.HOAOLPGEBKJ; i++)
                     {
@@ -183,14 +207,27 @@ namespace Roguelite
                 }
                 if (LIPNHOMGGHF.CHLJMEPFJOK == 3)       //disable character selection in cast menu
                 {
-                    NJBJIIIACEP.OAAMGFLINOB[1].AHBNKMMMGFI = 0;
+                    for (int i = 1; i < NJBJIIIACEP.OAAMGFLINOB.Length; i++)
+                    {
+                        if (NJBJIIIACEP.OAAMGFLINOB[i] != null)
+                        {
+                            NJBJIIIACEP.OAAMGFLINOB[i].AHBNKMMMGFI = 0;
+                        }
+                    }
                 }
                 else
                 {
-                    NJBJIIIACEP.OAAMGFLINOB[1].AHBNKMMMGFI = 1;
+                    for (int i = 1; i < NJBJIIIACEP.OAAMGFLINOB.Length; i++)
+                    {
+                        if (NJBJIIIACEP.OAAMGFLINOB[i] != null && NJBJIIIACEP.OAAMGFLINOB[i].GOOKPABIPBC == save.SelectedCharacter)
+                        {
+                            NJBJIIIACEP.OAAMGFLINOB[i].AHBNKMMMGFI = 1;
+                        }
+                    }
                 }
             }
         }
+
         //disable cast tab buttons
         [HarmonyPatch(typeof(Scene_Match_Setup), nameof(Scene_Match_Setup.AddRandom))]
         [HarmonyPrefix]
@@ -256,7 +293,6 @@ namespace Roguelite
         {
             if (NAEEIFNFBBO.CBMHGKFFHJE == RogueliteNum || LIPNHOMGGHF.BCKLOCJPIMD == RogueliteNum)
             {
-                UnityEngine.Debug.LogWarning("A");
                 MatchGenerator.SetupMatchRules(save.matches[0]);
                 MatchGenerator.SetupParticipants(save.SelectedCharacter, save.matches[0]);
             }
