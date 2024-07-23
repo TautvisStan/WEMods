@@ -1,4 +1,4 @@
-//proper end when no more matches; delete save button in settings; better menu nav; bull rope dog collar in singles; check for invalid char ids;
+//proper end when no more matches, save a separate file;  bull rope dog collar in singles; change bo3 + no health combo; toggle between all match generation and generating matches on the run; fix current match to be +1?
 using BepInEx;
 using BepInEx.Configuration;
 using BepInEx.Logging;
@@ -9,6 +9,8 @@ using System.Collections.Generic;
 using System.IO;
 using UnityEngine.SceneManagement;
 using UnityEngine;
+using WECCL.API;
+using System.ComponentModel;
 
 namespace Roguelite
 {
@@ -18,7 +20,7 @@ namespace Roguelite
     {
         public const string PluginGuid = "GeeEm.WrestlingEmpire.Roguelite";
         public const string PluginName = "Roguelite";
-        public const string PluginVer = "0.9.1";
+        public const string PluginVer = "0.9.2";
 
         internal static ManualLogSource Log;
         internal readonly static Harmony Harmony = new(PluginGuid);
@@ -32,6 +34,7 @@ namespace Roguelite
         public static RogueliteSave save = null;
 
         public static ConfigEntry<string> RandomizerSeed;
+        public static ConfigEntry<bool> AdvancedDisplay;
         public static Randomizer rng = null;
 
         public static int CurrentMatch = 0;
@@ -47,6 +50,18 @@ namespace Roguelite
              "Randomizer Seed",
              "",
              "If you set a seed here, the characters you fight should always be the same based on the seed, as long as you pick the same character and have the same total number of characters. Leave empty for no set seed.");
+
+            AdvancedDisplay = Config.Bind("General",
+             "Advanced Display",
+             true,
+             "If enabled, it will display the match counter next to the timer.");
+
+
+            Buttons.RegisterCustomButton(this, "Delete Save", () =>
+            {
+                DeleteSave("RogueliteSave.json");
+                return "Save Deleted!";
+            }, true);
 
         }
 
@@ -132,9 +147,9 @@ namespace Roguelite
             //Doing stuff when exiting match
             if (SceneManager.GetActiveScene().name == "Game" && LIPNHOMGGHF.BCKLOCJPIMD == RogueliteNum)
             {
-                NAEEIFNFBBO.CBMHGKFFHJE = 0;
-                LIPNHOMGGHF.BCKLOCJPIMD = 0;
-                KBEAJEIMNMI = 1;  //titles
+                NAEEIFNFBBO.CBMHGKFFHJE = RogueliteNum;
+                LIPNHOMGGHF.BCKLOCJPIMD = RogueliteNum;
+                KBEAJEIMNMI = 14;  //match setup redirect
                 return;
             }
 
@@ -160,7 +175,7 @@ namespace Roguelite
         [HarmonyPostfix]
         public static void FFCEGMEAIBP_HLEDBJJDLIA_Patch()
         {
-            if (NAEEIFNFBBO.CBMHGKFFHJE == RogueliteNum || LIPNHOMGGHF.BCKLOCJPIMD == RogueliteNum)
+            if (NAEEIFNFBBO.CBMHGKFFHJE == RogueliteNum || LIPNHOMGGHF.BCKLOCJPIMD == RogueliteNum && AdvancedDisplay.Value == true)
             {
                 if (FFCEGMEAIBP.PDEHCNAKBCG.text != "")
                     FFCEGMEAIBP.PDEHCNAKBCG.text = "Time: " + FFCEGMEAIBP.PDEHCNAKBCG.text + " | <color=Orange>Match: " + (CurrentMatch+1) + "/" + save.matches.Count + "</color>";
@@ -233,7 +248,6 @@ namespace Roguelite
                     }
                     else
                     {
-                        Debug.LogWarning("UNLOCKING CHARS");
                         for (int i = 1; i < NJBJIIIACEP.OAAMGFLINOB.Length; i++)
                         {
                             if (NJBJIIIACEP.OAAMGFLINOB[i] != null)
@@ -312,6 +326,11 @@ namespace Roguelite
             if (NAEEIFNFBBO.CBMHGKFFHJE == RogueliteNum || LIPNHOMGGHF.BCKLOCJPIMD == RogueliteNum)
             {
                 MatchGenerator.SetupMatchRules(save.matches[save.currentMatch]);
+                if(save.SelectedCharacter > Characters.no_chars)
+                {
+                    Log.LogWarning($"WARNING! Player id {save.SelectedCharacter} is out of range! They will be replaced by a random character!");
+                    save.SelectedCharacter = UnityEngine.Random.Range(1, Characters.no_chars + 1);
+                }
                 MatchGenerator.SetupParticipants(save.SelectedCharacter, save.matches[save.currentMatch]);
                 CurrentMatch = save.currentMatch;
             }
@@ -326,6 +345,23 @@ namespace Roguelite
                 JsonSerializer serializer = new JsonSerializer();
                 serializer.Serialize(file, save);
             }
+        }
+        public static void DeleteSave(string filename)
+        {
+            save = null;
+            rng = null;
+            try
+            {
+                if (File.Exists(Path.Combine(Paths.ConfigPath, filename)))
+                {
+                    File.Delete(Path.Combine(Paths.ConfigPath, filename));
+                }
+            }
+            catch (Exception e)
+            {
+                Log.LogError(e);
+            }
+
         }
         public static RogueliteSave LoadFromFile(string filename)
         {

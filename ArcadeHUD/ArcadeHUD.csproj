@@ -1,7 +1,7 @@
-<Project Sdk="Microsoft.NET.Sdk">
+﻿<Project Sdk="Microsoft.NET.Sdk">
 
     <PropertyGroup>
-        <AssemblyName>Roguelite</AssemblyName>
+        <AssemblyName>ArcadeHUD</AssemblyName>
         <AssemblyVersion>1.0.0</AssemblyVersion>
         <ReleaseVersion>1.0.0</ReleaseVersion>
         <TargetFramework>netstandard2.0</TargetFramework>
@@ -15,15 +15,8 @@
     </PropertyGroup>
 
     <ItemGroup>
-      <Compile Remove="Old\**" />
-      <EmbeddedResource Remove="Old\**" />
-      <None Remove="Old\**" />
-    </ItemGroup>
-
-    <ItemGroup>
         <PackageReference Include="BepInEx.Analyzers" Version="1.*" PrivateAssets="all" />
         <PackageReference Include="BepInEx.Core" Version="5.4.21" />
-        <PackageReference Include="Newtonsoft.Json" Version="13.0.3" />
         <PackageReference Include="UnityEngine.Modules" Version="2020.3.43" IncludeAssets="compile" />
     </ItemGroup>
 
@@ -34,12 +27,6 @@
     <ItemGroup>
       <Reference Include="Assembly-CSharp">
         <HintPath>lib\Assembly-CSharp_public.dll</HintPath>
-      </Reference>
-      <Reference Include="UnityEngine.UI">
-        <HintPath>UnityEngine.UI.dll</HintPath>
-      </Reference>
-      <Reference Include="WECCL">
-        <HintPath>WECCL.dll</HintPath>
       </Reference>
     </ItemGroup>
 

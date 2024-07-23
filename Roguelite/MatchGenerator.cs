@@ -297,7 +297,18 @@ namespace Roguelite
             World.ICGNAJFLAHL(1); //location
             World.DBKOAJKLBIF(1); //ring
             World.crowdSize = 1;
-            World.ringSize = World.MNCIAPLCFDM();
+            if (World.ringShape > 0)
+            {
+                if (World.MNCIAPLCFDM() == 0f)
+                {
+                    World.ringShape = -World.ringShape;
+                    GIMNNPMAKNJ.NALPMNNGKAE();
+                }
+                else
+                {
+                    World.ringSize = World.MNCIAPLCFDM();
+                }
+            }
             FFCEGMEAIBP.NBAFIEALMHN = 0;
             FFCEGMEAIBP.JMBGHDFADHN = -1;
             //fog
@@ -322,11 +333,29 @@ namespace Roguelite
             AddCharacter(player, 1);
             foreach (int opponent in match.opponents)
             {
-                AddCharacter(opponent, 2);
+                if (opponent > Characters.no_chars)
+                {
+                    Plugin.Log.LogWarning($"WARNING! Opponent id {opponent} is out of range! They will be replaced by a random character!");
+                    int newopp = UnityEngine.Random.Range(1, Characters.no_chars+1);
+                    AddCharacter(newopp, 2);
+                }
+                else
+                {
+                    AddCharacter(opponent, 2);
+                }
             }
             foreach (int teammate in match.teammate)
             {
-                AddCharacter(teammate, 1);
+                if (teammate > Characters.no_chars)
+                {
+                    Plugin.Log.LogWarning($"WARNING! Teammate id {teammate} is out of range! They will be replaced by a random character!");
+                    int newteam = UnityEngine.Random.Range(1, Characters.no_chars+1);
+                    AddCharacter(newteam, 1);
+                }
+                else
+                {
+                    AddCharacter(teammate, 1);
+                }
             }
         }
         public static List<int> RandomizeOpponents(int playerchar, Randomizer rng)
