@@ -399,42 +399,47 @@ namespace Roguelite
             int i = 1;
             while (opponentPool.Count > 0) 
             {
-                RandomMatch match = new();
-                match.venue = GenerateVenue(rng);
-                match.format = GenerateFormat(rng, i);
-                match.ringshape = GenerateRingshape(rng, match.venue);
-                match.cage = GenerateCage(rng, match.ringshape);
-                match.rules = GenerateRules(rng, match.ringshape);
-                match.ropes = GenerateRopes(rng, match.ringshape);
-                match.falls = GenerateFalls(rng);
-                match.stoppage = GenerateStoppage(rng, match.rules, match.cage);
-                match.countouts = GenerateCountouts(rng, match.rules, match.cage, match.ringshape);
-                match.aim = GenerateAim(rng, i, match.stoppage);
-                match.style = GenerateMatchStyle(rng, match.falls);
-                match.tether = GenerateMatchTether(rng, match.format);
-                match.water = GenerateWater(rng);
-                if(i % 5 == 0 && i % 10 != 0)
-                {
-                    int index = rng.Range(1, teammatePool.Count);
-                    match.teammate.Add(teammatePool[index]);
-                    teammatePool.RemoveAt(index);
-                }
-                match.opponents.Add(opponentPool.First());
-                teammatePool.Add(opponentPool.First());
-                opponentPool.Remove(opponentPool.First());
+                RandomMatch match = GenerateSingleMatch(rng, i, opponentPool, teammatePool);
 
-                if(i%5 == 0 && opponentPool.Count != 0)
-                {
-                    match.opponents.Add(opponentPool.First());
-                    teammatePool.Add(opponentPool.First());
-                    opponentPool.Remove(opponentPool.First());
-                }
                 matches.Add(match);
                 i++;
             }
 
-
             return matches;
+        }
+        public static RandomMatch GenerateSingleMatch(Randomizer rng,  int i, List<int> opponentPool, List<int> teammatePool)
+        {
+            RandomMatch match = new RandomMatch();
+            match.venue = GenerateVenue(rng);
+            match.format = GenerateFormat(rng, i);
+            match.ringshape = GenerateRingshape(rng, match.venue);
+            match.cage = GenerateCage(rng, match.ringshape);
+            match.rules = GenerateRules(rng, match.ringshape);
+            match.ropes = GenerateRopes(rng, match.ringshape);
+            match.falls = GenerateFalls(rng);
+            match.stoppage = GenerateStoppage(rng, match.rules, match.cage);
+            match.countouts = GenerateCountouts(rng, match.rules, match.cage, match.ringshape);
+            match.aim = GenerateAim(rng, i, match.stoppage);
+            match.style = GenerateMatchStyle(rng, match.falls);
+            match.tether = GenerateMatchTether(rng, match.format);
+            match.water = GenerateWater(rng);
+            if (i % 5 == 0 && i % 10 != 0)
+            {
+                int index = rng.Range(1, teammatePool.Count);
+                match.teammate.Add(teammatePool[index]);
+                teammatePool.RemoveAt(index);
+            }
+            match.opponents.Add(opponentPool.First());
+            teammatePool.Add(opponentPool.First());
+            opponentPool.Remove(opponentPool.First());
+
+            if (i % 5 == 0 && opponentPool.Count != 0)
+            {
+                match.opponents.Add(opponentPool.First());
+                teammatePool.Add(opponentPool.First());
+                opponentPool.Remove(opponentPool.First());
+            }
+            return match;
         }
         public static int GenerateVenue(Randomizer rng)
         {
@@ -628,7 +633,7 @@ namespace Roguelite
             if (format == 0)
             {
                 ProportionalRandomSelector<int> randomSelectorTether = new(rng);
-                foreach ((int i, int proc) in MatchRules.rules)
+                foreach ((int i, int proc) in MatchRules.tether)
                 {
                     randomSelectorTether.AddPercentageItem(i, proc);
                 }
@@ -642,7 +647,7 @@ namespace Roguelite
         public static int GenerateWater(Randomizer rng)
         {
             ProportionalRandomSelector<int> randomSelectorWater = new(rng);
-            foreach ((int i, int proc) in MatchRules.falls)
+            foreach ((int i, int proc) in MatchRules.water)
             {
                 randomSelectorWater.AddPercentageItem(i, proc);
             }

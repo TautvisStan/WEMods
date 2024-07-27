@@ -1,4 +1,3 @@
-//proper end when no more matches, save a separate file;  toggle between all match generation and generating matches on the run;
 using BepInEx;
 using BepInEx.Configuration;
 using BepInEx.Logging;
@@ -19,7 +18,7 @@ namespace Roguelite
     {
         public const string PluginGuid = "GeeEm.WrestlingEmpire.Roguelite";
         public const string PluginName = "Roguelite";
-        public const string PluginVer = "0.9.3";
+        public const string PluginVer = "0.9.9";
 
         internal static ManualLogSource Log;
         internal readonly static Harmony Harmony = new(PluginGuid);
@@ -34,10 +33,12 @@ namespace Roguelite
 
         public static ConfigEntry<string> RandomizerSeed { get; set; }
         public static ConfigEntry<bool> AdvancedDisplay { get; set; }
+        public static ConfigEntry<int> MatchGenerationMethod { get; set; }
         public static Randomizer rng { get; set; } = null;
-
+        public static int TotalMatches { get; set; } = 0;
         public static int CurrentMatch { get; set; } = 0;
         public static string DefaultSaveName { get; set; } = "RogueliteSave.json";
+        private static bool Won { get; set; } = false;
         private void Awake()
         {
             Plugin.Log = base.Logger;
@@ -53,6 +54,11 @@ namespace Roguelite
              "Advanced Display",
              true,
              "If enabled, it will display the match counter next to the timer.");
+
+            MatchGenerationMethod = Config.Bind("General",
+             "Match generation method",
+             1,
+             new ConfigDescription("0 = all matches will generated at the start; 1 = matches will be generated during the run.", new AcceptableValueRange<int>(0, 1)));
 
 
             Buttons.RegisterCustomButton(this, "Delete Save", () =>
@@ -90,7 +96,7 @@ namespace Roguelite
                 if (LIPNHOMGGHF.ODOAPLMOJPD == 1)
                 {
                     LIPNHOMGGHF.DFLLBNMHHIH();
-                    LIPNHOMGGHF.FKANHDIMMBJ[LIPNHOMGGHF.HOAOLPGEBKJ].ICGNAJFLAHL(1, "Wrestle Warzone", 200f, -300f, 1.5f, 1.5f);
+                    LIPNHOMGGHF.FKANHDIMMBJ[LIPNHOMGGHF.HOAOLPGEBKJ].ICGNAJFLAHL(1, "Rogue Rumble", 200f, -300f, 1.5f, 1.5f);
                     RogueliteButton = LIPNHOMGGHF.HOAOLPGEBKJ;
                 }
             }
@@ -151,9 +157,19 @@ namespace Roguelite
             //Doing stuff when exiting match
             if (SceneManager.GetActiveScene().name == "Game" && LIPNHOMGGHF.BCKLOCJPIMD == RogueliteNum)
             {
-                NAEEIFNFBBO.CBMHGKFFHJE = RogueliteNum;
-                LIPNHOMGGHF.BCKLOCJPIMD = RogueliteNum;
-                KBEAJEIMNMI = 14;  //match setup redirect
+                if(!Won)
+                { 
+                    NAEEIFNFBBO.CBMHGKFFHJE = RogueliteNum;
+                    LIPNHOMGGHF.BCKLOCJPIMD = RogueliteNum;
+                    KBEAJEIMNMI = 14;  //match setup redirect
+                }
+                else
+                {
+                    Won = false;
+                    NAEEIFNFBBO.CBMHGKFFHJE = 0;
+                    LIPNHOMGGHF.BCKLOCJPIMD = 0;
+                    KBEAJEIMNMI = 1;   //titles
+                }
                 return;
             }
 
@@ -201,7 +217,7 @@ namespace Roguelite
             if (InCustomMode() && AdvancedDisplay.Value == true)
             {
                 if (FFCEGMEAIBP.PDEHCNAKBCG.text != "")
-                    FFCEGMEAIBP.PDEHCNAKBCG.text = "Time: " + FFCEGMEAIBP.PDEHCNAKBCG.text + " | <color=Orange>Match: " + CurrentMatch + "/" + save.matches.Count + "</color>";
+                    FFCEGMEAIBP.PDEHCNAKBCG.text = "Time: " + FFCEGMEAIBP.PDEHCNAKBCG.text + " | <color=Orange>Match: " + CurrentMatch + "/" + TotalMatches + "</color>";
             }
         }
         //Progressing once the player wins
@@ -213,9 +229,20 @@ namespace Roguelite
             {
                 if (NJBJIIIACEP.OAAMGFLINOB[KJELLNJFNGO].LBCFAJGDKJP == 1 || NJBJIIIACEP.OAAMGFLINOB[KJELLNJFNGO].GOOKPABIPBC == save.SelectedCharacter)
                 {
-                    // save.matches.RemoveAt(0);
                     save.matchesCompleted++;
-                    SaveToFile(save, DefaultSaveName);
+                    if (save.matchesCompleted == TotalMatches)
+                    {
+                        FFCEGMEAIBP.PGPFHDLODFG[1].text = "Congrats for beating the mode!";
+                        save.matchesCompleted = 0;
+                        string filename = "CompletedRogue " + DateTime.Now.ToString("yyyy'-'MM'-'dd' 'HH'-'mm'-'ss'-'fff") + ".json";
+                        SaveToFile(save, filename);
+                        DeleteSave(DefaultSaveName);
+                        Won = true;
+                    }
+                    else
+                    {
+                        SaveToFile(save, DefaultSaveName);
+                    }
                 }
             }
         }
@@ -314,12 +341,6 @@ namespace Roguelite
             {
                 save = new(GOOKPABIPBC);
 
-                //?
-               // FFCEGMEAIBP.OHBEGHIIHJB = 0;
-               // FFCEGMEAIBP.LOBDMDPMFLK = 1;
-               // FFCEGMEAIBP.EBMPAEBEMNE = 0;
-               // FFCEGMEAIBP.AEKLGCEFIHM = 0;
-
                 if (RandomizerSeed.Value != "")
                 {
                     rng = new(RandomizerSeed.Value);
@@ -332,8 +353,15 @@ namespace Roguelite
 
 
                 List<int> opponents = MatchGenerator.RandomizeOpponents(GOOKPABIPBC, rng);
-                save.matches = MatchGenerator.GenerateRandomMatches(opponents, rng);
-
+                save.generationMode = MatchGenerationMethod.Value;
+                if (save.generationMode == 0)
+                {
+                    save.matches = MatchGenerator.GenerateRandomMatches(opponents, rng);
+                }
+                else
+                {
+                    save.OpponentPool = opponents;
+                }
                 SaveToFile(save, DefaultSaveName);
 
                 LIPNHOMGGHF.PMIIOCMHEAE(14);  //match setup
@@ -348,6 +376,11 @@ namespace Roguelite
         {
             if (InCustomMode())
             {
+                if (save.generationMode == 1 && save.matchesCompleted == save.matches.Count)
+                {
+                    save.matches.Add(MatchGenerator.GenerateSingleMatch(rng, save.matchesCompleted + 1, save.OpponentPool, save.TeammatePool));
+                    SaveToFile(save, DefaultSaveName);
+                }
                 MatchGenerator.SetupMatchRules(save.matches[save.matchesCompleted]);
                 if(save.SelectedCharacter > Characters.no_chars)
                 {
@@ -356,6 +389,7 @@ namespace Roguelite
                 }
                 MatchGenerator.SetupParticipants(save.SelectedCharacter, save.matches[save.matchesCompleted]);
                 CurrentMatch = save.matchesCompleted+1;
+                TotalMatches = CalcTotalMatches();
             }
         }
 
@@ -385,6 +419,20 @@ namespace Roguelite
                 Log.LogError(e);
             }
 
+        }
+        public static int CalcTotalMatches()
+        {
+            if (save.generationMode == 0) return save.matches.Count;
+            if (save.generationMode == 1)
+            {
+                int nthTeamMatch = 5;
+                int preparedMatches = save.matches.Count;
+                int distributedOpponents = Mathf.FloorToInt(preparedMatches / nthTeamMatch) * (nthTeamMatch + 1) + (preparedMatches % nthTeamMatch);
+                int totalOpponents = distributedOpponents + save.OpponentPool.Count;
+                int matches = (Mathf.FloorToInt(totalOpponents / (nthTeamMatch + 1)) * nthTeamMatch) + (totalOpponents % (nthTeamMatch + 1));
+                return matches;
+            }
+            return 0;
         }
         public static RogueliteSave LoadFromFile(string filename)
         {
