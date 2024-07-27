@@ -13,14 +13,14 @@ namespace Roguelite
         public List<RandomMatch> matches { get; set; }
         public uint seed { get; set; }
         public int nums { get; set; }
-        public int currentMatch { get; set; }
+        public int matchesCompleted { get; set; }
 
         public RogueliteSave(int character)
         {
             SelectedCharacter = character;
             active = true;
             matches = new();
-            currentMatch = 0;
+            matchesCompleted = 0;
         }
     }
 }

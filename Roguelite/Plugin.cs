@@ -1,4 +1,4 @@
-//proper end when no more matches, save a separate file;  bull rope dog collar in singles; change bo3 + no health combo; toggle between all match generation and generating matches on the run; fix current match to be +1?
+//proper end when no more matches, save a separate file;  toggle between all match generation and generating matches on the run;
 using BepInEx;
 using BepInEx.Configuration;
 using BepInEx.Logging;
@@ -10,7 +10,6 @@ using System.IO;
 using UnityEngine.SceneManagement;
 using UnityEngine;
 using WECCL.API;
-using System.ComponentModel;
 
 namespace Roguelite
 {
@@ -20,7 +19,7 @@ namespace Roguelite
     {
         public const string PluginGuid = "GeeEm.WrestlingEmpire.Roguelite";
         public const string PluginName = "Roguelite";
-        public const string PluginVer = "0.9.2";
+        public const string PluginVer = "0.9.3";
 
         internal static ManualLogSource Log;
         internal readonly static Harmony Harmony = new(PluginGuid);
@@ -31,15 +30,14 @@ namespace Roguelite
         static int RogueliteButton;
         static readonly int RogueliteNum = -123655;
 
-        public static RogueliteSave save = null;
+        public static RogueliteSave save { get; set; } = null;
 
-        public static ConfigEntry<string> RandomizerSeed;
-        public static ConfigEntry<bool> AdvancedDisplay;
-        public static Randomizer rng = null;
+        public static ConfigEntry<string> RandomizerSeed { get; set; }
+        public static ConfigEntry<bool> AdvancedDisplay { get; set; }
+        public static Randomizer rng { get; set; } = null;
 
-        public static int CurrentMatch = 0;
-
-        public static bool selected = false;
+        public static int CurrentMatch { get; set; } = 0;
+        public static string DefaultSaveName { get; set; } = "RogueliteSave.json";
         private void Awake()
         {
             Plugin.Log = base.Logger;
@@ -49,7 +47,7 @@ namespace Roguelite
             RandomizerSeed = Config.Bind("General",
              "Randomizer Seed",
              "",
-             "If you set a seed here, the characters you fight should always be the same based on the seed, as long as you pick the same character and have the same total number of characters. Leave empty for no set seed.");
+             "If you set a seed here, the matches should always be the same based on the seed, as long as you pick the same character. Leave empty for no set seed.");
 
             AdvancedDisplay = Config.Bind("General",
              "Advanced Display",
@@ -59,7 +57,7 @@ namespace Roguelite
 
             Buttons.RegisterCustomButton(this, "Delete Save", () =>
             {
-                DeleteSave("RogueliteSave.json");
+                DeleteSave(DefaultSaveName);
                 return "Save Deleted!";
             }, true);
 
@@ -77,6 +75,11 @@ namespace Roguelite
             Logger.LogInfo($"Unloaded {PluginName}!");
         }
 
+        public static bool InCustomMode()
+        {
+            return NAEEIFNFBBO.CBMHGKFFHJE == RogueliteNum || LIPNHOMGGHF.BCKLOCJPIMD == RogueliteNum;
+        }
+
         //adding new button to the main menu
         [HarmonyPatch(typeof(LIPNHOMGGHF), nameof(LIPNHOMGGHF.ICGNAJFLAHL))]
         [HarmonyPostfix]
@@ -87,7 +90,7 @@ namespace Roguelite
                 if (LIPNHOMGGHF.ODOAPLMOJPD == 1)
                 {
                     LIPNHOMGGHF.DFLLBNMHHIH();
-                    LIPNHOMGGHF.FKANHDIMMBJ[LIPNHOMGGHF.HOAOLPGEBKJ].ICGNAJFLAHL(1, "Roguelite", 0f, 0f, 1.5f, 1.5f);
+                    LIPNHOMGGHF.FKANHDIMMBJ[LIPNHOMGGHF.HOAOLPGEBKJ].ICGNAJFLAHL(1, "Wrestle Warzone", 200f, -300f, 1.5f, 1.5f);
                     RogueliteButton = LIPNHOMGGHF.HOAOLPGEBKJ;
                 }
             }
@@ -105,7 +108,7 @@ namespace Roguelite
                     NAEEIFNFBBO.CBMHGKFFHJE = RogueliteNum;
                     LIPNHOMGGHF.BCKLOCJPIMD = RogueliteNum;
 
-                    save = LoadFromFile("RogueliteSave.json");
+                    save = LoadFromFile(DefaultSaveName);
                     if (save == null)
                         LIPNHOMGGHF.PMIIOCMHEAE(11); //char select
                     else
@@ -132,6 +135,7 @@ namespace Roguelite
             {
                 NAEEIFNFBBO.CBMHGKFFHJE = 0;
                 LIPNHOMGGHF.BCKLOCJPIMD = RogueliteNum;
+                FFCEGMEAIBP.EBMPAEBEMNE = 0;
                 return;
             }
 
@@ -154,6 +158,25 @@ namespace Roguelite
             }
 
         }
+        //disabling character switch in matches
+        [HarmonyPatch(typeof(BJMGCKGNCHO), nameof(BJMGCKGNCHO.FEEFDEKKMBM))]
+        [HarmonyPrefix]
+        public static void BJMGCKGNCHO_FEEFDEKKMBM_Prefix()
+        {
+            if(InCustomMode())
+            {
+                NAEEIFNFBBO.CBMHGKFFHJE = 1;
+            }
+        }
+        [HarmonyPatch(typeof(BJMGCKGNCHO), nameof(BJMGCKGNCHO.FEEFDEKKMBM))]
+        [HarmonyPostfix]
+        public static void BJMGCKGNCHO_FEEFDEKKMBM_Postfix()
+        {
+            if (InCustomMode())
+            {
+                NAEEIFNFBBO.CBMHGKFFHJE = 0;
+            }
+        }
 
         //Setting up the char select back button redirect
         [HarmonyPatch(typeof(Scene_Select_Char), nameof(Scene_Select_Char.Update))]
@@ -175,10 +198,10 @@ namespace Roguelite
         [HarmonyPostfix]
         public static void FFCEGMEAIBP_HLEDBJJDLIA_Patch()
         {
-            if (NAEEIFNFBBO.CBMHGKFFHJE == RogueliteNum || LIPNHOMGGHF.BCKLOCJPIMD == RogueliteNum && AdvancedDisplay.Value == true)
+            if (InCustomMode() && AdvancedDisplay.Value == true)
             {
                 if (FFCEGMEAIBP.PDEHCNAKBCG.text != "")
-                    FFCEGMEAIBP.PDEHCNAKBCG.text = "Time: " + FFCEGMEAIBP.PDEHCNAKBCG.text + " | <color=Orange>Match: " + (CurrentMatch+1) + "/" + save.matches.Count + "</color>";
+                    FFCEGMEAIBP.PDEHCNAKBCG.text = "Time: " + FFCEGMEAIBP.PDEHCNAKBCG.text + " | <color=Orange>Match: " + CurrentMatch + "/" + save.matches.Count + "</color>";
             }
         }
         //Progressing once the player wins
@@ -186,13 +209,13 @@ namespace Roguelite
         [HarmonyPostfix]
         public static void FFCEGMEAIBP_BAGEPNPJPLD_Patch(int KJELLNJFNGO)
         {
-            if (NAEEIFNFBBO.CBMHGKFFHJE == RogueliteNum || LIPNHOMGGHF.BCKLOCJPIMD == RogueliteNum)
+            if (InCustomMode())
             {
                 if (NJBJIIIACEP.OAAMGFLINOB[KJELLNJFNGO].LBCFAJGDKJP == 1 || NJBJIIIACEP.OAAMGFLINOB[KJELLNJFNGO].GOOKPABIPBC == save.SelectedCharacter)
                 {
                     // save.matches.RemoveAt(0);
-                    save.currentMatch++;
-                    SaveToFile(save, "RogueliteSave.json");
+                    save.matchesCompleted++;
+                    SaveToFile(save, DefaultSaveName);
                 }
             }
         }
@@ -201,7 +224,7 @@ namespace Roguelite
         [HarmonyPostfix]
         public static void LIPNHOMGGHF_OPBBKBAJJHA_Patch()
         {
-            if (NAEEIFNFBBO.CBMHGKFFHJE == RogueliteNum || LIPNHOMGGHF.BCKLOCJPIMD == RogueliteNum)
+            if (InCustomMode())
             {
                 if (LIPNHOMGGHF.ODOAPLMOJPD == 0)
                 {
@@ -265,7 +288,7 @@ namespace Roguelite
         [HarmonyPrefix]
         public static bool Scene_Match_Setup_AddRandom(Scene_Match_Setup __instance)
         {
-            if (NAEEIFNFBBO.CBMHGKFFHJE == RogueliteNum || LIPNHOMGGHF.BCKLOCJPIMD == RogueliteNum)
+            if (InCustomMode())
             {
                 return false;
             }
@@ -275,7 +298,7 @@ namespace Roguelite
         [HarmonyPrefix]
         public static bool Scene_Match_Setup_RemoveCast(Scene_Match_Setup __instance, int GKNIAFAOLJK)
         {
-            if (NAEEIFNFBBO.CBMHGKFFHJE == RogueliteNum || LIPNHOMGGHF.BCKLOCJPIMD == RogueliteNum)
+            if (InCustomMode())
             {
                 return false;
             }
@@ -311,7 +334,7 @@ namespace Roguelite
                 List<int> opponents = MatchGenerator.RandomizeOpponents(GOOKPABIPBC, rng);
                 save.matches = MatchGenerator.GenerateRandomMatches(opponents, rng);
 
-                SaveToFile(save, "RogueliteSave.json");
+                SaveToFile(save, DefaultSaveName);
 
                 LIPNHOMGGHF.PMIIOCMHEAE(14);  //match setup
 
@@ -323,16 +346,16 @@ namespace Roguelite
         [HarmonyPostfix]
         public static void Scene_Match_Setup_Start_Postfix(Scene_Match_Setup __instance)
         {
-            if (NAEEIFNFBBO.CBMHGKFFHJE == RogueliteNum || LIPNHOMGGHF.BCKLOCJPIMD == RogueliteNum)
+            if (InCustomMode())
             {
-                MatchGenerator.SetupMatchRules(save.matches[save.currentMatch]);
+                MatchGenerator.SetupMatchRules(save.matches[save.matchesCompleted]);
                 if(save.SelectedCharacter > Characters.no_chars)
                 {
                     Log.LogWarning($"WARNING! Player id {save.SelectedCharacter} is out of range! They will be replaced by a random character!");
                     save.SelectedCharacter = UnityEngine.Random.Range(1, Characters.no_chars + 1);
                 }
-                MatchGenerator.SetupParticipants(save.SelectedCharacter, save.matches[save.currentMatch]);
-                CurrentMatch = save.currentMatch;
+                MatchGenerator.SetupParticipants(save.SelectedCharacter, save.matches[save.matchesCompleted]);
+                CurrentMatch = save.matchesCompleted+1;
             }
         }
 

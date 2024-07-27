@@ -89,20 +89,41 @@ namespace Roguelite
             { 2, 3, 4, 5, 6, 7, 8, 9, 10, 11, 12, 13, 14, 15, 16, 21, 27};
 
 
-        //public static RandomMatch
+        public static (int, int)[] style =
+        {
+            (0, 90),  //mixed
+            (1, 5),  //striking
+            (2, 5)  //grappling
+        };
+
+        public static (int, int)[] tether =
+        {
+            (0, 90),  //none
+            (1, 5),  //bull rope
+            (2, 5)  //dog collar
+        };
+
+        public static (int, int)[] water =
+        {
+            (0, 85),  //none
+            (10, 15)  //50%
+        };
     }
     public class RandomMatch
     {
-        public int venue { get; set; }   
-        public int format { get; set; }
-        public int rules { get; set; }
-        public int aim { get; set; }
-        public int falls { get; set; }
-        public int stoppage { get; set; }
-        public int countouts { get; set; }
-        public int ringshape { get; set; }
-        public int cage { get; set; }
-        public int ropes { get; set; }
+        public int venue { get; set; } = 1;
+        public int format { get; set; } = 0;
+        public int rules { get; set; } = 2;
+        public int aim { get; set; } = 1;
+        public int falls { get; set; } = 3;
+        public int stoppage { get; set; } = 0;
+        public int countouts { get; set; } = 2;
+        public int ringshape { get; set; } = 1;
+        public int cage { get; set; } = 0;
+        public int ropes { get; set; } = 1;
+        public int style { get; set; } = 0;
+        public int tether { get; set; } = 0;
+        public int water { get; set; } = 0;
         public List<int> opponents { get; set; }
         public List<int> teammate { get; set; }
         public RandomMatch()
@@ -294,6 +315,9 @@ namespace Roguelite
             World.ringShape = match.ringshape;
             World.arenaCage = match.cage;
             World.ringRopes = match.ropes;
+            FFCEGMEAIBP.PDNEOPFBGJF = match.style;
+            FFCEGMEAIBP.OHHMCBFAEMC = match.tether;
+            World.waterOffset = match.water;
             World.ICGNAJFLAHL(1); //location
             World.DBKOAJKLBIF(1); //ring
             World.crowdSize = 1;
@@ -381,12 +405,14 @@ namespace Roguelite
                 match.ringshape = GenerateRingshape(rng, match.venue);
                 match.cage = GenerateCage(rng, match.ringshape);
                 match.rules = GenerateRules(rng, match.ringshape);
-                match.aim = GenerateAim(rng, i);
                 match.ropes = GenerateRopes(rng, match.ringshape);
                 match.falls = GenerateFalls(rng);
                 match.stoppage = GenerateStoppage(rng, match.rules, match.cage);
                 match.countouts = GenerateCountouts(rng, match.rules, match.cage, match.ringshape);
-
+                match.aim = GenerateAim(rng, i, match.stoppage);
+                match.style = GenerateMatchStyle(rng, match.falls);
+                match.tether = GenerateMatchTether(rng, match.format);
+                match.water = GenerateWater(rng);
                 if(i % 5 == 0 && i % 10 != 0)
                 {
                     int index = rng.Range(1, teammatePool.Count);
@@ -456,15 +482,20 @@ namespace Roguelite
             }
             return 0; //individuals
         }
-        public static int GenerateAim(Randomizer rng, int i)
+        public static int GenerateAim(Randomizer rng, int i, int stoppage)
         {
             ProportionalRandomSelector<int> randomSelectorAim = new(rng);
             randomSelectorAim.AddPercentageItem(1, 75);
-            randomSelectorAim.AddPercentageItem(2, 25);
+           
 
             if (i % 5 == 0)
             {
                 randomSelectorAim.AddPercentageItem(5, 50);
+            }
+
+            if(stoppage != 1 || stoppage != 3)
+            {
+                randomSelectorAim.AddPercentageItem(2, 25);
             }
             return randomSelectorAim.SelectItem();
         }
@@ -580,6 +611,44 @@ namespace Roguelite
             return randomSelectorCountouts.SelectItem();
 
         }
+        public static int GenerateMatchStyle(Randomizer rng, int falls)
+        {
+            ProportionalRandomSelector<int> randomSelectorStyle = new(rng);
+            randomSelectorStyle.AddPercentageItem(0, 90);
+            randomSelectorStyle.AddPercentageItem(2, 5);
+
+            if (falls != 3)
+            {
+                randomSelectorStyle.AddPercentageItem(1, 5);
+            }
+            return randomSelectorStyle.SelectItem();
+        }
+        public static int GenerateMatchTether(Randomizer rng, int format)
+        {
+            if (format == 0)
+            {
+                ProportionalRandomSelector<int> randomSelectorTether = new(rng);
+                foreach ((int i, int proc) in MatchRules.rules)
+                {
+                    randomSelectorTether.AddPercentageItem(i, proc);
+                }
+                return randomSelectorTether.SelectItem();
+            }
+            else
+            {
+                return 0;
+            }
+        }
+        public static int GenerateWater(Randomizer rng)
+        {
+            ProportionalRandomSelector<int> randomSelectorWater = new(rng);
+            foreach ((int i, int proc) in MatchRules.falls)
+            {
+                randomSelectorWater.AddPercentageItem(i, proc);
+            }
+            return randomSelectorWater.SelectItem();
+        }
+
 
 
     }
