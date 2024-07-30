@@ -4,6 +4,7 @@ using HarmonyLib;
 using System;
 using System.IO;
 using UnityEngine;
+using BepInEx.Configuration;
 
 namespace ArcadeHUD
 {
@@ -13,7 +14,7 @@ namespace ArcadeHUD
     {
         public const string PluginGuid = "GeeEm.WrestlingEmpire.ArcadeHUD";
         public const string PluginName = "ArcadeHUD";
-        public const string PluginVer = "1.1.0";
+        public const string PluginVer = "1.1.1";
 
         internal static ManualLogSource Log;
         internal readonly static Harmony Harmony = new(PluginGuid);
@@ -25,11 +26,18 @@ namespace ArcadeHUD
         public static Color SpecialColor = new Color(1f, 1f, 1f);
         public static Color SpecialColorBreakdown = new Color(0.1f, 0.1f, 0.1f);
         public static float[] SpecialDisplay = new[] {1f, 1f, 1f, 1f, 1f};
+        public static ConfigEntry<bool> TimerAtTheTop { get; set; }
         private void Awake()
         {
             Plugin.Log = base.Logger;
 
             PluginPath = Path.GetDirectoryName(Info.Location);
+
+
+            TimerAtTheTop = Config.Bind("General",
+             "Timer at the top",
+             true,
+             "If enabled, timer will be moved to the top of the screen.");
         }
 
         private void OnEnable()
@@ -76,7 +84,7 @@ namespace ArcadeHUD
                     SpecialBarBase[__instance.PLFGKLGCOMD].transform.localPosition = new Vector3(-256, -17, 0);
                     SpecialBarBase[__instance.PLFGKLGCOMD].transform.localScale = new Vector3(-1f, 1f, 1f);
                 }
-                if(__instance.PLFGKLGCOMD == 1)
+                if(__instance.PLFGKLGCOMD == 1 && TimerAtTheTop.Value)
                 {
                     float y = FFCEGMEAIBP.OGIOFKKEFHK.transform.parent.Find("Meter01").transform.localPosition.y;
                     FFCEGMEAIBP.OGIOFKKEFHK.transform.localPosition = new Vector3(0, y, 0);

@@ -341,13 +341,13 @@ namespace Roguelite
 
             if(match.rules <= 1)
             {
-                JFLEBEBCGFA.CCFGHKNBOEL *= 2;
+                JFLEBEBCGFA.CCFGHKNBOEL *= 3;
                 JFLEBEBCGFA.LGPEMCGEEPN = 0;
             }
 
             if (match.stoppage == -1)
             {
-                HAPFAOIMGOL.CCFGHKNBOEL *= 2;
+                HAPFAOIMGOL.CCFGHKNBOEL *= 3;
             }
 
         }

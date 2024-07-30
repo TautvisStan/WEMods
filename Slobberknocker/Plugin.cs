@@ -21,7 +21,7 @@ namespace Slobberknocker
     {
         public const string PluginGuid = "GeeEm.WrestlingEmpire.Slobberknocker";
         public const string PluginName = "Slobberknocker";
-        public const string PluginVer = "1.0.2";
+        public const string PluginVer = "1.0.3";
 
         internal static ManualLogSource Log;
         internal readonly static Harmony Harmony = new(PluginGuid);
@@ -35,8 +35,9 @@ namespace Slobberknocker
         public static int elims = 0;
 
         public static ConfigEntry<bool> MatchRulesOverride;
-
+        public static ConfigEntry<bool> AdvancedDisplay { get; set; }
         public static ConfigEntry<string> RandomizerSeed;
+
 
         private void Awake()
         {
@@ -49,6 +50,11 @@ namespace Slobberknocker
                  "Match Rules Override",
                  false,
                  "If enabled, will let you customize the match rules.");
+
+            AdvancedDisplay = Config.Bind("General",
+             "Advanced Display",
+             true,
+             "If enabled, it will display the match counter next to the timer.");
 
             RandomizerSeed = Config.Bind("General",
                  "Randomizer Seed",
@@ -124,7 +130,7 @@ namespace Slobberknocker
         [HarmonyPostfix]
         public static void FFCEGMEAIBP_HLEDBJJDLIA_Patch()
         {
-            if (NAEEIFNFBBO.CBMHGKFFHJE == SlobberknockerNum || LIPNHOMGGHF.BCKLOCJPIMD == SlobberknockerNum)
+            if ((NAEEIFNFBBO.CBMHGKFFHJE == SlobberknockerNum || LIPNHOMGGHF.BCKLOCJPIMD == SlobberknockerNum) && AdvancedDisplay.Value == true)
             {
                 if(FFCEGMEAIBP.PDEHCNAKBCG.text != "")
                     FFCEGMEAIBP.PDEHCNAKBCG.text = "Time: " + FFCEGMEAIBP.PDEHCNAKBCG.text + " | <color=Orange>Score: " + elims + "-" + (FFCEGMEAIBP.LAOPDIJDEGM -1) + "</color>";
