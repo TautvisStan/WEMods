@@ -9,6 +9,7 @@ using System.IO;
 using UnityEngine.SceneManagement;
 using UnityEngine;
 using WECCL.API;
+using System.Runtime.InteropServices.ComTypes;
 
 namespace Roguelite
 {
@@ -18,7 +19,7 @@ namespace Roguelite
     {
         public const string PluginGuid = "GeeEm.WrestlingEmpire.Roguelite";
         public const string PluginName = "Roguelite";
-        public const string PluginVer = "1.0.0";
+        public const string PluginVer = "1.0.1";
 
         internal static ManualLogSource Log;
         internal readonly static Harmony Harmony = new(PluginGuid);
@@ -58,7 +59,7 @@ namespace Roguelite
             MatchGenerationMethod = Config.Bind("General",
              "Match generation method",
              1,
-             new ConfigDescription("0 = all matches will generated at the start; 1 = matches will be generated during the run.", new AcceptableValueRange<int>(0, 1)));
+             new ConfigDescription("Applies only on new saves. 0 = all matches will generated at the start; 1 = matches will be generated during the run.", new AcceptableValueRange<int>(0, 1)));
 
 
             Buttons.RegisterCustomButton(this, "Delete Save", () =>
@@ -246,6 +247,21 @@ namespace Roguelite
                 }
             }
         }
+        //The match got restarted
+        [HarmonyPatch(typeof(FFCEGMEAIBP), nameof(FFCEGMEAIBP.EAAIHKLJFCM))]
+        [HarmonyPostfix]
+        public static void LIPNHOMGGHF_EAAIHKLJFCM_Patch()
+        {
+            if (InCustomMode())
+            {
+                if(save.matchesCompleted >= save.matches.Count)
+                {
+                    save.matchesCompleted = save.matches.Count - 1;
+                    SaveToFile(save, DefaultSaveName);
+                }
+            }
+        }
+
         //disable interference and simulate buttons;
         [HarmonyPatch(typeof(LIPNHOMGGHF), nameof(LIPNHOMGGHF.OPBBKBAJJHA))]
         [HarmonyPostfix]
