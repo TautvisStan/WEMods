@@ -18,7 +18,7 @@ namespace MenuMusicRandomizer
     {
         public const string PluginGuid = "GeeEm.WrestlingEmpire.MenuMusicRandomizer";
         public const string PluginName = "MenuMusicRandomizer";
-        public const string PluginVer = "1.0.2";
+        public const string PluginVer = "1.0.3";
 
         internal static ManualLogSource Log;
         internal readonly static Harmony Harmony = new(PluginGuid);
@@ -46,7 +46,10 @@ namespace MenuMusicRandomizer
 
             PluginPath = Path.GetDirectoryName(Info.Location);
             UseVanilla = Config.Bind("General", "Use Vanilla Songs", true, "Disabling this will prevent vanilla songs (\"Theme00.ogg\") from playing. If there are no custom songs nothing will be played");
-            LoadAudioFiles();
+            foreach (string modPath in Directory.GetDirectories(Path.Combine(Paths.BepInExRootPath, "plugins")))
+            {
+                ScanFolder(modPath);
+            }
         }
         private void OnEnable()
         {
@@ -66,9 +69,25 @@ namespace MenuMusicRandomizer
                 SetupMenuSong(-1, CHLPMKEGJBJ.OGCBMJIIKPP.pitch, 1);
             }
         }
-        static void LoadAudioFiles()
+        static void ScanFolder(string path)
         {
-            DirectoryInfo dir = new DirectoryInfo(PluginPath);
+            bool found = false;
+            if(path.Contains("MenuMusic"))
+            {
+                LoadAudioFiles(path);
+                found = true;
+            }
+            if (!found)
+            {
+                foreach (string subDir in Directory.GetDirectories(path))
+                {
+                    ScanFolder(subDir);
+                }
+            }
+        }
+        static void LoadAudioFiles(string path)
+        {
+            DirectoryInfo dir = new DirectoryInfo(path);
             FileInfo[] files = dir.GetFiles("*")
                         .Where(f => AudioExtensions.Contains(f.Extension.ToLower())).ToArray();
             foreach (FileInfo file in files)
