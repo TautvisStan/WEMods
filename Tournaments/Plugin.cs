@@ -19,7 +19,7 @@ namespace Tournaments
     {
         public const string PluginGuid = "GeeEm.WrestlingEmpire.Tournaments";
         public const string PluginName = "Tournaments";
-        public const string PluginVer = "1.0.0";
+        public const string PluginVer = "1.0.1";
 
         internal static ManualLogSource Log;
         internal readonly static Harmony Harmony = new(PluginGuid);
@@ -224,7 +224,7 @@ namespace Tournaments
                 FFCEGMEAIBP.EJBBMLKPNFK[4].SetActive(false);
                 FFCEGMEAIBP.EJBBMLKPNFK[5].SetActive(false);
                 FFCEGMEAIBP.EJBBMLKPNFK[6].SetActive(false);
-
+                Vector3 winnerPos = FFCEGMEAIBP.EJBBMLKPNFK[1].transform.localPosition;
                 FFCEGMEAIBP.EJBBMLKPNFK[1].transform.localPosition = new Vector3(FFCEGMEAIBP.EJBBMLKPNFK[1].transform.localPosition.x, FFCEGMEAIBP.EJBBMLKPNFK[2].transform.localPosition.y, FFCEGMEAIBP.EJBBMLKPNFK[1].transform.localPosition.z);
 
                 FFCEGMEAIBP.EJBBMLKPNFK[2].transform.localPosition = new Vector3(FFCEGMEAIBP.EJBBMLKPNFK[2].transform.localPosition.x, FFCEGMEAIBP.EJBBMLKPNFK[4].transform.localPosition.y, FFCEGMEAIBP.EJBBMLKPNFK[2].transform.localPosition.z);
@@ -239,8 +239,8 @@ namespace Tournaments
 
 
 
-                TournamentCard.WinnerObj = GameObject.Instantiate(__instance.gDate, __instance.gDate.transform.parent);
-                TournamentCard.WinnerObj.transform.localPosition = new Vector3(0f, 220f, 0f);
+                TournamentCard.WinnerObj = GameObject.Instantiate(__instance.gDate, FFCEGMEAIBP.EJBBMLKPNFK[1].transform.parent);
+                TournamentCard.WinnerObj.transform.localPosition = winnerPos;
                 TournamentCard.WinnerObj.GetComponent<Text>().text = "Winner: " + TournamentCard.Winner;
 
             }

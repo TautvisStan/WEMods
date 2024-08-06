@@ -18,7 +18,7 @@ namespace MatchMusic
     {
         public const string PluginGuid = "GeeEm.WrestlingEmpire.MatchMusic";
         public const string PluginName = "MatchMusic";
-        public const string PluginVer = "1.0.3.1";
+        public const string PluginVer = "1.0.4";
 
         internal static ManualLogSource Log;
         internal readonly static Harmony Harmony = new(PluginGuid);
@@ -50,9 +50,28 @@ namespace MatchMusic
             Plugin.Log = base.Logger;
 
             PluginPath = Path.GetDirectoryName(Info.Location);
-            LoadAudioFiles();
+            foreach (string modPath in Directory.GetDirectories(Path.Combine(Paths.BepInExRootPath, "plugins")))
+            {
+                ScanFolder(modPath);
+            }
 
 
+        }
+        static void ScanFolder(string path)
+        {
+            bool found = false;
+            if (path.Contains("MatchMusic"))
+            {
+                LoadAudioFiles(path);
+                found = true;
+            }
+            if (!found)
+            {
+                foreach (string subDir in Directory.GetDirectories(path))
+                {
+                    ScanFolder(subDir);
+                }
+            }
         }
         [HarmonyPatch(typeof(CHLPMKEGJBJ), nameof(CHLPMKEGJBJ.ICGNAJFLAHL))]
         [HarmonyPostfix]
@@ -81,7 +100,7 @@ namespace MatchMusic
             {
                 if (canBePlayed && !MatchMusic.isPlaying)
                 {
-                    Log.LogWarning("PLAYING NEXT SONG BECAUSE canBePlayed=" + canBePlayed + " & isPlaying=" + MatchMusic.isPlaying);
+ //                   Log.LogWarning("PLAYING NEXT SONG BECAUSE canBePlayed=" + canBePlayed + " & isPlaying=" + MatchMusic.isPlaying);
                     PlayMusic();
                 }
 
@@ -96,9 +115,9 @@ namespace MatchMusic
                 }
             }
         }
-        static void LoadAudioFiles()
+        static void LoadAudioFiles(string path)
         {
-            DirectoryInfo dir = new DirectoryInfo(PluginPath);
+            DirectoryInfo dir = new DirectoryInfo(path);
             FileInfo[] files = dir.GetFiles("*")
                         .Where(f => AudioExtensions.Contains(f.Extension.ToLower())).ToArray();
             foreach (FileInfo file in files)
@@ -107,14 +126,14 @@ namespace MatchMusic
                 try
                 {
                     AudioClip clip;
-                        UnityWebRequest wr = new(file.FullName);
-                        wr.downloadHandler = new DownloadHandlerAudioClip(file.Name, AudioType.UNKNOWN);
-                        wr.SendWebRequest();
-                        while (!wr.isDone) { }
+                    UnityWebRequest wr = new(file.FullName);
+                    wr.downloadHandler = new DownloadHandlerAudioClip(file.Name, AudioType.UNKNOWN);
+                    wr.SendWebRequest();
+                    while (!wr.isDone) { }
 
-                        clip = DownloadHandlerAudioClip.GetContent(wr);
-                        wr.Dispose();
-                        clip.name = fileName;
+                    clip = DownloadHandlerAudioClip.GetContent(wr);
+                    wr.Dispose();
+                    clip.name = fileName;
                     AudioClips.Add(clip);
                 }
                 catch (Exception e)
@@ -125,33 +144,33 @@ namespace MatchMusic
                 GC.Collect();
             }
 
-            int i = 0;
+           /* int i = 0;
             foreach(AudioClip clip in AudioClips)
             {
-                Log.LogWarning("Song " + i + ": " + clip.name + ", length " + clip.length);
+  //              Log.LogWarning("Song " + i + ": " + clip.name + ", length " + clip.length);
                 i++;
-            }
-            Log.LogWarning("-----------------------------------------");
+            }*/
+  //          Log.LogWarning("-----------------------------------------");
         }
 
         public static void PlayMusic()
         {
-            Log.LogWarning("TRYING TO PLAY NEXT SONG");
-            Log.LogWarning("OLD SONG WAS " + OldSong);
+ //           Log.LogWarning("TRYING TO PLAY NEXT SONG");
+  //          Log.LogWarning("OLD SONG WAS " + OldSong);
             if (AudioClips.Count != 0)
             {
                 canBePlayed = true;
                 if (MatchMusicObject == null) { return; }
-                Log.LogWarning("ROLLING NEXT SONG BETWEEN 0 AND " + AudioClips.Count);
+ //               Log.LogWarning("ROLLING NEXT SONG BETWEEN 0 AND " + AudioClips.Count);
                 int song = UnityEngine.Random.RandomRangeInt(0, AudioClips.Count);
-                Log.LogWarning("ROLLED NEXT SONG " + song);
+ //               Log.LogWarning("ROLLED NEXT SONG " + song);
                 if (song == OldSong)
                 {
-                    Log.LogWarning("INCREASING NEXT SONG BECAUSE OLD SONG WAS " + OldSong);
+ //                   Log.LogWarning("INCREASING NEXT SONG BECAUSE OLD SONG WAS " + OldSong);
                     song++;
                     if (song >= AudioClips.Count)
                     {
-                        Log.LogWarning("SETTING NEXT SONG TO 0 BECAUSE SONG= " + song + " AND THERE IS TOTAL OF " + AudioClips.Count);
+  //                      Log.LogWarning("SETTING NEXT SONG TO 0 BECAUSE SONG= " + song + " AND THERE IS TOTAL OF " + AudioClips.Count);
                         song = 0;
                     }
                 }
@@ -161,9 +180,9 @@ namespace MatchMusic
                 MatchMusic.time = 0f;
                 MatchMusic.Play();
                 OldSong = song;
-                Log.LogWarning("PLAYING SONG " + song + ", " + MatchMusic.clip.name+ ", length " + MatchMusic.clip.length);
+ //               Log.LogWarning("PLAYING SONG " + song + ", " + MatchMusic.clip.name+ ", length " + MatchMusic.clip.length);
             }
-            Log.LogWarning("--------------------");
+  //          Log.LogWarning("--------------------");
         }
 
         public static void StopMusic()
@@ -182,7 +201,7 @@ namespace MatchMusic
         [HarmonyPostfix]
         public static void Interfere()
         {
-            Log.LogWarning("PLAYING SONG ON INTERFERE");
+  //          Log.LogWarning("PLAYING SONG ON INTERFERE");
             PlayMusic();
         }
         [HarmonyPatch(typeof(FFCEGMEAIBP),nameof(FFCEGMEAIBP.DMJFCHKLEFH))]
@@ -217,7 +236,7 @@ namespace MatchMusic
             }
             if (num > 0 || FFCEGMEAIBP.CBIPLGLDCAG == 1)
             {
-                Log.LogWarning("PLAYING SONG ON MATCH START");
+  //              Log.LogWarning("PLAYING SONG ON MATCH START");
                 PlayMusic();
             }
 
@@ -227,7 +246,7 @@ namespace MatchMusic
         [HarmonyPostfix]
         public static void MatchRestart()
         {
-            Log.LogWarning("PLAYING SONG ON RESTART");
+  //          Log.LogWarning("PLAYING SONG ON RESTART");
             PlayMusic();
         }
 
@@ -235,7 +254,7 @@ namespace MatchMusic
         [HarmonyPostfix]
         public static void MatchEnd()
         {
-            Log.LogWarning("STOPPING SONG ON MATCH END");
+  //          Log.LogWarning("STOPPING SONG ON MATCH END");
             StopMusic();
         }
 
@@ -243,7 +262,7 @@ namespace MatchMusic
         [HarmonyPrefix]
         public static void SceneChange()
         {
-            Log.LogWarning("STOPPING SONG ON SCENE CHANGE");
+  //          Log.LogWarning("STOPPING SONG ON SCENE CHANGE");
             StopMusic();
         }
     }
