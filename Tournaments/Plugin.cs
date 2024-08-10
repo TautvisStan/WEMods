@@ -19,7 +19,7 @@ namespace Tournaments
     {
         public const string PluginGuid = "GeeEm.WrestlingEmpire.Tournaments";
         public const string PluginName = "Tournaments";
-        public const string PluginVer = "1.0.1";
+        public const string PluginVer = "1.0.2";
 
         internal static ManualLogSource Log;
         internal readonly static Harmony Harmony = new(PluginGuid);
@@ -30,6 +30,7 @@ namespace Tournaments
         static readonly int TournamentNum = -789987;
         public static CustomCard TournamentCard { get; set; } = null;
         public static int OldMenu { get; set; }
+        public static int OldDate { get; set; }
 
         private void Awake()
         {
@@ -90,6 +91,7 @@ namespace Tournaments
                 {
                     NAEEIFNFBBO.CBMHGKFFHJE = TournamentNum;
                     LIPNHOMGGHF.BCKLOCJPIMD = TournamentNum;
+                    OldDate = Progress.date;
                     Progress.date = 0;
                     Progress.focDate = 0;
 
@@ -132,6 +134,8 @@ namespace Tournaments
             {
                 NAEEIFNFBBO.CBMHGKFFHJE = 0;
                 LIPNHOMGGHF.BCKLOCJPIMD = 0;
+                Progress.date = OldDate;
+                Progress.focDate = OldDate;
                 KBEAJEIMNMI = 1;   //titles
                 return;
             }
