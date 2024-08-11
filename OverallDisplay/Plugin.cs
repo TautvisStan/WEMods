@@ -7,6 +7,7 @@ using UnityEngine;
 using System.Linq;
 using System.Collections.Generic;
 using WECCL.Patches;
+using BepInEx.Configuration;
 
 namespace PromotionEditorUnlock
 {
@@ -16,7 +17,7 @@ namespace PromotionEditorUnlock
     {
         public const string PluginGuid = "GeeEm.WrestlingEmpire.OverallDisplay";
         public const string PluginName = "OverallDisplay";
-        public const string PluginVer = "1.0.0";
+        public const string PluginVer = "1.0.1";
 
         internal static ManualLogSource Log;
         internal readonly static Harmony Harmony = new(PluginGuid);
@@ -30,11 +31,15 @@ namespace PromotionEditorUnlock
         public static float Xnum2 = 85f;
         public static float Ynum = 12f;
 
+        public static ConfigEntry<bool> CalculateMainStatsOnly;
+
         private void Awake()
         {
             Plugin.Log = base.Logger;
 
             PluginPath = Path.GetDirectoryName(Info.Location);
+
+            CalculateMainStatsOnly = Config.Bind("General", "Calculate Main Stats Only", false, "If enabled, the overall will only be calcuated using Strength, Skill, Agility and Stamina. If disabled, the vanilla overall calculation will be used instead");
         }
 
         private void OnEnable()
@@ -70,7 +75,7 @@ namespace PromotionEditorUnlock
         }
         static void UpdateOVRText(Character character)
         {
-            OvrText.GetComponent<UnityEngine.UI.Text>().text = "Overall: " + character.FOOLOEEKEAJ(0).ToString("0");
+            OvrText.GetComponent<UnityEngine.UI.Text>().text = "Overall: " + CalculateOverall(character).ToString("0");
             if(LIPNHOMGGHF.IOMOGCLAPFD == OverallSortingNumber)
             {
                 OvrText.GetComponent<UnityEngine.UI.Text>().color = new Color(1f, 0.9f, 0f);
@@ -94,7 +99,7 @@ namespace PromotionEditorUnlock
                         if (i != 0)
                             charList.Add(Characters.c[i]);
                     }
-                    LIPNHOMGGHF.JJKLBHGFJNF = (from x in charList.OrderByDescending((Character x) => x.FOOLOEEKEAJ(0))
+                    LIPNHOMGGHF.JJKLBHGFJNF = (from x in charList.OrderByDescending((Character x) => CalculateOverall(x))
                                                select x.id).Prepend(0).ToArray<int>();
                 }
                 else
@@ -110,10 +115,10 @@ namespace PromotionEditorUnlock
                         {
                             if (LIPNHOMGGHF.ILEGPMAAJAJ[j] == 0 && ((GMJKGKDFHOH >= 0 && GMJKGKDFHOH <= Characters.no_feds && Characters.c[j].fed == GMJKGKDFHOH) || (GMJKGKDFHOH > Characters.no_feds && Characters.c[j].fed >= 1 && Characters.c[j].fed < Characters.no_feds)))
                             {
-                                if (Characters.c[j].FOOLOEEKEAJ(0) > num2)
+                                if (CalculateOverall(Characters.c[j]) > num2)
                                 {
                                     num = j;
-                                    num2 = Characters.c[j].FOOLOEEKEAJ(0);
+                                    num2 = CalculateOverall(Characters.c[j]);
                                 }
                             }
                         }
@@ -168,10 +173,23 @@ namespace PromotionEditorUnlock
         {
             if (LIPNHOMGGHF.IOMOGCLAPFD == OverallSortingNumber)
             {
-                __instance.JBCKJGIJFGK.transform.localScale = new Vector3(Characters.c[GOOKPABIPBC].FOOLOEEKEAJ(0)/100, 1f, 1f);
+                __instance.JBCKJGIJFGK.transform.localScale = new Vector3(CalculateOverall(Characters.c[GOOKPABIPBC]) /100, 1f, 1f);
+            }
+        }
+        public static float CalculateOverall(Character c)
+        {
+            if(CalculateMainStatsOnly.Value == true)
+            {
+                return (c.stat[2] + c.stat[3] + c.stat[4] + c.stat[5]) /4;
+            }
+            else
+            {
+                return c.FOOLOEEKEAJ(0);
             }
         }
     }
+
+
 }
 
 //LIPNHOMGGHF.IOMOGCLAPFD = -1;
