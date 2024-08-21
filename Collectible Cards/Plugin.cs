@@ -1,11 +1,13 @@
-//todo fix scene lightning; costumes based on character role; injured taunt?
+//todo fix scene lightning; costumes based on character role; injured taunt?; figure out adding fed logo
 
 
 using BepInEx;
+using BepInEx.Configuration;
 using BepInEx.Logging;
 using HarmonyLib;
 using System;
 using System.Collections;
+using System.Collections.Generic;
 using System.IO;
 using UnityEngine;
 using UnityEngine.UI;
@@ -19,7 +21,7 @@ namespace CollectibleCards
     {
         public const string PluginGuid = "GeeEm.WrestlingEmpire.CollectibleCards";
         public const string PluginName = "CollectibleCards";
-        public const string PluginVer = "1.0.0";
+        public const string PluginVer = "0.0.1";
 
         internal static ManualLogSource Log;
         internal readonly static Harmony Harmony = new(PluginGuid);
@@ -30,12 +32,36 @@ namespace CollectibleCards
         public static int CardWidth { get; set; } = 719;
         public static int CardHeight { get; set; } = 1000;
 
+        public static ConfigEntry<float> CharXPos { get; set; }
+        public static ConfigEntry<float> CharYPos { get; set; }
+        public static ConfigEntry<float> CharSize { get; set; }
+
+        public static ConfigEntry<int> CameraMode { get; set; }
+
         private void Awake()
         {
             Plugin.Log = base.Logger;
             PluginPath = Path.GetDirectoryName(Info.Location);
 
             Background.GetShaderPrefab();
+
+            CharXPos = Config.Bind("General",
+             "Character x position",
+             0f,
+             "Character x position");
+            CharYPos = Config.Bind("General",
+             "Character y position",
+             0f,
+             "Character y position");
+            CharSize = Config.Bind("General",
+             "Character scale",
+             1f,
+             "Character scale");
+
+            CameraMode = Config.Bind("General",
+             "Camera mode",
+             0,
+             "0 - perspective, 1 - orthographic");
         }
 
         private void OnEnable()
@@ -89,20 +115,38 @@ namespace CollectibleCards
                 BackgroundObj = GameObject.CreatePrimitive(PrimitiveType.Plane);
                 BackgroundObj.transform.position = new Vector3(0f, 8f, -10f);
                 BackgroundObj.transform.rotation = Quaternion.Euler(90f, 0f, 0);
-                float distance = Mathf.Abs(cameraObject.transform.position.z - BackgroundObj.transform.position.z);
+                if (cameraObject.GetComponent<Camera>().orthographic)
+                {
+                    // Set the orthographic size based on the desired resolution
+                    float orthographicHeight = 10;//CardHeight / 2.0f;
+                    cameraObject.GetComponent<Camera>().orthographicSize = orthographicHeight;
 
-                // Calculate the height in world units based on the camera's FOV
-                float height = 2.0f * distance * Mathf.Tan(cameraObject.GetComponent<Camera>().fieldOfView * 0.5f * Mathf.Deg2Rad);
+                    // Calculate the scale of the background plane
+                    float aspectRatio = (float)CardWidth / (float)CardHeight;
+                    Vector3 planeScale = new Vector3(aspectRatio * orthographicHeight/5, 1, orthographicHeight/5);
 
-                // Calculate the width in world units to match the texture's aspect ratio
-                float width = height * (float)CardWidth / (float)CardHeight;
+                    // Apply the calculated scale to the background plane
+                    BackgroundObj.transform.localScale = planeScale;
 
-                // Scale the plane to match the calculated width and height
-                BackgroundObj.transform.localScale = new Vector3(width / 10, 1, height / 10);
-                //2.0756 1 2.8868 when the real distance is 20
+                }
+                else
+                {
+                    float distance = Mathf.Abs(cameraObject.transform.position.z - BackgroundObj.transform.position.z);
 
-                string imagePath = Path.Combine(PluginPath, "Pictures", "BG.png");
+                    // Calculate the height in world units based on the camera's FOV
+                    float height = 2.0f * distance * Mathf.Tan(cameraObject.GetComponent<Camera>().fieldOfView * 0.5f * Mathf.Deg2Rad);
+
+                    // Calculate the width in world units to match the texture's aspect ratio
+                    float width = height * (float)CardWidth / (float)CardHeight;
+
+                    // Scale the plane to match the calculated width and height
+                    BackgroundObj.transform.localScale = new Vector3(width / 10, 1, height / 10);
+                    //2.0756 1 2.8868 when the real distance is 20
+                }
+
+                string imagePath = Path.Combine(PluginPath, "BG.png");
                 byte[] fileData = File.ReadAllBytes(imagePath);
+
 
                 if (fileData != null)
                 {
@@ -142,6 +186,11 @@ namespace CollectibleCards
             cameraObject.transform.position = new Vector3(0f, 8f, 15f);
             Vector3 targetPosition = new Vector3(0f, 8f, 0f);
             cameraObject.transform.LookAt(targetPosition);
+            if (CameraMode.Value == 1)
+            {
+                cameraObject.GetComponent<Camera>().orthographic = true;
+                cameraObject.GetComponent<Camera>().orthographicSize = 10;
+            }
             return cameraObject;
         }
         public static Texture2D ResizeTexture(Texture2D texture, int width, int height)
@@ -188,7 +237,7 @@ namespace CollectibleCards
             LightObj.transform.eulerAngles = new Vector3(39.4763f, 209.4147f, 227.5626f);
             Light LightComp = LightObj.AddComponent<Light>();
            // LightComp.color = new Color(1f, 0.9748f, 0.816f, 1f);
-            LightComp.intensity = 1f;
+            LightComp.intensity = 1.125f;
             LightComp.shadowBias = 0.5f;
             LightComp.shadowResolution = UnityEngine.Rendering.LightShadowResolution.High;
             LightComp.type = LightType.Directional;
@@ -196,8 +245,8 @@ namespace CollectibleCards
         }    
         public static void SetupCharacter()
         {
-            int BDHHBIIKMLP = 1; int FKEMEFPKBBL = 1; float JNLAJNFCDHA = 0.75f;
-            int GOOKPABIPBC = 1;
+            int BDHHBIIKMLP = 1;
+            int GOOKPABIPBC = UnityEngine.Random.Range(1, Characters.no_chars+1);
             if (NJBJIIIACEP.OAAMGFLINOB == null) NJBJIIIACEP.PIMGMPBCODM();
             DFOGOCNBECG dfogocnbecg = NJBJIIIACEP.OAAMGFLINOB[0];
             dfogocnbecg.GOOKPABIPBC = GOOKPABIPBC;
@@ -210,40 +259,42 @@ namespace CollectibleCards
             dfogocnbecg.DDKAGOBJGBC(0);
             dfogocnbecg.ABHDOPBDDPB();
             dfogocnbecg.PCNHIIPBNEK[0].transform.eulerAngles = new Vector3(0f, 0f, 0f);
-     /*       int num6;
-            int num7;
-            int num8;
-            do
-            {
-                int num5 = NAEEIFNFBBO.OMOADEKHHHO(MBLIOKEDHHB.AKICIDBAGOC, 0);
-                num6 = MBLIOKEDHHB.LHFJJPOPIAA[num5].PFDGHMKKHOF;
-                num7 = MBLIOKEDHHB.LHFJJPOPIAA[num5].EJPKJOFMIAI[NAEEIFNFBBO.PMEEFNOLAGF(0, MBLIOKEDHHB.LHFJJPOPIAA[num5].EJPKJOFMIAI.Length - 1, 0)];
-                if (NAEEIFNFBBO.PMEEFNOLAGF(0, 3, 0) == 0)
-                {
-                    num6 = 0;
-                    num7 = NAEEIFNFBBO.PMEEFNOLAGF(3, 24, 0);
-                }
-                if (dfogocnbecg.EMDMDLNJFKP.gender > 0 && NAEEIFNFBBO.PMEEFNOLAGF(0, 1, 0) == 0)
-                {
-                    num6 = 0;
-                    num7 = NAEEIFNFBBO.PMEEFNOLAGF(82, 83, 0);
-                }
-                if (dfogocnbecg.EMDMDLNJFKP.injury != 0 && NAEEIFNFBBO.PMEEFNOLAGF(0, 1, 0) == 0)
-                {
-                    num6 = 4;
-                    num7 = NAEEIFNFBBO.PMEEFNOLAGF(1, 6, 0);
-                }
-                num8 = 1;
-                if (num6 == 3 && (num7 == 36 || num7 == 37 || num7 == 42))
-                {
-                    num8 = 0;
-                }
-                if (num6 == 4 && num7 == 39)
-                {
-                    num8 = 0;
-                }
-            }
-            while (num8 == 0);*/
+            dfogocnbecg.PCNHIIPBNEK[0].transform.position = new Vector3(CharXPos.Value, CharYPos.Value, 0);
+            dfogocnbecg.PCNHIIPBNEK[0].transform.localScale = new Vector3(CharSize.Value, CharSize.Value, CharSize.Value);
+            /*       int num6;
+                   int num7;
+                   int num8;
+                   do
+                   {
+                       int num5 = NAEEIFNFBBO.OMOADEKHHHO(MBLIOKEDHHB.AKICIDBAGOC, 0);
+                       num6 = MBLIOKEDHHB.LHFJJPOPIAA[num5].PFDGHMKKHOF;
+                       num7 = MBLIOKEDHHB.LHFJJPOPIAA[num5].EJPKJOFMIAI[NAEEIFNFBBO.PMEEFNOLAGF(0, MBLIOKEDHHB.LHFJJPOPIAA[num5].EJPKJOFMIAI.Length - 1, 0)];
+                       if (NAEEIFNFBBO.PMEEFNOLAGF(0, 3, 0) == 0)
+                       {
+                           num6 = 0;
+                           num7 = NAEEIFNFBBO.PMEEFNOLAGF(3, 24, 0);
+                       }
+                       if (dfogocnbecg.EMDMDLNJFKP.gender > 0 && NAEEIFNFBBO.PMEEFNOLAGF(0, 1, 0) == 0)
+                       {
+                           num6 = 0;
+                           num7 = NAEEIFNFBBO.PMEEFNOLAGF(82, 83, 0);
+                       }
+                       if (dfogocnbecg.EMDMDLNJFKP.injury != 0 && NAEEIFNFBBO.PMEEFNOLAGF(0, 1, 0) == 0)
+                       {
+                           num6 = 4;
+                           num7 = NAEEIFNFBBO.PMEEFNOLAGF(1, 6, 0);
+                       }
+                       num8 = 1;
+                       if (num6 == 3 && (num7 == 36 || num7 == 37 || num7 == 42))
+                       {
+                           num8 = 0;
+                       }
+                       if (num6 == 4 && num7 == 39)
+                       {
+                           num8 = 0;
+                       }
+                   }
+                   while (num8 == 0);*/
             //dfogocnbecg.FJHHJGONAFO(num6, (float)num7);
             dfogocnbecg.KOLHFFPPCEE((float)(50 - 100 * dfogocnbecg.EMDMDLNJFKP.heel));
             int num = NAEEIFNFBBO.OMOADEKHHHO(MBLIOKEDHHB.ABJFEMNCIMI);
@@ -252,14 +303,6 @@ namespace CollectibleCards
             dfogocnbecg.FJHHJGONAFO(dfogocnbecg.FEOFDJFFNMN, dfogocnbecg.LMALJJFEHGH);
 
 
-
-            foreach (Transform transform in dfogocnbecg.PCNHIIPBNEK[0].GetComponentsInChildren<Transform>())
-            {
-                if (transform.gameObject.name == "Hair")
-                {
-              //      transform.gameObject.layer = 10;
-                }
-            }
         }
         public class CaptureCameraView : MonoBehaviour
         {
@@ -279,26 +322,10 @@ namespace CollectibleCards
             public IEnumerator CaptureScreenshotWithCanvas()
             {
                 Camera targetCamera = this.GetComponent<Camera>();
-                Texture2D overlayTexture = null;
-                var overlayText = "HELLO WORLD";
-                var textFontSize = 80;
-                var textColor = new Color(1, 1, 1);
-                string text2 = Path.Combine(PluginPath, "Pictures", "FoilOverlay.png");
-                if (File.Exists(text2))
-                {
-                    byte[] array2 = File.ReadAllBytes(text2);
-                    if (array2 != null)
-                    {
-                        Texture2D texture2D = new Texture2D(1, 1);
-                        ImageConversion.LoadImage(texture2D, array2);
-                        Sprite sprite = Sprite.Create(texture2D, new Rect(0f, 0f, (float)texture2D.width, (float)texture2D.height), new Vector2(0.5f, 0.5f));
-                        overlayTexture = sprite.texture;
-                        //     screenShot = OverlayTextures(screenShot, texture);
-                      //  AddOverlayTextureToCanvas(texture, overlayCanvas);
-                    }
-                }
-
-
+                List<Texture2D> overlayTextures = new();
+                //      var overlayText = "HELLO WORLD";
+                //       var textFontSize = 80;
+                //        var textColor = new Color(1, 1, 1);
 
                 // Create the canvas and add the overlay elements
                 GameObject canvasObj = new GameObject("CanvasObj");
@@ -308,10 +335,42 @@ namespace CollectibleCards
                 overlayCanvas.sortingOrder = 100; // Ensure it's rendered on top
                 overlayCanvas.planeDistance = 1;
 
+
+
+
+
+                // string overlayfile = Path.Combine(PluginPath, "Pictures", "FoilOverlay.png");
+
+                DirectoryInfo dir = new DirectoryInfo(PluginPath);
+                FileInfo[] files = dir.GetFiles("*");
+
+                foreach (FileInfo file in files)
+                {
+                    if (file.Name.StartsWith("overlay"))
+                    {
+                        byte[] array2 = File.ReadAllBytes(file.FullName);
+                        if (array2 != null)
+                        {
+                            Texture2D texture2D = new Texture2D(1, 1);
+                            ImageConversion.LoadImage(texture2D, array2);
+                            Sprite sprite = Sprite.Create(texture2D, new Rect(0f, 0f, (float)texture2D.width, (float)texture2D.height), new Vector2(0.5f, 0.5f));
+                            overlayTextures.Add (sprite.texture);
+                            //     screenShot = OverlayTextures(screenShot, texture);
+                            //  AddOverlayTextureToCanvas(texture, overlayCanvas);
+                        }
+                    }
+                }
+
+
                 // Add the overlay texture and text to the canvas
 
-                AddTextToCanvas(overlayCanvas, overlayText, new Vector2(-300, 0), textFontSize, textColor);
-                AddOverlayTextureToCanvas(overlayTexture, overlayCanvas);
+             //   AddTextToCanvas(overlayCanvas, overlayText, new Vector2(-300, 0), textFontSize, textColor);
+             //   AddOverlayTextureToCanvas(overlayTexture, overlayCanvas);
+
+                foreach(Texture2D texture2D in overlayTextures)
+                {
+                    AddOverlayTextureToCanvas(texture2D, overlayCanvas);
+                }
                 // Wait for the end of the frame to ensure everything is rendered
                 yield return new WaitForEndOfFrame();
 
@@ -324,8 +383,8 @@ namespace CollectibleCards
 
             void CaptureScreenshot(Camera camera)
             {
-                int captureHeight = 1000;
-                int captureWidth = 719;
+                int captureHeight = CardHeight;
+                int captureWidth = CardWidth;
                 RenderTexture rt = new RenderTexture(captureWidth, captureHeight, 24);
                 camera.targetTexture = rt;
                 Texture2D screenShot = new Texture2D(captureWidth, captureHeight, TextureFormat.RGB24, false);
@@ -339,11 +398,8 @@ namespace CollectibleCards
 
                 // Encode the Texture2D into PNG format with transparency
                 byte[] bytes = screenShot.EncodeToPNG();
-                string filename = DateTime.Now.ToString("yyyy'-'MM'-'dd' 'HH'-'mm'-'ss'-'fff") + ".jpg";
+                string filename = DateTime.Now.ToString("yyyy'-'MM'-'dd' 'HH'-'mm'-'ss'-'fff") + ".png";
                 string filePath = Path.Combine(PluginPath, filename);
-
-
-
                 // Save the PNG file
                 File.WriteAllBytes(filePath, bytes);
                 Debug.LogWarning($"Saved image to {filePath}");
