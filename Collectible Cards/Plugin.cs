@@ -1,5 +1,5 @@
 //todo costumes based on character role; injured taunt?; figure out adding fed logo; add text rotation; menu with cards; left right button + slider; text info below card;
-
+// draw bounding box around text option (chat gpt, set rect transfom anchor 0); signed card option
 
 using BepInEx;
 using BepInEx.Configuration;
@@ -44,6 +44,7 @@ namespace CollectibleCards
             PluginPath = Path.GetDirectoryName(Info.Location);
 
             Background.GetShaderPrefab();
+            OverlaytxtFileParser.LoadSigFont();
 
             CharXPos = Config.Bind("General",
              "Character x position",
@@ -108,11 +109,14 @@ namespace CollectibleCards
             public float PosX { get; set; } = 0;
             public float PosY { get; set; } = 0;
             public float RotX { get; set; } = 0;
-            public float RotY { get; set; } = 0;
+            public float RotY { get; set; } = 180;
             public float RotZ { get; set; } = 0;
             public float ColR { get; set; } = 0;
             public float ColG { get; set; } = 0;
             public float ColB { get; set; } = 0;
+            public float BoxX { get; set; } = 200;
+            public float BoxY { get; set; } = 100;
+            public bool DrawBox { get; set; } = false;
             public OverlayText(Text component)
             {
                 TextComponent = component;
@@ -128,16 +132,34 @@ namespace CollectibleCards
         }
         public static class OverlaytxtFileParser
         {
+            public static Font SignatureFont = new();
+            public static void LoadSigFont()
+            {
+                var assetBundle = AssetBundle.LoadFromFile(Path.Combine(PluginPath, "signaturefont"));
+                Debug.LogWarning(assetBundle);
+                SignatureFont = assetBundle.LoadAsset<Font>("Signaturefont");
+                Debug.LogWarning(SignatureFont);
+            }
             public static OverlayText ParseCharName(string file, Text component, int charID)
             {
                 OverlayText overlayText = Parser(file, component);
                 overlayText.TextComponent.text = Characters.c[charID].name;
+                overlayText.TextComponent.font = Resources.GetBuiltinResource<Font>("Arial.ttf");
+                return overlayText;
+            }
+            public static OverlayText ParseCharSig(string file, Text component, int charID)
+            {
+                OverlayText overlayText = Parser(file, component);
+                overlayText.TextComponent.text = Characters.c[charID].name;
+                overlayText.TextComponent.font = SignatureFont;
+                Debug.LogWarning(overlayText.TextComponent.font);
                 return overlayText;
             }
             public static OverlayText ParseCharNumber(string file, Text component, int charID)
             {
                 OverlayText overlayText = Parser(file, component);
                 overlayText.TextComponent.text = charID.ToString();
+                overlayText.TextComponent.font = Resources.GetBuiltinResource<Font>("Arial.ttf");
                 return overlayText;
             }
             public static OverlayText Parser(string file, Text component)
@@ -199,6 +221,20 @@ namespace CollectibleCards
                     if (line.ToLower().StartsWith("rotz:"))
                     {
                         overlayText.RotZ = float.Parse(line.Substring(5).Trim());
+                        continue;
+                    }
+                    if (line.ToLower().StartsWith("boxx:"))
+                    {
+                        overlayText.BoxX = float.Parse(line.Substring(5).Trim());
+                        continue;
+                    }
+                    if (line.ToLower() == "drawbox")
+                    {
+                        overlayText.DrawBox = true;
+                    }
+                    if (line.ToLower().StartsWith("boxy:"))
+                    {
+                        overlayText.BoxY = float.Parse(line.Substring(5).Trim());
                         continue;
                     }
                     if (line.ToLower().StartsWith("alignment:"))
@@ -558,6 +594,10 @@ namespace CollectibleCards
                         {
                             AddNumberTextToCanvas(overlayCanvas, file.FullName, NJBJIIIACEP.OAAMGFLINOB[1].GOOKPABIPBC);
                         }
+                        else if (file.Name.ToLower().Contains("signature"))
+                        {
+                            AddCharSigTextToCanvas(overlayCanvas, file.FullName, NJBJIIIACEP.OAAMGFLINOB[1].GOOKPABIPBC);
+                        }
                     }
                 }
 
@@ -624,12 +664,10 @@ namespace CollectibleCards
                 textObject.transform.SetParent(canvas.transform, false);
                 Text uiText = textObject.AddComponent<Text>();
                 OverlayText ovrText = OverlaytxtFileParser.ParseCharNumber(file, uiText, id);
-                uiText.horizontalOverflow = HorizontalWrapMode.Overflow;
-                uiText.color = new Color(ovrText.ColR, ovrText.ColG, ovrText.ColB);
-                uiText.font = Resources.GetBuiltinResource<Font>("Arial.ttf");
-                RectTransform rectTransform = uiText.GetComponent<RectTransform>();
-                rectTransform.anchoredPosition = ovrText.GetCanvasPos();
-                rectTransform.sizeDelta = new Vector2(200, 100);
+                AddText(canvas, ovrText, uiText);
+
+
+
                 uiText.transform.SetAsLastSibling();
             }
             void AddCharNameTextToCanvas(Canvas canvas, string file, int id)
@@ -638,13 +676,58 @@ namespace CollectibleCards
                 textObject.transform.SetParent(canvas.transform, false);
                 Text uiText = textObject.AddComponent<Text>();
                 OverlayText ovrText = OverlaytxtFileParser.ParseCharName(file, uiText, id);
+                AddText(canvas, ovrText, uiText);
+
+
+                uiText.transform.SetAsLastSibling();
+            }
+            void AddCharSigTextToCanvas(Canvas canvas, string file, int id)
+            {
+                GameObject textObject = new GameObject("Sig");
+                textObject.transform.SetParent(canvas.transform, false);
+                Text uiText = textObject.AddComponent<Text>();
+                OverlayText ovrText = OverlaytxtFileParser.ParseCharSig(file, uiText, id);
+                AddText(canvas, ovrText, uiText);
+
+
+                uiText.transform.SetAsLastSibling();
+            }
+            void AddText(Canvas canvas, OverlayText ovrText, Text uiText)
+            {
                 uiText.horizontalOverflow = HorizontalWrapMode.Overflow;
                 uiText.color = new Color(ovrText.ColR, ovrText.ColG, ovrText.ColB);
-                uiText.font = Resources.GetBuiltinResource<Font>("Arial.ttf");
                 RectTransform rectTransform = uiText.GetComponent<RectTransform>();
                 rectTransform.anchoredPosition = ovrText.GetCanvasPos();
-                rectTransform.sizeDelta = new Vector2(200, 100);
-                uiText.transform.SetAsLastSibling();
+                rectTransform.eulerAngles = new Vector3(ovrText.RotX, ovrText.RotY, ovrText.RotZ);
+                rectTransform.sizeDelta = new Vector2(ovrText.BoxX, ovrText.BoxY);
+                if (ovrText.DrawBox == true) DrawBox(uiText);
+            }
+            void DrawBox(Text uiText)
+            {
+                // Create a new GameObject for the background image
+                GameObject backgroundObject = new GameObject("TextBackground");
+
+                // Add the Image component to the new GameObject
+                UnityEngine.UI.Image backgroundImage = backgroundObject.AddComponent<UnityEngine.UI.Image>();
+
+                // Set the background color (e.g., red with some transparency)
+                backgroundImage.color = new Color(1, 0, 0, 0.5f); // Red color with 50% transparency
+
+                // Get the RectTransform components
+                RectTransform textRectTransform = uiText.GetComponent<RectTransform>();
+                RectTransform backgroundRectTransform = backgroundObject.GetComponent<RectTransform>();
+
+                // Set the parent of the background to be the same as the text's parent
+                backgroundRectTransform.SetParent(uiText.transform, false);
+
+                // Match the size of the background to the text box
+                backgroundRectTransform.anchorMin = textRectTransform.anchorMin;
+                backgroundRectTransform.anchorMax = textRectTransform.anchorMax;
+               // backgroundRectTransform.anchoredPosition = textRectTransform.anchoredPosition;
+                backgroundRectTransform.sizeDelta = textRectTransform.sizeDelta;
+
+                // Optionally, adjust the background to be behind the text
+                backgroundObject.transform.SetSiblingIndex(uiText.transform.GetSiblingIndex());
             }
             void AddTextToCanvas(Canvas canvas, string text, Vector2 position, int fontSize, Color color)
             {
@@ -656,7 +739,7 @@ namespace CollectibleCards
                 uiText.fontSize = fontSize;
                 uiText.color = color;
                 uiText.alignment = TextAnchor.UpperLeft;
-                uiText.font = Resources.GetBuiltinResource<Font>("Arial.ttf");
+                
                 RectTransform rectTransform = uiText.GetComponent<RectTransform>();
                 rectTransform.anchoredPosition = position;
                 rectTransform.sizeDelta = new Vector2(200, 100);
