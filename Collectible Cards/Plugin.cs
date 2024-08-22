@@ -1,4 +1,4 @@
-//todo fix scene lightning; costumes based on character role; injured taunt?; figure out adding fed logo
+//todo costumes based on character role; injured taunt?; figure out adding fed logo; add text rotation; menu with cards; left right button + slider; text info below card;
 
 
 using BepInEx;
@@ -21,7 +21,7 @@ namespace CollectibleCards
     {
         public const string PluginGuid = "GeeEm.WrestlingEmpire.CollectibleCards";
         public const string PluginName = "CollectibleCards";
-        public const string PluginVer = "0.0.1";
+        public const string PluginVer = "0.0.2";
 
         internal static ManualLogSource Log;
         internal readonly static Harmony Harmony = new(PluginGuid);
@@ -87,17 +87,132 @@ namespace CollectibleCards
         public void CreateCharacterCard()
         {
             GameObject cam = SetupCamera();
-            SetupCharacter();
+            CaptureCameraView camView = cam.AddComponent<CaptureCameraView>();
             SetupPictureLight();
             Background.SetupBackground(cam);
+            StartCoroutine(SetupCharacter(camView));
+            
+
             //  CardOverlay.SetupCanvas();
             //   yield return frameEnd;
-            CaptureCameraView camView = cam.AddComponent<CaptureCameraView>();
-            camView.StartCoroutine(camView.CaptureScreenshotWithCanvas());
+            
+
             //CleanupScene();
         }
         public static class CardOverlay
         { 
+        }
+        public class OverlayText
+        {
+            public Text TextComponent { get; set; } = new();
+            public float PosX { get; set; } = 0;
+            public float PosY { get; set; } = 0;
+            public float RotX { get; set; } = 0;
+            public float RotY { get; set; } = 0;
+            public float RotZ { get; set; } = 0;
+            public float ColR { get; set; } = 0;
+            public float ColG { get; set; } = 0;
+            public float ColB { get; set; } = 0;
+            public OverlayText(Text component)
+            {
+                TextComponent = component;
+            }
+            public Vector2 GetCanvasPos()
+            {
+                int width = CardWidth;
+                int height = CardHeight;
+
+                return new Vector2(PosX- (width / 2), (height / 2) - PosY );
+               // return new Vector2(((width / 2) + PosX), ((height / 2) - PosY));
+            }
+        }
+        public static class OverlaytxtFileParser
+        {
+            public static OverlayText ParseCharName(string file, Text component, int charID)
+            {
+                OverlayText overlayText = Parser(file, component);
+                overlayText.TextComponent.text = Characters.c[charID].name;
+                return overlayText;
+            }
+            public static OverlayText ParseCharNumber(string file, Text component, int charID)
+            {
+                OverlayText overlayText = Parser(file, component);
+                overlayText.TextComponent.text = charID.ToString();
+                return overlayText;
+            }
+            public static OverlayText Parser(string file, Text component)
+            {
+                OverlayText overlayText = new(component);
+
+                string[] lines = File.ReadAllLines(Path.Combine(PluginPath, file));
+                foreach (string line in lines)
+                {
+                    if (line.Trim().Length == 0)
+                    {
+                        continue;
+                    }
+                    if (line.ToLower().StartsWith("text:"))
+                    {
+                        overlayText.TextComponent.text = line.Substring(5).Trim();
+                        continue;
+                    }
+                    if (line.ToLower().StartsWith("size:"))
+                    {
+                        overlayText.TextComponent.fontSize = int.Parse(line.Substring(5).Trim());
+                        continue;
+                    }
+                    if (line.ToLower().StartsWith("colorr:"))
+                    {
+                        overlayText.ColR = float.Parse(line.Substring(7).Trim());
+                        continue;
+                    }
+                    if (line.ToLower().StartsWith("colorg:"))
+                    {
+                        overlayText.ColG = float.Parse(line.Substring(7).Trim());
+                        continue;
+                    }
+                    if (line.ToLower().StartsWith("colorb:"))
+                    {
+                        overlayText.ColB = float.Parse(line.Substring(7).Trim());
+                        continue;
+                    }
+                    if (line.ToLower().StartsWith("posx:"))
+                    {
+                        overlayText.PosX = float.Parse(line.Substring(5).Trim());
+                        continue;
+                    }
+                    if (line.ToLower().StartsWith("posy:"))
+                    {
+                        overlayText.PosY = float.Parse(line.Substring(5).Trim());
+                        continue;
+                    }
+                    if (line.ToLower().StartsWith("rotx:"))
+                    {
+                        overlayText.RotX = float.Parse(line.Substring(5).Trim());
+                        continue;
+                    }
+                    if (line.ToLower().StartsWith("roty:"))
+                    {
+                        overlayText.RotY = float.Parse(line.Substring(5).Trim());
+                        continue;
+                    }
+                    if (line.ToLower().StartsWith("rotz:"))
+                    {
+                        overlayText.RotZ = float.Parse(line.Substring(5).Trim());
+                        continue;
+                    }
+                    if (line.ToLower().StartsWith("alignment:"))
+                    {
+                        TextAnchor alignment;
+                        if(Enum.TryParse<TextAnchor>(line.Substring(10).Trim(), true, out alignment))
+                        {
+                            overlayText.TextComponent.alignment = alignment;
+                        }
+                        continue;
+                    }
+                }
+                return overlayText;
+            }
         }
         public static class Background
         {
@@ -243,24 +358,33 @@ namespace CollectibleCards
             LightComp.type = LightType.Directional;
             return LightObj;
         }    
-        public static void SetupCharacter()
+        public IEnumerator SetupCharacter(CaptureCameraView camView)
         {
             int BDHHBIIKMLP = 1;
             int GOOKPABIPBC = UnityEngine.Random.Range(1, Characters.no_chars+1);
-            if (NJBJIIIACEP.OAAMGFLINOB == null) NJBJIIIACEP.PIMGMPBCODM();
-            DFOGOCNBECG dfogocnbecg = NJBJIIIACEP.OAAMGFLINOB[0];
+            if (NJBJIIIACEP.OAAMGFLINOB == null) NJBJIIIACEP.PIMGMPBCODM(1);
+            NJBJIIIACEP.NBBBLJDBLNM = 1;
+            Debug.LogWarning("D");
+            DFOGOCNBECG dfogocnbecg = NJBJIIIACEP.OAAMGFLINOB[1];
+            Debug.LogWarning("C1");
             dfogocnbecg.GOOKPABIPBC = GOOKPABIPBC;
             dfogocnbecg.EMDMDLNJFKP = Characters.c[dfogocnbecg.GOOKPABIPBC];
             dfogocnbecg.OEGJEBDBGJA = dfogocnbecg.EMDMDLNJFKP.costume[BDHHBIIKMLP];
+            dfogocnbecg.PLFGKLGCOMD = 1;
             if (dfogocnbecg.PCNHIIPBNEK[0] != null)
             {
                 UnityEngine.Object.Destroy(dfogocnbecg.PCNHIIPBNEK[0]);
             }
+            Debug.LogWarning("C");
             dfogocnbecg.DDKAGOBJGBC(0);
             dfogocnbecg.ABHDOPBDDPB();
             dfogocnbecg.PCNHIIPBNEK[0].transform.eulerAngles = new Vector3(0f, 0f, 0f);
             dfogocnbecg.PCNHIIPBNEK[0].transform.position = new Vector3(CharXPos.Value, CharYPos.Value, 0);
             dfogocnbecg.PCNHIIPBNEK[0].transform.localScale = new Vector3(CharSize.Value, CharSize.Value, CharSize.Value);
+
+
+
+            /**/
             /*       int num6;
                    int num7;
                    int num8;
@@ -296,11 +420,76 @@ namespace CollectibleCards
                    }
                    while (num8 == 0);*/
             //dfogocnbecg.FJHHJGONAFO(num6, (float)num7);
+            Debug.LogWarning("B");
             dfogocnbecg.KOLHFFPPCEE((float)(50 - 100 * dfogocnbecg.EMDMDLNJFKP.heel));
             int num = NAEEIFNFBBO.OMOADEKHHHO(MBLIOKEDHHB.ABJFEMNCIMI);
             dfogocnbecg.FEOFDJFFNMN = MBLIOKEDHHB.LHFJJPOPIAA[num].PFDGHMKKHOF;
             dfogocnbecg.LMALJJFEHGH = MBLIOKEDHHB.LHFJJPOPIAA[num].EJPKJOFMIAI[NAEEIFNFBBO.PMEEFNOLAGF(0, MBLIOKEDHHB.LHFJJPOPIAA[num].EJPKJOFMIAI.Length - 1)];
             dfogocnbecg.FJHHJGONAFO(dfogocnbecg.FEOFDJFFNMN, dfogocnbecg.LMALJJFEHGH);
+
+            Debug.LogWarning("A");
+
+
+            dfogocnbecg.FEACEIIIAHK();
+
+            yield return new WaitForEndOfFrame();
+
+
+            //belts
+
+            dfogocnbecg.JIFMEHIKLDI[0] = 0;
+            dfogocnbecg.JIFMEHIKLDI[1] = 0;
+            dfogocnbecg.JIFMEHIKLDI[2] = 0;
+            for (int j = 1; j <= JFLEBEBCGFA.LLODPDKEEJG; j++)
+            {
+                Debug.LogWarning("2");
+                Debug.Log("Removing existing prop " + j.ToString() + " / " + JFLEBEBCGFA.LLODPDKEEJG.ToString());
+                if (JFLEBEBCGFA.HLLBCKILNNG[j].BHKGKKLDDBC != null)
+                {
+                    UnityEngine.Object.Destroy(JFLEBEBCGFA.HLLBCKILNNG[j].BHKGKKLDDBC);
+                }
+            }
+            Debug.LogWarning("3");
+            JFLEBEBCGFA.LLODPDKEEJG = 0;
+            JFLEBEBCGFA.HLLBCKILNNG = new GDFKEAMIOAG[JFLEBEBCGFA.LLODPDKEEJG + 1];
+            JFLEBEBCGFA.HLLBCKILNNG[0] = new GDFKEAMIOAG();
+            Debug.LogWarning("4");
+            if (dfogocnbecg.PCNHIIPBNEK[0].activeSelf)
+            {
+                dfogocnbecg.AMPHLBAOCKC();
+            }
+            //  dfogocnbecg.MKFMMIPFKKC();
+
+            if (JFLEBEBCGFA.HLLBCKILNNG != null)
+            {
+
+
+                foreach (GDFKEAMIOAG weap in JFLEBEBCGFA.HLLBCKILNNG)
+                {
+                    Debug.LogWarning(weap.PLFGKLGCOMD);
+                }
+                if (JFLEBEBCGFA.HLLBCKILNNG[dfogocnbecg.JIFMEHIKLDI[0]] != null)
+                {
+                    Debug.LogWarning("INDEX " + 13);
+                    Debug.LogWarning(dfogocnbecg.PCNHIIPBNEK[13] == null);
+
+                    JFLEBEBCGFA.HLLBCKILNNG[dfogocnbecg.JIFMEHIKLDI[0]].OFPBEHEIBBD(dfogocnbecg.PLFGKLGCOMD, 13);
+                }
+                if (JFLEBEBCGFA.HLLBCKILNNG[dfogocnbecg.JIFMEHIKLDI[1]] != null)
+                {
+                    Debug.LogWarning("INDEX " + 10);
+                    Debug.LogWarning(dfogocnbecg.PCNHIIPBNEK[10] == null);
+                    JFLEBEBCGFA.HLLBCKILNNG[dfogocnbecg.JIFMEHIKLDI[1]].OFPBEHEIBBD(dfogocnbecg.PLFGKLGCOMD, 10);
+                }
+                if (JFLEBEBCGFA.HLLBCKILNNG[dfogocnbecg.JIFMEHIKLDI[2]] != null)
+                {
+                    Debug.LogWarning("INDEX " + JFLEBEBCGFA.HLLBCKILNNG[dfogocnbecg.JIFMEHIKLDI[2]].KDFCBHGKOKE);
+                    Debug.LogWarning("IS CHAR GAME OBJECT NULL??");
+                    Debug.LogWarning(dfogocnbecg.PCNHIIPBNEK[JFLEBEBCGFA.HLLBCKILNNG[dfogocnbecg.JIFMEHIKLDI[2]].KDFCBHGKOKE] == null);
+                    JFLEBEBCGFA.HLLBCKILNNG[dfogocnbecg.JIFMEHIKLDI[2]].OFPBEHEIBBD(dfogocnbecg.PLFGKLGCOMD, JFLEBEBCGFA.HLLBCKILNNG[dfogocnbecg.JIFMEHIKLDI[2]].KDFCBHGKOKE);
+                }
+            }
+            camView.CaptureScreenshotWithCanvas();
 
 
         }
@@ -319,7 +508,7 @@ namespace CollectibleCards
                 Graphics.Blit(null, rt); // Blit the canvas content onto the RenderTexture
             }*/
 
-            public IEnumerator CaptureScreenshotWithCanvas()
+            public void CaptureScreenshotWithCanvas()
             {
                 Camera targetCamera = this.GetComponent<Camera>();
                 List<Texture2D> overlayTextures = new();
@@ -348,15 +537,26 @@ namespace CollectibleCards
                 {
                     if (file.Name.StartsWith("overlay"))
                     {
-                        byte[] array2 = File.ReadAllBytes(file.FullName);
-                        if (array2 != null)
+                        if (file.Extension.ToLower() != ".txt")
                         {
-                            Texture2D texture2D = new Texture2D(1, 1);
-                            ImageConversion.LoadImage(texture2D, array2);
-                            Sprite sprite = Sprite.Create(texture2D, new Rect(0f, 0f, (float)texture2D.width, (float)texture2D.height), new Vector2(0.5f, 0.5f));
-                            overlayTextures.Add (sprite.texture);
-                            //     screenShot = OverlayTextures(screenShot, texture);
-                            //  AddOverlayTextureToCanvas(texture, overlayCanvas);
+                            byte[] array2 = File.ReadAllBytes(file.FullName);
+                            if (array2 != null)
+                            {
+                                Texture2D texture2D = new Texture2D(1, 1);
+                                ImageConversion.LoadImage(texture2D, array2);
+                                Sprite sprite = Sprite.Create(texture2D, new Rect(0f, 0f, (float)texture2D.width, (float)texture2D.height), new Vector2(0.5f, 0.5f));
+                                AddOverlayTextureToCanvas(texture2D, overlayCanvas);
+                                //     screenShot = OverlayTextures(screenShot, texture);
+                                //  AddOverlayTextureToCanvas(texture, overlayCanvas);
+                            }
+                        }
+                        else if(file.Name.ToLower().Contains("name"))
+                        {
+                            AddCharNameTextToCanvas(overlayCanvas, file.FullName, NJBJIIIACEP.OAAMGFLINOB[1].GOOKPABIPBC);
+                        }
+                        else if (file.Name.ToLower().Contains("number"))
+                        {
+                            AddNumberTextToCanvas(overlayCanvas, file.FullName, NJBJIIIACEP.OAAMGFLINOB[1].GOOKPABIPBC);
                         }
                     }
                 }
@@ -367,18 +567,19 @@ namespace CollectibleCards
              //   AddTextToCanvas(overlayCanvas, overlayText, new Vector2(-300, 0), textFontSize, textColor);
              //   AddOverlayTextureToCanvas(overlayTexture, overlayCanvas);
 
-                foreach(Texture2D texture2D in overlayTextures)
-                {
-                    AddOverlayTextureToCanvas(texture2D, overlayCanvas);
-                }
+       //         foreach(Texture2D texture2D in overlayTextures)
+     //           {
+     //               AddOverlayTextureToCanvas(texture2D, overlayCanvas);
+     //           }
                 // Wait for the end of the frame to ensure everything is rendered
-                yield return new WaitForEndOfFrame();
+           //     yield return new WaitForEndOfFrame();
 
                 // Capture the screenshot here
                 CaptureScreenshot(targetCamera);
 
                 // Optionally, clean up the canvas after capturing
-               // Destroy(canvasObj);
+                // Destroy(canvasObj);
+               // yield return new WaitForEndOfFrame();
             }
 
             void CaptureScreenshot(Camera camera)
@@ -417,6 +618,34 @@ namespace CollectibleCards
                 rawImage.transform.SetAsLastSibling();
             }
 
+            void AddNumberTextToCanvas(Canvas canvas, string file, int id)
+            {
+                GameObject textObject = new GameObject("Number");
+                textObject.transform.SetParent(canvas.transform, false);
+                Text uiText = textObject.AddComponent<Text>();
+                OverlayText ovrText = OverlaytxtFileParser.ParseCharNumber(file, uiText, id);
+                uiText.horizontalOverflow = HorizontalWrapMode.Overflow;
+                uiText.color = new Color(ovrText.ColR, ovrText.ColG, ovrText.ColB);
+                uiText.font = Resources.GetBuiltinResource<Font>("Arial.ttf");
+                RectTransform rectTransform = uiText.GetComponent<RectTransform>();
+                rectTransform.anchoredPosition = ovrText.GetCanvasPos();
+                rectTransform.sizeDelta = new Vector2(200, 100);
+                uiText.transform.SetAsLastSibling();
+            }
+            void AddCharNameTextToCanvas(Canvas canvas, string file, int id)
+            {
+                GameObject textObject = new GameObject("Name");
+                textObject.transform.SetParent(canvas.transform, false);
+                Text uiText = textObject.AddComponent<Text>();
+                OverlayText ovrText = OverlaytxtFileParser.ParseCharName(file, uiText, id);
+                uiText.horizontalOverflow = HorizontalWrapMode.Overflow;
+                uiText.color = new Color(ovrText.ColR, ovrText.ColG, ovrText.ColB);
+                uiText.font = Resources.GetBuiltinResource<Font>("Arial.ttf");
+                RectTransform rectTransform = uiText.GetComponent<RectTransform>();
+                rectTransform.anchoredPosition = ovrText.GetCanvasPos();
+                rectTransform.sizeDelta = new Vector2(200, 100);
+                uiText.transform.SetAsLastSibling();
+            }
             void AddTextToCanvas(Canvas canvas, string text, Vector2 position, int fontSize, Color color)
             {
                 GameObject textObject = new GameObject(text);

@@ -17,7 +17,7 @@ namespace FontReplacer
     {
         public const string PluginGuid = "GeeEm.WrestlingEmpire.FontReplacer";
         public const string PluginName = "FontReplacer";
-        public const string PluginVer = "0.8.2";
+        public const string PluginVer = "0.8.3";
 
         internal static ManualLogSource Log;
         internal readonly static Harmony Harmony = new(PluginGuid);
@@ -43,6 +43,8 @@ namespace FontReplacer
             {
                 ScanFolder(modPath);
             }
+            if(Fonts.Count == 0) Fonts.Add(new Font());
+
             OSFontName = Config.Bind("General",
                  "OS font name",
                  "",
@@ -52,18 +54,41 @@ namespace FontReplacer
             {
                 try
                 {
-                    Fonts[0] = Font.CreateDynamicFontFromOSFont(OSFontName.Value, 10);
-                    CurrentFont = 0;
-                    return "Font applied!";
+                    if(OSFontName.Value != "")
+                    {
+                        Fonts[0] = Font.CreateDynamicFontFromOSFont(OSFontName.Value, 10);
+                        CurrentFont = 0;
+                        ChangeFont();
+                        return "Font applied!";
+                    }
+                    else
+                    {
+                        CurrentFont = -1;
+                        return "Font will be reset!";
+                    }
                 }
                 catch (Exception e)
                 {
                     CurrentFont = -1;
+                    Log.LogError(e);
                     return "Failed to apply: " + e.Message;
                 }
+
             });
 
-            if(OSFontName.Value != "")
+            Buttons.RegisterCustomButton(this, "List all available fonts in console", () =>
+            {
+                Log.LogInfo("---------");
+                foreach(string s in Font.GetOSInstalledFontNames())
+                {
+                    Log.LogInfo(s);
+                }
+                Log.LogInfo("---------");
+                return "Check your console!";
+
+            });
+
+            if (OSFontName.Value != "")
             {
                 Fonts[0] = Font.CreateDynamicFontFromOSFont(OSFontName.Value, 10);
                 CurrentFont = 0;
