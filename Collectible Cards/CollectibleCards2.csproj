@@ -1,7 +1,7 @@
 ﻿<Project Sdk="Microsoft.NET.Sdk">
 
     <PropertyGroup>
-        <AssemblyName>CollectibleCards</AssemblyName>
+        <AssemblyName>CollectibleCards2</AssemblyName>
         <AssemblyVersion>1.0.0</AssemblyVersion>
         <ReleaseVersion>1.0.0</ReleaseVersion>
         <TargetFramework>netstandard2.0</TargetFramework>
@@ -27,6 +27,9 @@
     <ItemGroup>
       <Reference Include="Assembly-CSharp">
         <HintPath>lib\Assembly-CSharp_public.dll</HintPath>
+      </Reference>
+      <Reference Include="Pngcs">
+        <HintPath>Pngcs45.dll</HintPath>
       </Reference>
       <Reference Include="UnityEngine.UI">
         <HintPath>UnityEngine.UI.dll</HintPath>

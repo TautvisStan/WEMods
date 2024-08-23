@@ -5,14 +5,19 @@ using BepInEx;
 using BepInEx.Configuration;
 using BepInEx.Logging;
 using HarmonyLib;
+using Hjg.Pngcs;
+using Hjg.Pngcs.Chunks;
 using System;
 using System.Collections;
 using System.Collections.Generic;
 using System.IO;
+using System.Net.NetworkInformation;
 using UnityEngine;
 using UnityEngine.UI;
+using UnityEngine.XR;
 
-namespace CollectibleCards
+
+namespace CollectibleCards2
 {
     [BepInPlugin(PluginGuid, PluginName, PluginVer)]
     [HarmonyPatch]
@@ -708,17 +713,40 @@ namespace CollectibleCards
                 camera.targetTexture = null;
                 RenderTexture.active = null;
                 Destroy(rt);
-
                 // Encode the Texture2D into PNG format with transparency
                 byte[] bytes = screenShot.EncodeToPNG();
                 string filename = DateTime.Now.ToString("yyyy'-'MM'-'dd' 'HH'-'mm'-'ss'-'fff") + ".png";
                 string filePath = Path.Combine(PluginPath, filename);
-                // Save the PNG file
-                File.WriteAllBytes(filePath, bytes);
-                Debug.LogWarning($"Saved image to {filePath}");
+
+
+
+                PngUtils.addMetadata(filePath, bytes, "CharID", NJBJIIIACEP.OAAMGFLINOB[1].GOOKPABIPBC.ToString());
+                //ImageInfo imi = new ImageInfo(719, 1000, 8, true);
+                /*       PngReader pngr = new PngReader(new MemoryStream(bytes));
+                       {
+
+
+                           PngWriter pngw = FileHelper.CreatePngWriter(filePath, pngr.ImgInfo, true);
+                           pngw.GetMetadata().SetText("CharID", NJBJIIIACEP.OAAMGFLINOB[1].GOOKPABIPBC.ToString());
+
+                           // Save the PNG file
+                           //      File.WriteAllBytes(filePath, bytes);
+                           for (int row = 0; row < pngr.ImgInfo.Rows; row++)
+                           { // also: while(pngr.hasMoreRows()) 
+                               ImageLine l1 = pngr.ReadRow(row);
+                               pngw.WriteRow(l1, row);
+                           }
+                           pngr.End();
+                           pngw.End();
+
+                       }*/
+
+                Debug.LogWarning($"Saved image to0 {filePath}");
+                Debug.LogWarning($"CHAR ID IS {PngUtils.getMetadata(filePath, "CharID")}");
             }
 
-            void AddOverlayTextureToCanvas(Texture2D texture, Canvas canvas)
+
+             void AddOverlayTextureToCanvas(Texture2D texture, Canvas canvas)
             {
                 GameObject rawImageObject = new GameObject(texture.name);
                 rawImageObject.transform.SetParent(canvas.transform, false);
@@ -845,5 +873,96 @@ namespace CollectibleCards
             }
 
         }
+    }
+    static class PngUtils
+    {
+
+        public static string getMetadata(string file, string key)
+        {
+
+            PngReader pngr = FileHelper.CreatePngReader(file);
+            //pngr.MaxTotalBytesRead = 1024 * 1024 * 1024L * 3; // 3Gb!
+            //pngr.ReadSkippingAllRows();
+            string data = pngr.GetMetadata().GetTxtForKey(key);
+            pngr.End();
+            return data; ;
+        }
+
+
+        public static void addMetadata(String origFilename, byte[] bytes, Dictionary<string, string> data)
+        {
+            String destFilename = "tmp.png";
+            PngReader pngr = new PngReader(new MemoryStream(bytes));
+            PngWriter pngw = FileHelper.CreatePngWriter(destFilename, pngr.ImgInfo, true); // idem
+            //Console.WriteLine(pngr.ToString()); // just information
+            int chunkBehav = ChunkCopyBehaviour.COPY_ALL_SAFE; // tell to copy all 'safe' chunks
+            pngw.CopyChunksFirst(pngr, chunkBehav);          // copy some metadata from reader 
+            foreach (string key in data.Keys)
+            {
+                PngChunk chunk = pngw.GetMetadata().SetText(key, data[key]);
+                chunk.Priority = true;
+            }
+
+            int channels = pngr.ImgInfo.Channels;
+            if (channels < 3)
+                throw new Exception("This example works only with RGB/RGBA images");
+            for (int row = 0; row < pngr.ImgInfo.Rows; row++)
+            {
+                ImageLine l1 = pngr.ReadRowInt(row); // format: RGBRGB... or RGBARGBA...
+                pngw.WriteRow(l1, row);
+            }
+            pngw.CopyChunksLast(pngr, chunkBehav); // metadata after the image pixels? can happen
+            pngw.End(); // dont forget this
+            pngr.End();
+            File.Delete(origFilename);
+            File.Move(destFilename, origFilename);
+
+        }
+
+        public static void addMetadata(String origFilename, Dictionary<string, string> data)
+        {
+            String destFilename = "tmp.png";
+            PngReader pngr = FileHelper.CreatePngReader(origFilename); // or you can use the constructor
+            PngWriter pngw = FileHelper.CreatePngWriter(destFilename, pngr.ImgInfo, true); // idem
+            //Console.WriteLine(pngr.ToString()); // just information
+            int chunkBehav = ChunkCopyBehaviour.COPY_ALL_SAFE; // tell to copy all 'safe' chunks
+            pngw.CopyChunksFirst(pngr, chunkBehav);          // copy some metadata from reader 
+            foreach (string key in data.Keys)
+            {
+                PngChunk chunk = pngw.GetMetadata().SetText(key, data[key]);
+                chunk.Priority = true;
+            }
+
+            int channels = pngr.ImgInfo.Channels;
+            if (channels < 3)
+                throw new Exception("This example works only with RGB/RGBA images");
+            for (int row = 0; row < pngr.ImgInfo.Rows; row++)
+            {
+                ImageLine l1 = pngr.ReadRowInt(row); // format: RGBRGB... or RGBARGBA...
+                pngw.WriteRow(l1, row);
+            }
+            pngw.CopyChunksLast(pngr, chunkBehav); // metadata after the image pixels? can happen
+            pngw.End(); // dont forget this
+            pngr.End();
+            File.Delete(origFilename);
+            File.Move(destFilename, origFilename);
+
+        }
+
+        public static void addMetadata(String origFilename, string key, string value)
+        {
+            Dictionary<string, string> data = new Dictionary<string, string>();
+            data.Add(key, value);
+            addMetadata(origFilename, data);
+        }
+        public static void addMetadata(String origFilename, byte[] bytes, string key, string value)
+        {
+            Dictionary<string, string> data = new()
+            {
+                { key, value }
+            };
+            addMetadata(origFilename, bytes, data);
+        }
+
     }
 }
