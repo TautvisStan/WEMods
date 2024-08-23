@@ -8,6 +8,7 @@ using UnityEngine;
 using UnityEngine.UI;
 using BepInEx.Configuration;
 using WECCL.API;
+using System.Linq;
 
 namespace FontReplacer
 {
@@ -17,7 +18,7 @@ namespace FontReplacer
     {
         public const string PluginGuid = "GeeEm.WrestlingEmpire.FontReplacer";
         public const string PluginName = "FontReplacer";
-        public const string PluginVer = "0.8.3";
+        public const string PluginVer = "0.9.0";
 
         internal static ManualLogSource Log;
         internal readonly static Harmony Harmony = new(PluginGuid);
@@ -25,10 +26,13 @@ namespace FontReplacer
         internal static string PluginPath;
 
 
-        public static List<Font> Fonts = new();
+        public static Font CustomFont = new();
         public static Dictionary<string, Font> FontsDict = new();
-
+        public static string[] FontsNameList;
         public static ConfigEntry<string> OSFontName;
+
+        public static ConfigEntry<string> CustomFontName;
+
 
         public static int CurrentFont = -1;
 
@@ -39,11 +43,7 @@ namespace FontReplacer
 
             PluginPath = Path.GetDirectoryName(Info.Location);
 
-            foreach (string modPath in Directory.GetDirectories(Path.Combine(Paths.BepInExRootPath, "plugins")))
-            {
-                ScanFolder(modPath);
-            }
-            if(Fonts.Count == 0) Fonts.Add(new Font());
+
 
             OSFontName = Config.Bind("General",
                  "OS font name",
@@ -56,7 +56,7 @@ namespace FontReplacer
                 {
                     if(OSFontName.Value != "")
                     {
-                        Fonts[0] = Font.CreateDynamicFontFromOSFont(OSFontName.Value, 10);
+                        CustomFont = Font.CreateDynamicFontFromOSFont(OSFontName.Value, 10);
                         CurrentFont = 0;
                         ChangeFont();
                         return "Font applied!";
@@ -76,7 +76,7 @@ namespace FontReplacer
 
             });
 
-            Buttons.RegisterCustomButton(this, "List all available fonts in console", () =>
+            Buttons.RegisterCustomButton(this, "List all OS installed available fonts in console", () =>
             {
                 Log.LogInfo("---------");
                 foreach(string s in Font.GetOSInstalledFontNames())
@@ -90,10 +90,71 @@ namespace FontReplacer
 
             if (OSFontName.Value != "")
             {
-                Fonts[0] = Font.CreateDynamicFontFromOSFont(OSFontName.Value, 10);
+                CustomFont = Font.CreateDynamicFontFromOSFont(OSFontName.Value, 10);
                 CurrentFont = 0;
             }
 
+
+
+
+            FontsDict.Add("", null);
+            foreach (string modPath in Directory.GetDirectories(Path.Combine(Paths.BepInExRootPath, "plugins")))
+            {
+                ScanFolder(modPath);
+            }
+            FontsNameList = FontsDict.Keys.ToArray();
+
+            CustomFontName = Config.Bind("General", "Custom font name from asset", "", new ConfigDescription("Custom font name from asset", new AcceptableValueList<string>(FontsNameList)));
+
+            Buttons.RegisterCustomButton(this, "Apply Custom font", () =>
+            {
+                try
+                {
+                    if (CustomFontName.Value != "")
+                    {
+                        CustomFont = FontsDict[CustomFontName.Value];
+                        CurrentFont = 0;
+                        ChangeFont();
+                        return "Font applied!";
+                    }
+                    else
+                    {
+                        CurrentFont = -1;
+                        return "Font will be reset!";
+                    }
+                }
+                catch (Exception e)
+                {
+                    CurrentFont = -1;
+                    Log.LogError(e);
+                    return "Failed to apply: " + e.Message;
+                }
+
+            });
+        }
+        public static void ChangeFont()
+        {
+            if (CurrentFont != -1)
+            {
+
+                Text[] TextObjs = LIPNHOMGGHF.JPABICKOAEO.GetComponentsInChildren<Text>(true);//GameObject.FindObjectsOfType(typeof(Text), true) as Text[];
+                foreach (Text t in TextObjs)
+                {
+                    t.font = CustomFont;
+                }
+            }
+        }
+        public static void ChangeFont(GameObject obj)
+        {
+            if (CurrentFont != -1)
+            {
+
+                Text[] TextObjs = obj.GetComponentsInChildren<Text>();//GameObject.FindObjectsOfType(typeof(Text), true) as Text[];
+                foreach (Text t in TextObjs)
+                {
+                    t.font = CustomFont;
+                }
+            }
         }
         static void ScanFolder(string path)
         {
@@ -124,7 +185,7 @@ namespace FontReplacer
                 if (file.Name.StartsWith("asset_"))
                 {
                     foreach (Font font in ObtainFontsFromFile(file.FullName))
-                        Fonts.Add(font);
+                        FontsDict.Add(font.name, font);
                 }
             }
         }
@@ -313,30 +374,7 @@ namespace FontReplacer
             ChangeFont(__instance.JGHBIPNIHBK);
         }
 
-        public static void ChangeFont()
-        {
-            if (CurrentFont != -1)
-            {
 
-                Text[] TextObjs = LIPNHOMGGHF.JPABICKOAEO.GetComponentsInChildren<Text>(true);//GameObject.FindObjectsOfType(typeof(Text), true) as Text[];
-                foreach (Text t in TextObjs)
-                {
-                    t.font = Fonts[CurrentFont];
-                }
-            }
-        }
-        public static void ChangeFont(GameObject obj)
-        {
-            if (CurrentFont != -1)
-            {
-
-                Text[] TextObjs = obj.GetComponentsInChildren<Text>();//GameObject.FindObjectsOfType(typeof(Text), true) as Text[];
-                foreach (Text t in TextObjs)
-                {
-                    t.font = Fonts[CurrentFont];
-                }
-            }
-        }
 
         /*   private void test()
            {

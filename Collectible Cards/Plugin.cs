@@ -11,7 +11,6 @@ using System.Collections.Generic;
 using System.IO;
 using UnityEngine;
 using UnityEngine.UI;
-using UnityEngine.UIElements;
 
 namespace CollectibleCards
 {
@@ -100,8 +99,66 @@ namespace CollectibleCards
 
             //CleanupScene();
         }
-        public static class CardOverlay
-        { 
+        public class OverlayFedLogo
+        {
+            public float PosX { get; set; } = 0;
+            public float PosY { get; set; } = 0;
+            public float RotX { get; set; } = 0;
+            public float RotY { get; set; } = 180;
+            public float RotZ { get; set; } = 0;
+            public float Size { get; set; } = 1;
+
+            public void Parse(string file)
+            {
+
+                string[] lines = File.ReadAllLines(Path.Combine(PluginPath, file));
+                foreach (string line in lines)
+                {
+                    if (line.Trim().Length == 0)
+                    {
+                        continue;
+                    }
+                    if (line.ToLower().StartsWith("size:"))
+                    {
+                        Size = float.Parse(line.Substring(5).Trim());
+                        continue;
+                    }
+                    if (line.ToLower().StartsWith("posx:"))
+                    {
+                        PosX = float.Parse(line.Substring(5).Trim());
+                        continue;
+                    }
+                    if (line.ToLower().StartsWith("posy:"))
+                    {
+                        PosY = float.Parse(line.Substring(5).Trim());
+                        continue;
+                    }
+                    if (line.ToLower().StartsWith("rotx:"))
+                    {
+                        RotX = float.Parse(line.Substring(5).Trim());
+                        continue;
+                    }
+                    if (line.ToLower().StartsWith("roty:"))
+                    {
+                        RotY = float.Parse(line.Substring(5).Trim());
+                        continue;
+                    }
+                    if (line.ToLower().StartsWith("rotz:"))
+                    {
+                        RotZ = float.Parse(line.Substring(5).Trim());
+                        continue;
+                    }
+                }
+            }
+            public Vector2 GetCanvasPos()
+            {
+                int width = CardWidth;
+                int height = CardHeight;
+
+                return new Vector2(PosX - (width / 2), (height / 2) - PosY);
+                // return new Vector2(((width / 2) + PosX), ((height / 2) - PosY));
+            }
+
         }
         public class OverlayText
         {
@@ -144,6 +201,13 @@ namespace CollectibleCards
             {
                 OverlayText overlayText = Parser(file, component);
                 overlayText.TextComponent.text = Characters.c[charID].name;
+                overlayText.TextComponent.font = Resources.GetBuiltinResource<Font>("Arial.ttf");
+                return overlayText;
+            }
+            public static OverlayText ParseFedName(string file, Text component, int charID)
+            {
+                OverlayText overlayText = Parser(file, component);
+                overlayText.TextComponent.text = Characters.fedData[Characters.c[charID].fed].name;
                 overlayText.TextComponent.font = Resources.GetBuiltinResource<Font>("Arial.ttf");
                 return overlayText;
             }
@@ -590,6 +654,14 @@ namespace CollectibleCards
                         {
                             AddCharNameTextToCanvas(overlayCanvas, file.FullName, NJBJIIIACEP.OAAMGFLINOB[1].GOOKPABIPBC);
                         }
+                        else if (file.Name.ToLower().Contains("fed"))
+                        {
+                            AddFedNameTextToCanvas(overlayCanvas, file.FullName, NJBJIIIACEP.OAAMGFLINOB[1].GOOKPABIPBC);
+                        }
+                        else if (file.Name.ToLower().Contains("logo"))
+                        {
+                            AddFedLogoToCanvas(overlayCanvas, file.FullName, NJBJIIIACEP.OAAMGFLINOB[1].GOOKPABIPBC);
+                        }
                         else if (file.Name.ToLower().Contains("number"))
                         {
                             AddNumberTextToCanvas(overlayCanvas, file.FullName, NJBJIIIACEP.OAAMGFLINOB[1].GOOKPABIPBC);
@@ -658,6 +730,21 @@ namespace CollectibleCards
                 rawImage.transform.SetAsLastSibling();
             }
 
+            void AddFedLogoToCanvas(Canvas canvas, string file, int id)
+            {
+                GameObject imageObject = new GameObject("FedLogo");
+                imageObject.transform.SetParent(canvas.transform, false);
+                Image image = imageObject.AddComponent<Image>();
+                OverlayFedLogo overlayLogo = new();
+                overlayLogo.Parse(file);
+                image.sprite = MCDCDEBALPI.HJMMBCFGCKA[Characters.c[id].fed];
+                RectTransform rectTransform = image.GetComponent<RectTransform>();
+                rectTransform.sizeDelta = new Vector2(image.sprite.texture.width, image.sprite.texture.height);
+                rectTransform.localScale = new Vector3(overlayLogo.Size, overlayLogo.Size, 1);
+                rectTransform.anchoredPosition = overlayLogo.GetCanvasPos();
+                image.transform.SetAsLastSibling();
+            }
+
             void AddNumberTextToCanvas(Canvas canvas, string file, int id)
             {
                 GameObject textObject = new GameObject("Number");
@@ -676,6 +763,17 @@ namespace CollectibleCards
                 textObject.transform.SetParent(canvas.transform, false);
                 Text uiText = textObject.AddComponent<Text>();
                 OverlayText ovrText = OverlaytxtFileParser.ParseCharName(file, uiText, id);
+                AddText(canvas, ovrText, uiText);
+
+
+                uiText.transform.SetAsLastSibling();
+            }
+            void AddFedNameTextToCanvas(Canvas canvas, string file, int id)
+            {
+                GameObject textObject = new GameObject("FedName");
+                textObject.transform.SetParent(canvas.transform, false);
+                Text uiText = textObject.AddComponent<Text>();
+                OverlayText ovrText = OverlaytxtFileParser.ParseFedName(file, uiText, id);
                 AddText(canvas, ovrText, uiText);
 
 
