@@ -111,6 +111,14 @@ namespace CollectibleCards2
         public static void Cleanup()
         {
             UnityEngine.Object.Destroy(Wrestler.PCNHIIPBNEK[0]);
+            for (int j = 1; j <= JFLEBEBCGFA.LLODPDKEEJG; j++)
+            {
+                Debug.Log("Removing existing prop " + j.ToString() + " / " + JFLEBEBCGFA.LLODPDKEEJG.ToString());
+                if (JFLEBEBCGFA.HLLBCKILNNG[j].BHKGKKLDDBC != null)
+                {
+                    UnityEngine.Object.Destroy(JFLEBEBCGFA.HLLBCKILNNG[j].BHKGKKLDDBC);
+                }
+            }
 
         }
     }

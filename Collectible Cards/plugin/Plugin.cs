@@ -1,5 +1,5 @@
-//todo costumes based on character role; injured taunt?; menu with cards; left right button + slider; text info below card;
-// custom card generator separate project; lock in character pos & camera mode; multiple presets + custom; 
+//todo costumes based on character role; injured taunt?; menu with cards; left right button + slider; text info below card; fix the text overflow (sig, char id 154);
+// custom card generator separate project; add char pos (+camera?) to meta.txt;
 using BepInEx;
 using BepInEx.Configuration;
 using BepInEx.Logging;
@@ -24,7 +24,7 @@ namespace CollectibleCards2
         internal static ManualLogSource Log;
         internal readonly static Harmony Harmony = new(PluginGuid);
 
-        internal static string PluginPath;
+        public static string PluginPath;
 
 
         public static int CardWidth { get; set; } = 719;
@@ -36,8 +36,13 @@ namespace CollectibleCards2
 
         public static ConfigEntry<int> CameraMode { get; set; }
 
+        public static int CardsMenuButton { get; set; }
+        public static int CardsMenuPage { get; set; } = 741;
+
+        public static Plugin ThisPlugin { get; set; }
         private void Awake()
         {
+            ThisPlugin = this;
             Plugin.Log = base.Logger;
             PluginPath = Path.GetDirectoryName(Info.Location);
 
@@ -81,7 +86,45 @@ namespace CollectibleCards2
         {
             if (Input.GetKeyDown(KeyCode.PageDown))
             {
-                StartCoroutine(CollectibleCardGenerator.GenerateCollectibleCard(preset:"1"));
+                GenerateSingleCard((action) => { }, preset:"preset_1");
+            }
+        }
+        public static void GenerateSingleCard(Action<string> onGenerated, int CharID = -1, string preset = "", int borderRarity = -1, int foilRarity = -1, int signatureRarity = -1, bool customGenerated = false)
+        {
+            ThisPlugin.StartCoroutine(CollectibleCardGenerator.GenerateCollectibleCard(onGenerated, CharID, preset, borderRarity, foilRarity, signatureRarity, customGenerated));
+        }
+
+        //adding new button to the main menu
+        [HarmonyPatch(typeof(LIPNHOMGGHF), nameof(LIPNHOMGGHF.ICGNAJFLAHL))]
+        [HarmonyPostfix]
+        public static void ICGNAJFLAHL_Patch()
+        {
+            if (LIPNHOMGGHF.FAKHAFKOBPB == 1)
+            {
+                if (LIPNHOMGGHF.ODOAPLMOJPD == 0)
+                {
+                    LIPNHOMGGHF.DFLLBNMHHIH();
+                    LIPNHOMGGHF.FKANHDIMMBJ[LIPNHOMGGHF.HOAOLPGEBKJ].ICGNAJFLAHL(1, "Collectible Cards", 200f, -300f, 1.5f, 1.5f);
+                    CardsMenuButton = LIPNHOMGGHF.HOAOLPGEBKJ;
+                }
+            }
+        }
+        //Setting up the main menu button redirect
+        [HarmonyPatch(typeof(Scene_Titles), nameof(Scene_Titles.Update))]
+        [HarmonyPostfix]
+        public static void Scene_Titles_Update_Patch()
+        {
+            if (LIPNHOMGGHF.PIEMLEPEDFN >= 5 && LIPNHOMGGHF.ODOAPLMOJPD == 0 && NAEEIFNFBBO.EKFJCKLKELN != 1)
+            {
+                Debug.LogWarning("TEST");
+                if (LIPNHOMGGHF.NNMDEFLLNBF == CardsMenuButton)
+                {
+
+                    LIPNHOMGGHF.ODOAPLMOJPD = CardsMenuPage;
+                    Debug.LogWarning(LIPNHOMGGHF.FAKHAFKOBPB);
+                    Debug.LogWarning("TESTAS");
+                    LIPNHOMGGHF.ICGNAJFLAHL(0);
+                }
             }
         }
     }

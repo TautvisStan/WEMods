@@ -5,6 +5,8 @@ VisualStudioVersion = 17.1.32414.318
 MinimumVisualStudioVersion = 10.0.40219.1
 Project("{9A19103F-16F7-4668-BE54-9A1E7A4F7556}") = "CollectibleCards2", "CollectibleCards2.csproj", "{ECC3B42E-48E6-451D-8C3D-CF20182CCF9F}"
 EndProject
+Project("{9A19103F-16F7-4668-BE54-9A1E7A4F7556}") = "CardGen", "CardGen\CardGen.csproj", "{3E0F9B4A-6058-480F-BE08-CD0E5F495558}"
+EndProject
 Global
 	GlobalSection(SolutionConfigurationPlatforms) = preSolution
 		Debug|Any CPU = Debug|Any CPU
@@ -15,6 +17,10 @@ Global
 		{ECC3B42E-48E6-451D-8C3D-CF20182CCF9F}.Debug|Any CPU.Build.0 = Debug|Any CPU
 		{ECC3B42E-48E6-451D-8C3D-CF20182CCF9F}.Release|Any CPU.ActiveCfg = Release|Any CPU
 		{ECC3B42E-48E6-451D-8C3D-CF20182CCF9F}.Release|Any CPU.Build.0 = Release|Any CPU
+		{3E0F9B4A-6058-480F-BE08-CD0E5F495558}.Debug|Any CPU.ActiveCfg = Debug|Any CPU
+		{3E0F9B4A-6058-480F-BE08-CD0E5F495558}.Debug|Any CPU.Build.0 = Debug|Any CPU
+		{3E0F9B4A-6058-480F-BE08-CD0E5F495558}.Release|Any CPU.ActiveCfg = Release|Any CPU
+		{3E0F9B4A-6058-480F-BE08-CD0E5F495558}.Release|Any CPU.Build.0 = Release|Any CPU
 	EndGlobalSection
 	GlobalSection(SolutionProperties) = preSolution
 		HideSolutionNode = FALSE

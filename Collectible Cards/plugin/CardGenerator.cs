@@ -11,16 +11,16 @@ namespace CollectibleCards2
     public static class CollectibleCardGenerator
     {
         public static WaitForEndOfFrame frameEnd = new();
-        public static IEnumerator GenerateCollectibleCard(int CharID = -1, string preset = "", int borderRarity = -1, int foilRarity = -1, int signatureRarity = -1)
+        public static IEnumerator GenerateCollectibleCard(Action<string> action, int CharID, string preset, int borderRarity, int foilRarity, int signatureRarity, bool customGenerated)
         {
             ProportionalRandomSelector<int> randomSelector;
             if (CharID == -1) CharID = UnityEngine.Random.Range(1, Characters.no_chars + 1);
             Character character = Characters.c[CharID];
             if (preset == "") preset = "preset_" + character.fed.ToString();
-            else
+        /*    else
             {
                 preset = "preset_" + preset;
-            }
+            }*/
             if (borderRarity == -1)
             {
                 randomSelector = new();
@@ -48,9 +48,11 @@ namespace CollectibleCards2
             Dictionary<string, string> CardMeta = new()
             {
                 { "CharID", CharID.ToString() },
+                { "Name", Characters.c[CharID].name },
                 { "Border", borderRarity.ToString() },
                 { "Foil", foilRarity.ToString() },
                 { "Signature", signatureRarity.ToString() },
+                { "CustomGenerated", customGenerated.ToString() }
             };
             CameraController.SetupCamera();
             LightController.SetupPictureLight();
@@ -66,6 +68,7 @@ namespace CollectibleCards2
             PngUtils.SaveWithMetadata(filePath, bytes, CardMeta);
 
             Debug.LogWarning($"Saved image to {filePath}");
+
          //   Debug.LogWarning($"CHAR ID IS {PngUtils.GetMetadata(filePath, "CharID")}");
 
 
@@ -75,7 +78,8 @@ namespace CollectibleCards2
             CharacterController.Cleanup();
             CanvasController.Cleanup();
             GC.Collect();
-            GC.WaitForPendingFinalizers();
+
+            action(filePath);
         }
     }
     public class ProportionalRandomSelector<T>
