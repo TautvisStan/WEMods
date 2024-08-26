@@ -1,6 +1,7 @@
 ﻿using System;
 using System.Collections;
 using System.Collections.Generic;
+using System.Drawing;
 using System.Text;
 using UnityEngine;
 
@@ -9,7 +10,7 @@ namespace CollectibleCards2
     internal class CharacterController
     {
         public static DFOGOCNBECG Wrestler { get; set; } = null;
-        public static void SetupCharacter(int id)
+        public static void SetupCharacter(int id, string[] setup)
         {
             int BDHHBIIKMLP = 1;
             int GOOKPABIPBC = id;
@@ -29,6 +30,49 @@ namespace CollectibleCards2
             Wrestler.PCNHIIPBNEK[0].transform.eulerAngles = new Vector3(0f, 0f, 0f);
             Wrestler.PCNHIIPBNEK[0].transform.position = new Vector3(Plugin.CharXPos.Value, Plugin.CharYPos.Value, 0);
             Wrestler.PCNHIIPBNEK[0].transform.localScale = new Vector3(Plugin.CharSize.Value, Plugin.CharSize.Value, Plugin.CharSize.Value);
+            foreach (string line in setup)
+            {
+                if (line.Trim().Length == 0)
+                {
+                    continue;
+                }
+                if (line.ToLower().StartsWith("charsize:"))
+                {
+                    float size = float.Parse(line.Substring(9).Trim());
+                    Wrestler.PCNHIIPBNEK[0].transform.localScale = new Vector3(size, size, size);
+                    continue;
+                }
+                if (line.ToLower().StartsWith("charposx:"))
+                {
+                    float PosX = float.Parse(line.Substring(9).Trim());
+                    Wrestler.PCNHIIPBNEK[0].transform.position = new Vector3(PosX, Wrestler.PCNHIIPBNEK[0].transform.position.y, 0);
+                    continue;
+                }
+                if (line.ToLower().StartsWith("charposy:"))
+                {
+                    float PosY = float.Parse(line.Substring(9).Trim());
+                    Wrestler.PCNHIIPBNEK[0].transform.position = new Vector3(Wrestler.PCNHIIPBNEK[0].transform.position.x, PosY, 0);
+                    continue;
+                }
+                if (line.ToLower().StartsWith("charrotx:"))
+                {
+                    float RotX = float.Parse(line.Substring(9).Trim());
+                    Wrestler.PCNHIIPBNEK[0].transform.eulerAngles = new Vector3(RotX, Wrestler.PCNHIIPBNEK[0].transform.eulerAngles.y, Wrestler.PCNHIIPBNEK[0].transform.eulerAngles.z);
+                    continue;
+                }
+                if (line.ToLower().StartsWith("charroty:"))
+                {
+                    float RotY = float.Parse(line.Substring(9).Trim());
+                    Wrestler.PCNHIIPBNEK[0].transform.eulerAngles = new Vector3(Wrestler.PCNHIIPBNEK[0].transform.eulerAngles.x, RotY, Wrestler.PCNHIIPBNEK[0].transform.eulerAngles.z);
+                    continue;
+                }
+                if (line.ToLower().StartsWith("charrotz:"))
+                {
+                    float RotZ = float.Parse(line.Substring(9).Trim());
+                    Wrestler.PCNHIIPBNEK[0].transform.eulerAngles = new Vector3(Wrestler.PCNHIIPBNEK[0].transform.eulerAngles.x, Wrestler.PCNHIIPBNEK[0].transform.eulerAngles.y, RotZ);
+                    continue;
+                }
+            }
 
 
 

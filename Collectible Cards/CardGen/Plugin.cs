@@ -100,7 +100,6 @@ namespace CardGen
         {
             if (LIPNHOMGGHF.FAKHAFKOBPB == 1)
             {
-                Debug.LogWarning(LIPNHOMGGHF.ODOAPLMOJPD);
                 if (LIPNHOMGGHF.ODOAPLMOJPD == CardsMenuPage)
                 {
                     LIPNHOMGGHF.DFLLBNMHHIH();
@@ -155,6 +154,10 @@ namespace CardGen
                 if (Rarity == -1)
                 {
                     LIPNHOMGGHF.FKANHDIMMBJ[RarityButton].FFCNPGPALPD = "Random";
+                }
+                if (Rarity == 0)
+                {
+                    LIPNHOMGGHF.FKANHDIMMBJ[RarityButton].FFCNPGPALPD = "Base";
                 }
                 Foil = Mathf.RoundToInt(LIPNHOMGGHF.FKANHDIMMBJ[FoilButton].ODONMLDCHHF(Foil, 1f, 10f, -1f, 1, 0));
                 if (Foil == -1)

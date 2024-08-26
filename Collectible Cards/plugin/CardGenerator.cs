@@ -45,7 +45,7 @@ namespace CollectibleCards2
                 signatureRarity = randomSelector.SelectItem();
             }
 
-            Dictionary<string, string> CardMeta = new()
+            Dictionary<string, string> CardMetaData = new()
             {
                 { "CharID", CharID.ToString() },
                 { "Name", Characters.c[CharID].name },
@@ -54,18 +54,19 @@ namespace CollectibleCards2
                 { "Signature", signatureRarity.ToString() },
                 { "CustomGenerated", customGenerated.ToString() }
             };
-            CameraController.SetupCamera();
+            (string[] scene, string[] canvas) = MetaTxtSplitter(Path.Combine(Plugin.PluginPath, preset, "meta.txt"));
+            CameraController.SetupCamera(scene);
             LightController.SetupPictureLight();
             Background.SetupBackground(CameraController.CameraObj, preset);
-            CharacterController.SetupCharacter(CharID);
-            CanvasController.SetupCanvas(CameraController.CameraObj, preset, CardMeta);
+            CharacterController.SetupCharacter(CharID, scene);
+            CanvasController.SetupCanvas(CameraController.CameraObj, preset, CardMetaData, canvas);
 
             yield return frameEnd;
             CharacterController.SetupBelts();
             byte[] bytes = CameraController.CaptureScreenshot();
             string filename = DateTime.Now.ToString("yyyy'-'MM'-'dd' 'HH'-'mm'-'ss'-'fff") + ".png";
             string filePath = Path.Combine(Plugin.PluginPath, filename);
-            PngUtils.SaveWithMetadata(filePath, bytes, CardMeta);
+            PngUtils.SaveWithMetadata(filePath, bytes, CardMetaData);
 
             Debug.LogWarning($"Saved image to {filePath}");
 
@@ -80,6 +81,32 @@ namespace CollectibleCards2
             GC.Collect();
 
             action(filePath);
+        }
+        public static (string[], string[]) MetaTxtSplitter(string file)
+        {
+            List<string> pre = new();
+            bool layers = false;
+            List<string> post = new();
+            foreach (string line in File.ReadAllLines(file))
+            {
+                if(line != "layers")
+                {
+                    if (!layers)
+                    {
+                        pre.Add(line);
+                    }
+                    else
+                    {
+                        post.Add(line);
+                        Debug.LogWarning(line);
+                    }
+                }
+                else
+                {
+                    layers = true;
+                }
+            }
+            return (pre.ToArray(), post.ToArray());
         }
     }
     public class ProportionalRandomSelector<T>

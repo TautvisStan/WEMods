@@ -1,5 +1,5 @@
-//todo costumes based on character role; injured taunt?; menu with cards; left right button + slider; text info below card; fix the text overflow (sig, char id 154);
-// custom card generator separate project; add char pos (+camera?) to meta.txt;
+//todo costumes based on character role; injured taunt?; menu with cards; left right button + slider; text info below card;
+// add camera mode to meta.txt;
 using BepInEx;
 using BepInEx.Configuration;
 using BepInEx.Logging;
@@ -116,13 +116,9 @@ namespace CollectibleCards2
         {
             if (LIPNHOMGGHF.PIEMLEPEDFN >= 5 && LIPNHOMGGHF.ODOAPLMOJPD == 0 && NAEEIFNFBBO.EKFJCKLKELN != 1)
             {
-                Debug.LogWarning("TEST");
                 if (LIPNHOMGGHF.NNMDEFLLNBF == CardsMenuButton)
                 {
-
                     LIPNHOMGGHF.ODOAPLMOJPD = CardsMenuPage;
-                    Debug.LogWarning(LIPNHOMGGHF.FAKHAFKOBPB);
-                    Debug.LogWarning("TESTAS");
                     LIPNHOMGGHF.ICGNAJFLAHL(0);
                 }
             }

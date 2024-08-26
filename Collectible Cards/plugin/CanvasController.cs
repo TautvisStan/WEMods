@@ -9,7 +9,7 @@ namespace CollectibleCards2
     {
         public static GameObject CanvasObj { get; set; } = null;
         private static List<Texture2D> oldTextures = new();
-        public static void SetupCanvas(GameObject CameraObj, string preset, Dictionary<string, string> CardMeta)
+        public static void SetupCanvas(GameObject CameraObj, string preset, Dictionary<string, string> CardMeta, string[] layers)
         {
             Camera targetCamera = CameraObj.GetComponent<Camera>();
             CanvasObj = new GameObject("CanvasObj");
@@ -19,7 +19,7 @@ namespace CollectibleCards2
             overlayCanvas.sortingOrder = 100; // Ensure it's rendered on top
             overlayCanvas.planeDistance = 1;
 
-            foreach (string line in File.ReadAllLines(Path.Combine(Plugin.PluginPath, preset, "meta.txt")))
+            foreach (string line in layers)
             {
                 string[] chunks = line.Split(' ');
                 if(chunks.Length == 2)
@@ -159,7 +159,8 @@ namespace CollectibleCards2
         }
         public static void AddText(OverlayText ovrText, Text uiText)
         {
-            uiText.horizontalOverflow = HorizontalWrapMode.Overflow;
+            uiText.horizontalOverflow = HorizontalWrapMode.Wrap;
+            uiText.verticalOverflow = VerticalWrapMode.Overflow;
             uiText.color = new Color(ovrText.ColR, ovrText.ColG, ovrText.ColB);
             RectTransform rectTransform = uiText.GetComponent<RectTransform>();
             rectTransform.anchoredPosition = ovrText.GetCanvasPos();

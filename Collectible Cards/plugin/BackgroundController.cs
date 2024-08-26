@@ -17,16 +17,36 @@ namespace CollectibleCards2
             BackgroundObj = GameObject.CreatePrimitive(PrimitiveType.Plane);
             BackgroundObj.transform.position = new Vector3(0f, 8f, -10f);
             BackgroundObj.transform.rotation = Quaternion.Euler(90f, 0f, 0);
-            // Set the orthographic size based on the desired resolution
-            float orthographicHeight = 10;//CardHeight / 2.0f;
-            cameraObject.GetComponent<Camera>().orthographicSize = orthographicHeight;
+            if (cameraObject.GetComponent<Camera>().orthographic)
+            {
+                // Set the orthographic size based on the desired resolution
+                float orthographicHeight = 10;//CardHeight / 2.0f;
+                cameraObject.GetComponent<Camera>().orthographicSize = orthographicHeight;
 
-            // Calculate the scale of the background plane
-            float aspectRatio = Plugin.CardWidth / (float)Plugin.CardHeight;
-            Vector3 planeScale = new(aspectRatio * orthographicHeight / 5, 1, orthographicHeight / 5);
+                // Calculate the scale of the background plane
+                float aspectRatio = Plugin.CardWidth / (float)Plugin.CardHeight;
+                Vector3 planeScale = new(aspectRatio * orthographicHeight / 5, 1, orthographicHeight / 5);
 
-            // Apply the calculated scale to the background plane
-            BackgroundObj.transform.localScale = planeScale;
+                // Apply the calculated scale to the background plane
+                BackgroundObj.transform.localScale = planeScale;
+
+
+            }
+            else
+            {
+                Debug.LogWarning("PERSP");
+                float distance = Mathf.Abs(cameraObject.transform.position.z - BackgroundObj.transform.position.z);
+
+                // Calculate the height in world units based on the camera's FOV
+                float height = 2.0f * distance * Mathf.Tan(cameraObject.GetComponent<Camera>().fieldOfView * 0.5f * Mathf.Deg2Rad);
+
+                // Calculate the width in world units to match the texture's aspect ratio
+                float width = height * Plugin.CardWidth / Plugin.CardHeight;
+
+                // Scale the plane to match the calculated width and height
+                BackgroundObj.transform.localScale = new Vector3(width / 10, 1, height / 10);
+                //2.0756 1 2.8868 when the real distance is 20
+            }
 
             string imagePath = Path.Combine(Plugin.PluginPath, preset, "BG.png");
             byte[] fileData = File.ReadAllBytes(imagePath);

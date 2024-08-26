@@ -7,7 +7,7 @@ namespace CollectibleCards2
     public static class CameraController
     {
         public static GameObject CameraObj { get; set; } = null;
-        public static void SetupCamera()
+        public static void SetupCamera(string[] scene)
         {
             // Setup hard camera
             CameraObj = new GameObject("CardCamera");
