@@ -49,6 +49,7 @@ namespace CollectibleCards2
             {
                 { "CharID", CharID.ToString() },
                 { "Name", Characters.c[CharID].name },
+                { "FedName", Characters.fedData[Characters.c[CharID].fed].name },
                 { "Border", borderRarity.ToString() },
                 { "Foil", foilRarity.ToString() },
                 { "Signature", signatureRarity.ToString() },
@@ -65,7 +66,12 @@ namespace CollectibleCards2
             CharacterController.SetupBelts();
             byte[] bytes = CameraController.CaptureScreenshot();
             string filename = DateTime.Now.ToString("yyyy'-'MM'-'dd' 'HH'-'mm'-'ss'-'fff") + ".png";
-            string filePath = Path.Combine(Plugin.PluginPath, filename);
+            string foldername = Plugin.CardsDirectory;
+            if (!Directory.Exists(foldername))
+            {
+                Directory.CreateDirectory(foldername);
+            }
+            string filePath = Path.Combine(foldername, filename);
             PngUtils.SaveWithMetadata(filePath, bytes, CardMetaData);
 
             Debug.LogWarning($"Saved image to {filePath}");

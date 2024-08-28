@@ -1,5 +1,5 @@
-//todo costumes based on character role; injured taunt?; menu with cards; left right button + slider; text info below card;
-// add camera mode to meta.txt;
+//todo injured taunt?; menu with cards; left right button + slider; text info below card; awarding cards for each career win; back arrow fix;
+//menu reachable from titles menu + career calendar; optimize card scanning?;
 using BepInEx;
 using BepInEx.Configuration;
 using BepInEx.Logging;
@@ -19,7 +19,7 @@ namespace CollectibleCards2
     {
         public const string PluginGuid = "GeeEm.WrestlingEmpire.CollectibleCards";
         public const string PluginName = "CollectibleCards";
-        public const string PluginVer = "0.1.0";
+        public const string PluginVer = "0.8.0";
 
         internal static ManualLogSource Log;
         internal readonly static Harmony Harmony = new(PluginGuid);
@@ -30,15 +30,11 @@ namespace CollectibleCards2
         public static int CardWidth { get; set; } = 719;
         public static int CardHeight { get; set; } = 1000;
 
-        public static ConfigEntry<float> CharXPos { get; set; }
-        public static ConfigEntry<float> CharYPos { get; set; }
-        public static ConfigEntry<float> CharSize { get; set; }
-
         public static ConfigEntry<int> CameraMode { get; set; }
 
         public static int CardsMenuButton { get; set; }
         public static int CardsMenuPage { get; set; } = 741;
-
+        public static string CardsDirectory { get; set; } = Path.Combine(Application.persistentDataPath, "Cards");
         public static Plugin ThisPlugin { get; set; }
         private void Awake()
         {
@@ -49,19 +45,6 @@ namespace CollectibleCards2
             Background.GetShaderPrefab();
             OverlaytxtFileParser.LoadSigFont();
             OverlaytxtFileParser.LoadCardFont();
-
-            CharXPos = Config.Bind("General",
-             "Character x position",
-             0f,
-             "Character x position");
-            CharYPos = Config.Bind("General",
-             "Character y position",
-             0f,
-             "Character y position");
-            CharSize = Config.Bind("General",
-             "Character scale",
-             1f,
-             "Character scale");
 
             CameraMode = Config.Bind("General",
              "Camera mode",
@@ -123,5 +106,6 @@ namespace CollectibleCards2
                 }
             }
         }
+
     }
 }

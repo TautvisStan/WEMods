@@ -1,8 +1,4 @@
 ﻿using System;
-using System.Collections;
-using System.Collections.Generic;
-using System.Drawing;
-using System.Text;
 using UnityEngine;
 
 namespace CollectibleCards2
@@ -10,9 +6,18 @@ namespace CollectibleCards2
     internal class CharacterController
     {
         public static DFOGOCNBECG Wrestler { get; set; } = null;
+        public static GameObject ParentObj { get; set; } = null;
+        public static float Size { get; set; } = 1f;
         public static void SetupCharacter(int id, string[] setup)
         {
-            int BDHHBIIKMLP = 1;
+            ParentObj = new("Parent");
+            int BDHHBIIKMLP;
+            if (Characters.c[id].role == 1)
+                BDHHBIIKMLP = 1;
+            else if (Characters.c[id].role == 3)
+                BDHHBIIKMLP = 3;
+            else
+                BDHHBIIKMLP = 2;
             int GOOKPABIPBC = id;
             if (NJBJIIIACEP.OAAMGFLINOB == null) NJBJIIIACEP.PIMGMPBCODM(1);
             NJBJIIIACEP.NBBBLJDBLNM = 1;
@@ -28,8 +33,9 @@ namespace CollectibleCards2
             Wrestler.DDKAGOBJGBC(0);
             Wrestler.ABHDOPBDDPB();
             Wrestler.PCNHIIPBNEK[0].transform.eulerAngles = new Vector3(0f, 0f, 0f);
-            Wrestler.PCNHIIPBNEK[0].transform.position = new Vector3(Plugin.CharXPos.Value, Plugin.CharYPos.Value, 0);
-            Wrestler.PCNHIIPBNEK[0].transform.localScale = new Vector3(Plugin.CharSize.Value, Plugin.CharSize.Value, Plugin.CharSize.Value);
+            Wrestler.PCNHIIPBNEK[0].transform.position = new Vector3(0, 0, 0);
+            Wrestler.PCNHIIPBNEK[0].transform.localScale = new Vector3(1, 1, 1);
+            Size = 1;
             foreach (string line in setup)
             {
                 if (line.Trim().Length == 0)
@@ -38,8 +44,7 @@ namespace CollectibleCards2
                 }
                 if (line.ToLower().StartsWith("charsize:"))
                 {
-                    float size = float.Parse(line.Substring(9).Trim());
-                    Wrestler.PCNHIIPBNEK[0].transform.localScale = new Vector3(size, size, size);
+                    Size = float.Parse(line.Substring(9).Trim());
                     continue;
                 }
                 if (line.ToLower().StartsWith("charposx:"))
@@ -118,38 +123,61 @@ namespace CollectibleCards2
             Wrestler.LMALJJFEHGH = MBLIOKEDHHB.LHFJJPOPIAA[num].EJPKJOFMIAI[NAEEIFNFBBO.PMEEFNOLAGF(0, MBLIOKEDHHB.LHFJJPOPIAA[num].EJPKJOFMIAI.Length - 1)];
             Wrestler.FJHHJGONAFO(Wrestler.FEOFDJFFNMN, Wrestler.LMALJJFEHGH);
             Wrestler.FEACEIIIAHK();
+
         }
         public static void SetupBelts()
         {
             //belts
-
-            Wrestler.JIFMEHIKLDI[0] = 0;
-            Wrestler.JIFMEHIKLDI[1] = 0;
-            Wrestler.JIFMEHIKLDI[2] = 0;
-            for (int j = 1; j <= JFLEBEBCGFA.LLODPDKEEJG; j++)
+            float realHeight = Characters.c[Wrestler.GOOKPABIPBC].height;
+            try
             {
-                Debug.Log("Removing existing prop " + j.ToString() + " / " + JFLEBEBCGFA.LLODPDKEEJG.ToString());
-                if (JFLEBEBCGFA.HLLBCKILNNG[j].BHKGKKLDDBC != null)
+                Characters.c[Wrestler.GOOKPABIPBC].height = 1;
+                Wrestler.JIFMEHIKLDI[0] = 0;
+                Wrestler.JIFMEHIKLDI[1] = 0;
+                Wrestler.JIFMEHIKLDI[2] = 0;
+                for (int j = 1; j <= JFLEBEBCGFA.LLODPDKEEJG; j++)
                 {
-                    UnityEngine.Object.Destroy(JFLEBEBCGFA.HLLBCKILNNG[j].BHKGKKLDDBC);
+                    Debug.Log("Removing existing prop " + j.ToString() + " / " + JFLEBEBCGFA.LLODPDKEEJG.ToString());
+                    if (JFLEBEBCGFA.HLLBCKILNNG[j].BHKGKKLDDBC != null)
+                    {
+                        UnityEngine.Object.Destroy(JFLEBEBCGFA.HLLBCKILNNG[j].BHKGKKLDDBC);
+                    }
                 }
+                JFLEBEBCGFA.LLODPDKEEJG = 0;
+                JFLEBEBCGFA.HLLBCKILNNG = new GDFKEAMIOAG[JFLEBEBCGFA.LLODPDKEEJG + 1];
+                JFLEBEBCGFA.HLLBCKILNNG[0] = new GDFKEAMIOAG();
+                if (Wrestler.PCNHIIPBNEK[0].activeSelf)
+                {
+                    Wrestler.AMPHLBAOCKC();
+                }
+                Wrestler.PCNHIIPBNEK[0].transform.SetParent(ParentObj.transform, true);
+                if (JFLEBEBCGFA.HLLBCKILNNG != null)
+                {
+                    if (JFLEBEBCGFA.HLLBCKILNNG[Wrestler.JIFMEHIKLDI[0]] != null && JFLEBEBCGFA.HLLBCKILNNG[Wrestler.JIFMEHIKLDI[0]].PCNHIIPBNEK != null)
+                    {
+                        JFLEBEBCGFA.HLLBCKILNNG[Wrestler.JIFMEHIKLDI[0]].OFPBEHEIBBD(Wrestler.PLFGKLGCOMD, 13);
+                        JFLEBEBCGFA.HLLBCKILNNG[Wrestler.JIFMEHIKLDI[0]].PCNHIIPBNEK.transform.SetParent(ParentObj.transform, true);
+                    }
+                    if (JFLEBEBCGFA.HLLBCKILNNG[Wrestler.JIFMEHIKLDI[1]] != null && JFLEBEBCGFA.HLLBCKILNNG[Wrestler.JIFMEHIKLDI[1]].PCNHIIPBNEK != null)
+                    {
+
+                        JFLEBEBCGFA.HLLBCKILNNG[Wrestler.JIFMEHIKLDI[1]].OFPBEHEIBBD(Wrestler.PLFGKLGCOMD, 10);
+                        JFLEBEBCGFA.HLLBCKILNNG[Wrestler.JIFMEHIKLDI[1]].PCNHIIPBNEK.transform.SetParent(ParentObj.transform, true);
+                    }
+                    if (JFLEBEBCGFA.HLLBCKILNNG[Wrestler.JIFMEHIKLDI[2]] != null && JFLEBEBCGFA.HLLBCKILNNG[Wrestler.JIFMEHIKLDI[2]].PCNHIIPBNEK != null)
+                    {
+                        JFLEBEBCGFA.HLLBCKILNNG[Wrestler.JIFMEHIKLDI[2]].OFPBEHEIBBD(Wrestler.PLFGKLGCOMD, JFLEBEBCGFA.HLLBCKILNNG[Wrestler.JIFMEHIKLDI[2]].KDFCBHGKOKE);
+                        JFLEBEBCGFA.HLLBCKILNNG[Wrestler.JIFMEHIKLDI[2]].PCNHIIPBNEK.transform.SetParent(ParentObj.transform, true);
+                    }
+                }
+
+                ParentObj.transform.localScale = new Vector3(Size, Size, Size);
+                Characters.c[Wrestler.GOOKPABIPBC].height = realHeight;
             }
-            JFLEBEBCGFA.LLODPDKEEJG = 0;
-            JFLEBEBCGFA.HLLBCKILNNG = new GDFKEAMIOAG[JFLEBEBCGFA.LLODPDKEEJG + 1];
-            JFLEBEBCGFA.HLLBCKILNNG[0] = new GDFKEAMIOAG();
-            if (Wrestler.PCNHIIPBNEK[0].activeSelf)
+            catch (Exception e)
             {
-                Wrestler.AMPHLBAOCKC();
-            }
-            //  Wrestler.MKFMMIPFKKC();
-
-            if (JFLEBEBCGFA.HLLBCKILNNG != null)
-            {
-
-                JFLEBEBCGFA.HLLBCKILNNG[Wrestler.JIFMEHIKLDI[0]]?.OFPBEHEIBBD(Wrestler.PLFGKLGCOMD, 13);
-                JFLEBEBCGFA.HLLBCKILNNG[Wrestler.JIFMEHIKLDI[1]]?.OFPBEHEIBBD(Wrestler.PLFGKLGCOMD, 10);
-                JFLEBEBCGFA.HLLBCKILNNG[Wrestler.JIFMEHIKLDI[2]]?.OFPBEHEIBBD(Wrestler.PLFGKLGCOMD, JFLEBEBCGFA.HLLBCKILNNG[Wrestler.JIFMEHIKLDI[2]].KDFCBHGKOKE);
-
+                Plugin.Log.LogError(e);
+                Characters.c[Wrestler.GOOKPABIPBC].height = realHeight;
             }
         }
         public static void Cleanup()
@@ -163,6 +191,7 @@ namespace CollectibleCards2
                     UnityEngine.Object.Destroy(JFLEBEBCGFA.HLLBCKILNNG[j].BHKGKKLDDBC);
                 }
             }
+            UnityEngine.Object.Destroy(ParentObj);
 
         }
     }

@@ -8,16 +8,18 @@ namespace CollectibleCards2
 {
     internal static class PngUtils
     {
-        public static void GetFullMetadata(string file, Dictionary<string, string> metadata)
+        public static Dictionary<string, string> GetFullMetadata(string file, Dictionary<string, string> metadataRequest)
         {
             PngReader pngr = FileHelper.CreatePngReader(file);
             //pngr.MaxTotalBytesRead = 1024 * 1024 * 1024L * 3; // 3Gb!
             //pngr.ReadSkippingAllRows();
-            foreach(string key in metadata.Keys)
+            Dictionary<string, string> metadata = new();
+            foreach (string key in metadataRequest.Keys)
             {
                 metadata[key] = pngr.GetMetadata().GetTxtForKey(key);
             }
             pngr.End();
+            return metadata;
         }
         public static string GetMetadata(string file, string key)
         {

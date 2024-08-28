@@ -1,4 +1,4 @@
-//todo back button; scan meta on opening the menu; rename rarity button text (base, bronze, silver, gold, etc)
+//todo back button; Card Generator button in card menu
 
 using BepInEx;
 using BepInEx.Logging;
@@ -27,7 +27,7 @@ namespace CardGen
         private static RawImage rawImage;
         private static Texture2D texture2D;
 
-        public static int CardsMenuPage { get; set; } = CollectibleCards2.Plugin.CardsMenuPage;
+        public static int CardsGenPage { get; set; } = CollectibleCards2.Plugin.CardsMenuPage+1;
         public static List<string> Presets { get; set; } = new();
         public static GameObject CardObject { get; set; } = null;
         public static int CharButton { get; set; }
@@ -60,20 +60,14 @@ namespace CardGen
             Harmony.UnpatchSelf();
             Logger.LogInfo($"Unloaded {PluginName}!");
         }
-
-        void Start()
-        {
-            Debug.LogWarning("STARTING");
-            ScanPresets();
-        }
         public static void ScanPresets()
         {
             string path = CollectibleCards2.Plugin.PluginPath;
+            Presets = new();
             ScanFolder(path);
         }
         static void ScanFolder(string path)
         {
-            Debug.LogWarning("SCANNING " + path);
             DirectoryInfo directoryInfo = new(path);
             FileInfo[] files = directoryInfo.GetFiles("meta.txt");
             if (files.Length != 0)
@@ -100,10 +94,12 @@ namespace CardGen
         {
             if (LIPNHOMGGHF.FAKHAFKOBPB == 1)
             {
-                if (LIPNHOMGGHF.ODOAPLMOJPD == CardsMenuPage)
+                if (LIPNHOMGGHF.ODOAPLMOJPD == CardsGenPage)
                 {
+                    ScanPresets();
+
                     LIPNHOMGGHF.DFLLBNMHHIH();
-                    LIPNHOMGGHF.FKANHDIMMBJ[LIPNHOMGGHF.HOAOLPGEBKJ].ICGNAJFLAHL(3, "Character", 375f, 250f, 1.5f, 1.5f);
+                    LIPNHOMGGHF.FKANHDIMMBJ[LIPNHOMGGHF.HOAOLPGEBKJ].ICGNAJFLAHL(3, "Character", 0f, 250f, 2.5f, 2.5f);
                     CharButton = LIPNHOMGGHF.HOAOLPGEBKJ;
 
                     LIPNHOMGGHF.DFLLBNMHHIH();
@@ -134,12 +130,16 @@ namespace CardGen
         [HarmonyPostfix]
         public static void Scene_Titles_Update_Patch()
         {
-            if (LIPNHOMGGHF.ODOAPLMOJPD == CardsMenuPage)
+            if (LIPNHOMGGHF.ODOAPLMOJPD == CardsGenPage)
             {
                 CharID = Mathf.RoundToInt(LIPNHOMGGHF.FKANHDIMMBJ[CharButton].ODONMLDCHHF(CharID, 1f, 10f, 0f, Characters.no_chars, 0));
                 if (CharID == 0)
                 {
                     LIPNHOMGGHF.FKANHDIMMBJ[CharButton].FFCNPGPALPD = "Random";
+                }
+                else
+                {
+                    LIPNHOMGGHF.FKANHDIMMBJ[CharButton].FFCNPGPALPD = $"({CharID}) {Characters.c[CharID].name}";
                 }
                 Preset = Mathf.RoundToInt(LIPNHOMGGHF.FKANHDIMMBJ[PresetButton].ODONMLDCHHF(Preset, 1f, 10f, -1f, Presets.Count-1, 0));
                 if (Preset == -1)
@@ -151,13 +151,23 @@ namespace CardGen
                     LIPNHOMGGHF.FKANHDIMMBJ[PresetButton].FFCNPGPALPD = Presets[Preset];
                 }
                 Rarity = Mathf.RoundToInt(LIPNHOMGGHF.FKANHDIMMBJ[RarityButton].ODONMLDCHHF(Rarity, 1f, 10f, -1f, 3, 0));
-                if (Rarity == -1)
+                switch (Rarity)
                 {
-                    LIPNHOMGGHF.FKANHDIMMBJ[RarityButton].FFCNPGPALPD = "Random";
-                }
-                if (Rarity == 0)
-                {
-                    LIPNHOMGGHF.FKANHDIMMBJ[RarityButton].FFCNPGPALPD = "Base";
+                    case -1:
+                        LIPNHOMGGHF.FKANHDIMMBJ[RarityButton].FFCNPGPALPD = "Random";
+                        break;
+                    case 0:
+                        LIPNHOMGGHF.FKANHDIMMBJ[RarityButton].FFCNPGPALPD = "Base";
+                        break;
+                    case 1:
+                        LIPNHOMGGHF.FKANHDIMMBJ[RarityButton].FFCNPGPALPD = "Bronze";
+                        break;
+                    case 2:
+                        LIPNHOMGGHF.FKANHDIMMBJ[RarityButton].FFCNPGPALPD = "Silver";
+                        break;
+                    case 3:
+                        LIPNHOMGGHF.FKANHDIMMBJ[RarityButton].FFCNPGPALPD = "Gold";
+                        break;
                 }
                 Foil = Mathf.RoundToInt(LIPNHOMGGHF.FKANHDIMMBJ[FoilButton].ODONMLDCHHF(Foil, 1f, 10f, -1f, 1, 0));
                 if (Foil == -1)
@@ -208,8 +218,22 @@ namespace CardGen
                 rawImage.texture = texture2D;
                 RectTransform rectTransform = rawImage.GetComponent<RectTransform>();
                 rectTransform.sizeDelta = new Vector2(texture2D.width/2, texture2D.height/2);
-                rectTransform.anchoredPosition = new Vector2(-200, 0);
+                rectTransform.anchoredPosition = new Vector2(-200, -100);
                 rawImage.transform.SetAsLastSibling();
+            }
+        }
+        //disabling annoying audio
+        [HarmonyPatch(typeof(CHLPMKEGJBJ), nameof(CHLPMKEGJBJ.DNNPEAOCDOG))]
+        [HarmonyPrefix]
+        public static bool CHLPMKEGJBJ_DNNPEAOCDOG_Prefix(AudioClip GGMBIAAEMKO, float ELJKCOHGBBD = 0f, float CDNNGHGFALM = 1f)
+        {
+            if (GGMBIAAEMKO == CHLPMKEGJBJ.PAJJMPLBDPL && LIPNHOMGGHF.ODOAPLMOJPD == CardsGenPage)
+            {
+                return false;
+            }
+            else
+            {
+                return true;
             }
         }
     }
