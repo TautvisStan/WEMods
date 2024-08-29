@@ -1,5 +1,5 @@
-//todo injured taunt?;text info below card; awarding cards for each career win; back arrow fix;
-//menu reachable from titles menu + career calendar; optimize card scanning?; Card catalog menu;
+//todo injured taunt?; awarding cards for each career win; 
+//menu reachable from career calendar (+back); optimize card scanning?; Card catalog menu;
 using BepInEx;
 using BepInEx.Configuration;
 using BepInEx.Logging;

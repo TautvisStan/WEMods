@@ -1,5 +1,3 @@
-//todo back button; Card Generator button in card menu
-
 using BepInEx;
 using BepInEx.Logging;
 using HarmonyLib;
@@ -27,7 +25,8 @@ namespace CardGen
         private static RawImage rawImage;
         private static Texture2D texture2D;
 
-        public static int CardsGenPage { get; set; } = CollectibleCards2.Plugin.CardsMenuPage+1;
+        public static int CardsGenPage { get; set; } = CollectibleCards2.Plugin.CardsMenuPage-1;
+        public static int CardsGenButton { get; set; }
         public static List<string> Presets { get; set; } = new();
         public static GameObject CardObject { get; set; } = null;
         public static int CharButton { get; set; }
@@ -94,6 +93,12 @@ namespace CardGen
         {
             if (LIPNHOMGGHF.FAKHAFKOBPB == 1)
             {
+                if (LIPNHOMGGHF.ODOAPLMOJPD == CollectibleCards2.Plugin.CardsMenuPage)
+                {
+                    LIPNHOMGGHF.DFLLBNMHHIH();
+                    LIPNHOMGGHF.FKANHDIMMBJ[LIPNHOMGGHF.HOAOLPGEBKJ].ICGNAJFLAHL(1, "Card Generator", 375f, 250f, 1.5f, 1.5f);
+                    CardsGenButton = LIPNHOMGGHF.HOAOLPGEBKJ;
+                }
                 if (LIPNHOMGGHF.ODOAPLMOJPD == CardsGenPage)
                 {
                     ScanPresets();
@@ -122,6 +127,24 @@ namespace CardGen
                     LIPNHOMGGHF.FKANHDIMMBJ[LIPNHOMGGHF.HOAOLPGEBKJ].ICGNAJFLAHL(1, "Generate", 375f, -250f, 1.5f, 1.5f);
                     GenerateButton = LIPNHOMGGHF.HOAOLPGEBKJ;
                 }
+                else
+                {
+                    if(CardObject != null)
+                    {
+                        UnityEngine.Object.Destroy(CardObject);
+                        CardObject = null;
+                    }
+                    if (rawImage != null)
+                    {
+                        UnityEngine.Object.Destroy(rawImage);
+                        rawImage = null;
+                    }
+                    if (texture2D != null)
+                    {
+                        UnityEngine.Object.Destroy(texture2D);
+                        texture2D = null;
+                    }
+                }
             }
         }
 
@@ -130,6 +153,14 @@ namespace CardGen
         [HarmonyPostfix]
         public static void Scene_Titles_Update_Patch()
         {
+            if (LIPNHOMGGHF.ODOAPLMOJPD == CollectibleCards2.Plugin.CardsMenuPage)
+            {
+                if (LIPNHOMGGHF.PIEMLEPEDFN == 5 && LIPNHOMGGHF.FKANHDIMMBJ[CardsGenButton].CLMDCNDEBGD != 0)
+                {
+                    LIPNHOMGGHF.ODOAPLMOJPD = CardsGenPage;
+                    LIPNHOMGGHF.ICGNAJFLAHL(0);
+                }
+            }
             if (LIPNHOMGGHF.ODOAPLMOJPD == CardsGenPage)
             {
                 CharID = Mathf.RoundToInt(LIPNHOMGGHF.FKANHDIMMBJ[CharButton].ODONMLDCHHF(CharID, 1f, 10f, 0f, Characters.no_chars, 0));
@@ -139,7 +170,7 @@ namespace CardGen
                 }
                 else
                 {
-                    LIPNHOMGGHF.FKANHDIMMBJ[CharButton].FFCNPGPALPD = $"({CharID}) {Characters.c[CharID].name}";
+                    LIPNHOMGGHF.FKANHDIMMBJ[CharButton].FFCNPGPALPD = $"[{CharID}] {Characters.c[CharID].name}";
                 }
                 Preset = Mathf.RoundToInt(LIPNHOMGGHF.FKANHDIMMBJ[PresetButton].ODONMLDCHHF(Preset, 1f, 10f, -1f, Presets.Count-1, 0));
                 if (Preset == -1)
@@ -194,6 +225,13 @@ namespace CardGen
                 if (LIPNHOMGGHF.PIEMLEPEDFN > 5 || LIPNHOMGGHF.FKANHDIMMBJ[CharButton].CLMDCNDEBGD != 0)
                 {
                     LIPNHOMGGHF.PIEMLEPEDFN = 0;
+                }
+
+
+                if (LIPNHOMGGHF.PIEMLEPEDFN <= -5)
+                {
+                    LIPNHOMGGHF.ODOAPLMOJPD = CollectibleCards2.Plugin.CardsMenuPage;
+                    LIPNHOMGGHF.ICGNAJFLAHL(0);
                 }
             }
         }

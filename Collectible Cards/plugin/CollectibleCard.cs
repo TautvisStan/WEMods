@@ -42,7 +42,6 @@ namespace CollectibleCards2
             Attitude = metadata["Attitude"];
             FrontFinisher = metadata["FrontFinisher"];
             BackFinisher = metadata["BackFinisher"];
-            UnityEngine.Debug.LogWarning(CharID);
         }
 
         public string GetDescription()
@@ -59,7 +58,7 @@ namespace CollectibleCards2
         }
         public bool IsCustom()
         {
-            if (CustomGenerated.ToLower() == "True") return true;
+            if (CustomGenerated.ToLower() == "true") return true;
             else return false;
         }
         public bool IsSigned()
@@ -82,7 +81,7 @@ namespace CollectibleCards2
         }
         public string GetID()
         {
-            if (CharID != "") return $" ({CharID})";
+            if (CharID != "") return $" [{CharID}]";
             return "";
         }
         public string GetName()
