@@ -14,9 +14,10 @@ namespace CollectibleCards2
             //pngr.MaxTotalBytesRead = 1024 * 1024 * 1024L * 3; // 3Gb!
             //pngr.ReadSkippingAllRows();
             Dictionary<string, string> metadata = new();
+            PngMetadata pngmeta = pngr.GetMetadata();
             foreach (string key in metadataRequest.Keys)
             {
-                metadata[key] = pngr.GetMetadata().GetTxtForKey(key);
+                metadata[key] = pngmeta.GetTxtForKey(key);
             }
             pngr.End();
             return metadata;

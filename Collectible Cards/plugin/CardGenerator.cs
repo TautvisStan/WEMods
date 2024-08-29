@@ -53,7 +53,15 @@ namespace CollectibleCards2
                 { "Border", borderRarity.ToString() },
                 { "Foil", foilRarity.ToString() },
                 { "Signature", signatureRarity.ToString() },
-                { "CustomGenerated", customGenerated.ToString() }
+                { "CustomGenerated", customGenerated.ToString() },
+                { "Popularity", Characters.c[CharID].stat[1].ToString("0") },
+                { "Strength", Characters.c[CharID].stat[2].ToString("0") },
+                { "Skill", Characters.c[CharID].stat[3].ToString("0") },
+                { "Agility", Characters.c[CharID].stat[4].ToString("0") },
+                { "Stamina", Characters.c[CharID].stat[5].ToString("0") },
+                { "Attitude", Characters.c[CharID].stat[6].ToString("0") },
+                { "FrontFinisher", MBLIOKEDHHB.DDIJBPJLEBF(Characters.c[Characters.foc].moveFront[0]) },
+                { "BackFinisher", MBLIOKEDHHB.DDIJBPJLEBF(Characters.c[Characters.foc].moveBack[0]) },
             };
             (string[] scene, string[] canvas) = MetaTxtSplitter(Path.Combine(Plugin.PluginPath, preset, "meta.txt"));
             CameraController.SetupCamera(scene);
