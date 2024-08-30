@@ -7,6 +7,7 @@ namespace CollectibleCards2
 {
     public class CollectibleCard
     {
+        public string FileName { get; set; }
         public byte[] CardBytes { get; set; }
         public string CharID { get; set; }
         public string Name { get; set; }
@@ -24,8 +25,9 @@ namespace CollectibleCards2
         public string FrontFinisher { get; set; }
         public string BackFinisher { get; set; }
 
-        public CollectibleCard(byte[] cardBytes, Dictionary<string, string> metadata)
+        public CollectibleCard(string fileName, byte[] cardBytes, Dictionary<string, string> metadata)
         {
+            FileName = fileName;
             CardBytes = cardBytes;
             CharID = metadata["CharID"];
             Name = metadata["Name"];

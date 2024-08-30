@@ -1,12 +1,12 @@
 ﻿using System;
 using System.Collections.Generic;
 using System.IO;
-using System.Runtime.InteropServices.ComTypes;
-using System.Text;
 using HarmonyLib;
 using UnityEngine;
-using UnityEngine.Networking.Match;
 using UnityEngine.UI;
+using System.Collections.Concurrent;
+using System.Threading.Tasks;
+using System.Linq;
 
 namespace CollectibleCards2
 {
@@ -23,34 +23,20 @@ namespace CollectibleCards2
         public static int DisplayedCardIndex { get; set; } = 1;
         public static int OldIndex { get; set; } = 1;
         public static GameObject CardDescription { get; set; } = null;
-        public static void ScanCards()
+        public static Font VanillaFont { get; set; } = null;
+        public static List<CollectibleCard> ScanCards()
         {
-            Cards = new();
-            foreach (FileInfo file in new DirectoryInfo(Plugin.CardsDirectory).EnumerateFiles("*.png"))
-            {
-                byte[] array = File.ReadAllBytes(file.FullName);
-                Dictionary<string, string> metadata  = new()
-                {
-                    { "CharID", "" },
-                    { "Name", "" },
-                    { "FedName", "" },
-                    { "Border", "" },
-                    { "Foil", "" },
-                    { "Signature", "" },
-                    { "CustomGenerated", "" },
-                    { "Popularity", "" },
-                    { "Strength", "" },
-                    { "Skill", "" },
-                    { "Agility", "" },
-                    { "Stamina", "" },
-                    { "Attitude", "" },
-                    { "FrontFinisher", "" },
-                    { "BackFinisher", "" },
+            ConcurrentBag<CollectibleCard> cards = new();
 
-                };
-                metadata = PngUtils.GetFullMetadata(file.FullName, metadata);
-                Cards.Add(new CollectibleCard(array, metadata));
-            }
+            Parallel.ForEach(new DirectoryInfo(Plugin.CardsDirectory).EnumerateFiles("*.png"), file =>
+            {
+                byte[] array = null;//File.ReadAllBytes(file.FullName);
+                var metadata = PngUtils.GetCardMetadata(file.FullName);
+
+                cards.Add(new CollectibleCard(file.Name, array, metadata));
+            });
+
+            return cards.ToList(); // Convert ConcurrentBag to List
         }
         //adding buttons
         [HarmonyPatch(typeof(LIPNHOMGGHF), nameof(LIPNHOMGGHF.ICGNAJFLAHL))]
@@ -61,7 +47,9 @@ namespace CollectibleCards2
             {
                 if (LIPNHOMGGHF.ODOAPLMOJPD == Plugin.CardsMenuPage)
                 {
-                    ScanCards();
+                    Cards.Clear();
+                    Cards = ScanCards();
+                    Cards.Sort((card1, card2) => string.Compare(card1.FileName, card2.FileName, StringComparison.Ordinal));
                     LIPNHOMGGHF.DFLLBNMHHIH();
                     LIPNHOMGGHF.FKANHDIMMBJ[LIPNHOMGGHF.HOAOLPGEBKJ].ICGNAJFLAHL(3, "Card index", 0f, 280f, 1.5f, 1.5f);
                     TopSliderButton = LIPNHOMGGHF.HOAOLPGEBKJ;
@@ -91,6 +79,15 @@ namespace CollectibleCards2
                         DisplayCard(Cards[DisplayedCardIndex-1].CardBytes);
                     }
                 }
+            }
+        }
+        [HarmonyPatch(typeof(Scene_Titles), nameof(Scene_Titles.Start))]
+        [HarmonyPostfix]
+        public static void Scene_Titles_Start_Patch()
+        {
+            if(VanillaFont == null)
+            {
+                VanillaFont = MCDCDEBALPI.IMPJPDIEKDF[1].GetComponentInChildren<Text>().font;
             }
         }
         //handling buttons
@@ -177,8 +174,8 @@ namespace CollectibleCards2
                 rectTransform.sizeDelta = new Vector2(texture2D.width / 2, texture2D.height / 2);
                 rectTransform.anchoredPosition = new Vector2(0, 0);
                 rawImage.transform.SetAsLastSibling();
-                DisplayCardInfo();
             }
+            DisplayCardInfo();
         }
         //disabling annoying audio
         [HarmonyPatch(typeof(CHLPMKEGJBJ), nameof(CHLPMKEGJBJ.DNNPEAOCDOG))]
@@ -200,15 +197,18 @@ namespace CollectibleCards2
             {
                 CardDescription = new GameObject("Description");
                 CardDescription.transform.SetParent(LIPNHOMGGHF.JPABICKOAEO.transform, false);
-                CardDescription.AddComponent<Text>().font = OverlaytxtFileParser.CardFont;
-                
+                CardDescription.AddComponent<Text>().font = VanillaFont;
+                CardDescription.AddComponent<Outline>().effectColor = new Color(0, 0, 0, 1);
+                CardDescription.AddComponent<Shadow>().effectDistance = new Vector2(2, -2);
+
+
             }
             Text text = CardDescription.GetComponent<Text>();
             text.text = Cards[DisplayedCardIndex - 1].GetDescription();
             text.horizontalOverflow = HorizontalWrapMode.Wrap;
             text.verticalOverflow = VerticalWrapMode.Overflow;
             text.alignment = TextAnchor.UpperCenter;
-            text.fontSize = 48;
+            text.fontSize = 42;
             RectTransform rectTransform = text.GetComponent<RectTransform>();
             rectTransform.sizeDelta = new Vector2(Screen.width * 0.9f, 0);
             rectTransform.anchoredPosition = new Vector2(0, -250);

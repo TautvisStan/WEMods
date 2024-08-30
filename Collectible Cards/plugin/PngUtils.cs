@@ -22,6 +22,33 @@ namespace CollectibleCards2
             pngr.End();
             return metadata;
         }
+        public static Dictionary<string, string> GetCardMetadata(string file)
+        {
+            PngReader pngr = FileHelper.CreatePngReader(file);
+            PngMetadata pngmeta = pngr.GetMetadata();
+
+            var metadata = new Dictionary<string, string>
+            {
+                { "CharID", pngmeta.GetTxtForKey("CharID") },
+                { "Name", pngmeta.GetTxtForKey("Name") },
+                { "FedName", pngmeta.GetTxtForKey("FedName") },
+                { "Border", pngmeta.GetTxtForKey("Border") },
+                { "Foil", pngmeta.GetTxtForKey("Foil") },
+                { "Signature", pngmeta.GetTxtForKey("Signature") },
+                { "CustomGenerated", pngmeta.GetTxtForKey("CustomGenerated") },
+                { "Popularity", pngmeta.GetTxtForKey("Popularity") },
+                { "Strength", pngmeta.GetTxtForKey("Strength") },
+                { "Skill", pngmeta.GetTxtForKey("Skill") },
+                { "Agility", pngmeta.GetTxtForKey("Agility") },
+                { "Stamina", pngmeta.GetTxtForKey("Stamina") },
+                { "Attitude", pngmeta.GetTxtForKey("Attitude") },
+                { "FrontFinisher", pngmeta.GetTxtForKey("FrontFinisher") },
+                { "BackFinisher", pngmeta.GetTxtForKey("BackFinisher") }
+            };
+
+            pngr.End();
+            return metadata;
+        }
         public static string GetMetadata(string file, string key)
         {
             PngReader pngr = FileHelper.CreatePngReader(file);

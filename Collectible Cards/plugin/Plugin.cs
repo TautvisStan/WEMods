@@ -1,5 +1,5 @@
-//todo injured taunt?; awarding cards for each career win; 
-//menu reachable from career calendar (+back); optimize card scanning?; Card catalog menu;
+//todo injured taunt?; awarding cards for each career win; camera color to the meta.txt (look into vanilla cam color)
+//menu reachable from career calendar (+back); Improve card loading; Card catalog menu;
 using BepInEx;
 using BepInEx.Configuration;
 using BepInEx.Logging;
