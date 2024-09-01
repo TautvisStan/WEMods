@@ -1,4 +1,4 @@
-// Card catalog menu; scan whole plugins folder
+// scan whole plugins folder
 
 using BepInEx;
 using BepInEx.Configuration;
@@ -90,8 +90,7 @@ namespace CollectibleCards2
                 if (NAEEIFNFBBO.CBMHGKFFHJE == 1)
                 {
                     LIPNHOMGGHF.DFLLBNMHHIH();
-                    // LIPNHOMGGHF.FKANHDIMMBJ[LIPNHOMGGHF.HOAOLPGEBKJ].ICGNAJFLAHL(1, "Collectible Cards", 350f, -125f, 1f, 1f);
-                    LIPNHOMGGHF.FKANHDIMMBJ[LIPNHOMGGHF.HOAOLPGEBKJ].ICGNAJFLAHL(1, "Collectible Cards", 0f, -330f, 1.4f, 1.4f);
+                    LIPNHOMGGHF.FKANHDIMMBJ[LIPNHOMGGHF.HOAOLPGEBKJ].ICGNAJFLAHL(1, "Collectible Cards", 0f, -125f, 1f, 1f);
                     CardsMenuButtonCareer = LIPNHOMGGHF.HOAOLPGEBKJ;
                 }
             }

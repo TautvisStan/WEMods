@@ -71,7 +71,6 @@ namespace CardGen
             FileInfo[] files = directoryInfo.GetFiles("meta.txt");
             if (files.Length != 0)
             {
-                Debug.LogWarning("FOUND " + directoryInfo.Name);
                 Presets.Add(directoryInfo.Name);
             }
             else
@@ -235,7 +234,6 @@ namespace CardGen
                     int rarity = Rarity == 0 ? -1 : Rarity;
                     CollectibleCards2.Plugin.GenerateSingleCard((fileName) =>
                     {
-                        Debug.LogWarning("filename is " + fileName);
                         DisplayCard(fileName);
                     }, charid, preset, rarity, Foil, Signature, true);
                     

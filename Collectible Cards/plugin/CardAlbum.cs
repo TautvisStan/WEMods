@@ -27,6 +27,8 @@ namespace CollectibleCards2
         public static int SignatureFilter { get; set; } = -1;
         public static int SignatureFilterButton { get; set; }
         public static int ApplyFilterButton { get; set; }
+        public static int LeftPageButton { get; set; }
+        public static int RightPageButton { get; set; }
         private static bool SetUp = false;
         public class AlbumDisplayElement
         {
@@ -96,8 +98,7 @@ namespace CollectibleCards2
                 {
                     if (Mathf.Abs(HKJOAJOKOIJ.GMCCPOAIBHC - CardObject.transform.position.x) < 70f * NAEEIFNFBBO.IADPBBEPJKF && Mathf.Abs(HKJOAJOKOIJ.MINFPCEENFN - CardObject.transform.position.y) < 100f * NAEEIFNFBBO.PNHIGOBEEBB)
                     {
-                        UnityEngine.Debug.LogWarning("CLICKED" + Card.Index);
-                        LIPNHOMGGHF.ODOAPLMOJPD = CollectibleCards2.Plugin.CardsMenuPage;
+                        LIPNHOMGGHF.ODOAPLMOJPD = Plugin.CardsMenuPage;
                         LIPNHOMGGHF.ICGNAJFLAHL(0);
                         CardMenu.DisplayedCardIndex = Card.Index;
                     }
@@ -140,21 +141,29 @@ namespace CollectibleCards2
                     LIPNHOMGGHF.DFLLBNMHHIH();
                     LIPNHOMGGHF.FKANHDIMMBJ[LIPNHOMGGHF.HOAOLPGEBKJ].ICGNAJFLAHL(1, "Card Album", 350f, 175f, 1.5f, 1.5f);
                     AlbumButton = LIPNHOMGGHF.HOAOLPGEBKJ;
+
                 }
                 if (LIPNHOMGGHF.ODOAPLMOJPD == CardAlbumPage)
                 {
                     LIPNHOMGGHF.DFLLBNMHHIH();
                     LIPNHOMGGHF.FKANHDIMMBJ[LIPNHOMGGHF.HOAOLPGEBKJ].ICGNAJFLAHL(2, "Rarity Filter", -250f, 300f, 1.25f, 1.25f);
-                    AlbumButton = LIPNHOMGGHF.HOAOLPGEBKJ;
+                    RarityFilterButton = LIPNHOMGGHF.HOAOLPGEBKJ;
                     LIPNHOMGGHF.DFLLBNMHHIH();
                     LIPNHOMGGHF.FKANHDIMMBJ[LIPNHOMGGHF.HOAOLPGEBKJ].ICGNAJFLAHL(2, "Foil Filter", 0f, 300f, 1.25f, 1.25f);
-                    AlbumButton = LIPNHOMGGHF.HOAOLPGEBKJ;
+                    FoilFilterButton = LIPNHOMGGHF.HOAOLPGEBKJ;
                     LIPNHOMGGHF.DFLLBNMHHIH();
-                    LIPNHOMGGHF.FKANHDIMMBJ[LIPNHOMGGHF.HOAOLPGEBKJ].ICGNAJFLAHL(2, "Border Filter", 250f, 300f, 1.25f, 1.25f);
-                    AlbumButton = LIPNHOMGGHF.HOAOLPGEBKJ;
+                    LIPNHOMGGHF.FKANHDIMMBJ[LIPNHOMGGHF.HOAOLPGEBKJ].ICGNAJFLAHL(2, "Signature Filter", 250f, 300f, 1.25f, 1.25f);
+                    SignatureFilterButton = LIPNHOMGGHF.HOAOLPGEBKJ;
                     LIPNHOMGGHF.DFLLBNMHHIH();
                     LIPNHOMGGHF.FKANHDIMMBJ[LIPNHOMGGHF.HOAOLPGEBKJ].ICGNAJFLAHL(1, "Apply Filters", 500f, 300f, 1.25f, 1.25f);
-                    AlbumButton = LIPNHOMGGHF.HOAOLPGEBKJ;
+                    ApplyFilterButton = LIPNHOMGGHF.HOAOLPGEBKJ;
+
+                    LIPNHOMGGHF.DFLLBNMHHIH();
+                    LIPNHOMGGHF.FKANHDIMMBJ[LIPNHOMGGHF.HOAOLPGEBKJ].ICGNAJFLAHL(1, "<--", -500f, 0f, 1f, 1f);
+                    LeftPageButton = LIPNHOMGGHF.HOAOLPGEBKJ;
+                    LIPNHOMGGHF.DFLLBNMHHIH();
+                    LIPNHOMGGHF.FKANHDIMMBJ[LIPNHOMGGHF.HOAOLPGEBKJ].ICGNAJFLAHL(1, "-->", 500f, 0f, 1f, 1f);
+                    RightPageButton = LIPNHOMGGHF.HOAOLPGEBKJ;
 
                     PlaceCards();
                     FilterCards();
@@ -178,21 +187,34 @@ namespace CollectibleCards2
         public static void CalculatePages()
         {
             MaxPages = Mathf.CeilToInt(FilteredCards.Count / 10f);
+            if (Page > MaxPages) Page = MaxPages;
+            if (Page == 0 && MaxPages != 0) Page = 1;
+            if (MaxPages < 2)
+            {
+                LIPNHOMGGHF.FKANHDIMMBJ[LeftPageButton].AHBNKMMMGFI = 0;
+                LIPNHOMGGHF.FKANHDIMMBJ[RightPageButton].AHBNKMMMGFI = 0;
+            }
+            else
+            {
+                LIPNHOMGGHF.FKANHDIMMBJ[LeftPageButton].AHBNKMMMGFI = 1;
+                LIPNHOMGGHF.FKANHDIMMBJ[RightPageButton].AHBNKMMMGFI = 1;
+            }
         }
         public static void SetupCards()
         {
             for (int i = 0; i < 10; i++)
             {
                 int listIndex = (10 * (Page-1)) + i;
-                Debug.LogWarning(listIndex);
                 if (listIndex >= 0)
                 {
                     if (listIndex < FilteredCards.Count && FilteredCards[listIndex] != null)
                     {
                         CardElements[i].Card = FilteredCards[listIndex];
                         CardElements[i].DisplayCard();
+                        continue;
                     }
                 }
+                CardElements[i].Cleanup();
             }
         }
 
@@ -213,7 +235,7 @@ namespace CollectibleCards2
                     y = -150;
                     col -= 5;
                 }
-                x = -400 + (200 * col);
+                x = -350 + (175 * col);
                 CardElements[i].Position = new Vector2(x, y);
             }
         }
@@ -247,13 +269,27 @@ namespace CollectibleCards2
             switch (SignatureFilter)
             {
                 case 0:
-                    FilteredCards = FilteredCards.FindAll(x => x.IsSigned() == true);
+                    FilteredCards = FilteredCards.FindAll(x => x.IsSigned() == false);
                     break;
                 case 1:
-                    FilteredCards = FilteredCards.FindAll(x => x.IsSigned() == false);
+                    FilteredCards = FilteredCards.FindAll(x => x.IsSigned() == true);
                     break;
             }
 
+        }
+        //disabling annoying audio
+        [HarmonyPatch(typeof(CHLPMKEGJBJ), nameof(CHLPMKEGJBJ.DNNPEAOCDOG))]
+        [HarmonyPrefix]
+        public static bool CHLPMKEGJBJ_DNNPEAOCDOG_Prefix(AudioClip GGMBIAAEMKO, float ELJKCOHGBBD = 0f, float CDNNGHGFALM = 1f)
+        {
+            if (GGMBIAAEMKO == CHLPMKEGJBJ.PAJJMPLBDPL && LIPNHOMGGHF.ODOAPLMOJPD == CardAlbumPage)
+            {
+                return false;
+            }
+            else
+            {
+                return true;
+            }
         }
         //handling buttons
         [HarmonyPatch(typeof(Scene_Titles), nameof(Scene_Titles.Update))]
@@ -277,6 +313,72 @@ namespace CollectibleCards2
                         CardElements[i].HandleClicks();
                     }
                 }
+                if (LIPNHOMGGHF.PIEMLEPEDFN == 5 && LIPNHOMGGHF.NNMDEFLLNBF == LeftPageButton)
+                {
+                    Page--;
+                    if (Page == 0)
+                    {
+                        Page = MaxPages;
+                    }
+                    SetupCards();
+                }
+                if (LIPNHOMGGHF.PIEMLEPEDFN == 5 && LIPNHOMGGHF.NNMDEFLLNBF == RightPageButton)
+                {
+                    Page++;
+                    if (Page > MaxPages)
+                    {
+                        Page = 1;
+                    }
+                    SetupCards();
+                }
+                RarityFilter = Mathf.RoundToInt(LIPNHOMGGHF.FKANHDIMMBJ[RarityFilterButton].ODONMLDCHHF(RarityFilter, 1f, 10f, -1f, 3, 0));
+                switch (RarityFilter)
+                {
+                    case -1:
+                        LIPNHOMGGHF.FKANHDIMMBJ[RarityFilterButton].FFCNPGPALPD = "No Filter";
+                        break;
+                    case 0:
+                        LIPNHOMGGHF.FKANHDIMMBJ[RarityFilterButton].FFCNPGPALPD = "Base";
+                        break;
+                    case 1:
+                        LIPNHOMGGHF.FKANHDIMMBJ[RarityFilterButton].FFCNPGPALPD = "Bronze";
+                        break;
+                    case 2:
+                        LIPNHOMGGHF.FKANHDIMMBJ[RarityFilterButton].FFCNPGPALPD = "Silver";
+                        break;
+                    case 3:
+                        LIPNHOMGGHF.FKANHDIMMBJ[RarityFilterButton].FFCNPGPALPD = "Gold";
+                        break;
+                }
+                FoilFilter = Mathf.RoundToInt(LIPNHOMGGHF.FKANHDIMMBJ[FoilFilterButton].ODONMLDCHHF(FoilFilter, 1f, 10f, -1f, 1, 0));
+                if (FoilFilter == -1)
+                {
+                    LIPNHOMGGHF.FKANHDIMMBJ[FoilFilterButton].FFCNPGPALPD = "No Filter";
+                }
+                SignatureFilter = Mathf.RoundToInt(LIPNHOMGGHF.FKANHDIMMBJ[SignatureFilterButton].ODONMLDCHHF(SignatureFilter, 1f, 10f, -1f, 1, 0));
+                if (SignatureFilter == -1)
+                {
+                    LIPNHOMGGHF.FKANHDIMMBJ[SignatureFilterButton].FFCNPGPALPD = "No Filter";
+                }
+                if (LIPNHOMGGHF.PIEMLEPEDFN == 5 && LIPNHOMGGHF.FKANHDIMMBJ[ApplyFilterButton].CLMDCNDEBGD != 0)
+                {
+                    FilterCards();
+                    CalculatePages();
+                    SetupCards();
+                }
+
+                if (LIPNHOMGGHF.PIEMLEPEDFN > 5)
+                {
+                    LIPNHOMGGHF.PIEMLEPEDFN = 0;
+                }
+
+
+                if (LIPNHOMGGHF.PIEMLEPEDFN <= -5)
+                {
+                    LIPNHOMGGHF.ODOAPLMOJPD = Plugin.CardsMenuPage;
+                    LIPNHOMGGHF.ICGNAJFLAHL(0);
+                }
+
             }
         }
     }
