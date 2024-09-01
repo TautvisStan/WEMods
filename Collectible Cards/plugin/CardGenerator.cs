@@ -4,7 +4,6 @@ using System.Collections.Generic;
 using System.IO;
 using System.Text;
 using UnityEngine;
-using UnityEngine.XR;
 
 namespace CollectibleCards2
 {
@@ -16,11 +15,7 @@ namespace CollectibleCards2
             ProportionalRandomSelector<int> randomSelector;
             if (CharID == -1) CharID = UnityEngine.Random.Range(1, Characters.no_chars + 1);
             Character character = Characters.c[CharID];
-            if (preset == "") preset = "preset_" + character.fed.ToString();
-        /*    else
-            {
-                preset = "preset_" + preset;
-            }*/
+            if (preset == "") preset = "Base_Fed_" + character.fed.ToString();
             if (borderRarity == -1)
             {
                 randomSelector = new();
@@ -82,10 +77,7 @@ namespace CollectibleCards2
             string filePath = Path.Combine(foldername, filename);
             PngUtils.SaveWithMetadata(filePath, bytes, CardMetaData);
 
-            Debug.LogWarning($"Saved image to {filePath}");
-
-         //   Debug.LogWarning($"CHAR ID IS {PngUtils.GetMetadata(filePath, "CharID")}");
-
+            Plugin.Log.LogInfo($"Saved card image to {filePath}");
 
             CameraController.Cleanup();
             LightController.Cleanup();
@@ -112,7 +104,6 @@ namespace CollectibleCards2
                     else
                     {
                         post.Add(line);
-                        Debug.LogWarning(line);
                     }
                 }
                 else

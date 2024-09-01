@@ -30,7 +30,7 @@ namespace CardGen
         public static List<string> Presets { get; set; } = new();
         public static GameObject CardObject { get; set; } = null;
         public static int CharButton { get; set; }
-        public static int CharID { get; set; } = -1;
+        public static int CharID { get; set; } = 0;
         public static int PresetButton { get; set; }
         public static int Preset { get; set; } = -1;
         public static int RarityButton { get; set; }
@@ -96,7 +96,7 @@ namespace CardGen
                 if (LIPNHOMGGHF.ODOAPLMOJPD == CollectibleCards2.Plugin.CardsMenuPage)
                 {
                     LIPNHOMGGHF.DFLLBNMHHIH();
-                    LIPNHOMGGHF.FKANHDIMMBJ[LIPNHOMGGHF.HOAOLPGEBKJ].ICGNAJFLAHL(1, "Card Generator", 375f, 250f, 1.5f, 1.5f);
+                    LIPNHOMGGHF.FKANHDIMMBJ[LIPNHOMGGHF.HOAOLPGEBKJ].ICGNAJFLAHL(1, "Card Generator", 350f, 250f, 1.5f, 1.5f);
                     CardsGenButton = LIPNHOMGGHF.HOAOLPGEBKJ;
                 }
                 if (LIPNHOMGGHF.ODOAPLMOJPD == CardsGenPage)
@@ -163,8 +163,12 @@ namespace CardGen
             }
             if (LIPNHOMGGHF.ODOAPLMOJPD == CardsGenPage)
             {
-                CharID = Mathf.RoundToInt(LIPNHOMGGHF.FKANHDIMMBJ[CharButton].ODONMLDCHHF(CharID, 1f, 10f, 0f, Characters.no_chars, 0));
-                if (CharID == 0)
+                CharID = Mathf.RoundToInt(LIPNHOMGGHF.FKANHDIMMBJ[CharButton].ODONMLDCHHF(CharID, 1f, 10f, -11f, Characters.no_chars, 0));
+                if (CharID < 0)
+                {
+                    LIPNHOMGGHF.FKANHDIMMBJ[CharButton].FFCNPGPALPD = $"Random from {Characters.fedData[(CharID*-1)-1].name}";
+                }
+                else if (CharID == 0)
                 {
                     LIPNHOMGGHF.FKANHDIMMBJ[CharButton].FFCNPGPALPD = "Random";
                 }
@@ -212,7 +216,21 @@ namespace CardGen
                 }
                 if (LIPNHOMGGHF.PIEMLEPEDFN == 5 && LIPNHOMGGHF.FKANHDIMMBJ[GenerateButton].CLMDCNDEBGD != 0)
                 {
-                    int charid = CharID == 0 ? -1 : CharID;
+
+                    int charid = -1;
+                    if (CharID < 0)
+                    {
+                        int fednum = (CharID * -1) - 1;
+                        charid = Characters.fedData[fednum].roster[UnityEngine.Random.Range(1, Characters.fedData[fednum].size + 1)];                        
+                    }
+                    else if (CharID == 0)
+                    {
+                        charid = -1;
+                    }
+                    else
+                    {
+                        charid = CharID;
+                    }
                     string preset = Preset == -1 ? "" : Presets[Preset];
                     int rarity = Rarity == 0 ? -1 : Rarity;
                     CollectibleCards2.Plugin.GenerateSingleCard((fileName) =>

@@ -1,6 +1,7 @@
 ﻿using System;
 using System.Collections.Generic;
 using System.Diagnostics;
+using System.IO;
 using System.Text;
 
 namespace CollectibleCards2
@@ -8,7 +9,8 @@ namespace CollectibleCards2
     public class CollectibleCard
     {
         public string FileName { get; set; }
-        public byte[] CardBytes { get; set; }
+        public byte[] CardBytes { get; set; } = null;
+        public int Index { get; set; }
         public string CharID { get; set; }
         public string Name { get; set; }
         public string FedName { get; set; }
@@ -24,11 +26,9 @@ namespace CollectibleCards2
         public string Attitude { get; set; }
         public string FrontFinisher { get; set; }
         public string BackFinisher { get; set; }
-
-        public CollectibleCard(string fileName, byte[] cardBytes, Dictionary<string, string> metadata)
+        public CollectibleCard(string fileName, Dictionary<string, string> metadata)
         {
             FileName = fileName;
-            CardBytes = cardBytes;
             CharID = metadata["CharID"];
             Name = metadata["Name"];
             FedName = metadata["FedName"];
@@ -45,7 +45,11 @@ namespace CollectibleCards2
             FrontFinisher = metadata["FrontFinisher"];
             BackFinisher = metadata["BackFinisher"];
         }
-
+        //Some kind of caching? But then mem usage goes up...
+        public byte[] GetCardBytes()
+        {
+            return File.ReadAllBytes(Path.Combine(Plugin.CardsDirectory, FileName));
+        }
         public string GetDescription()
         {
             string text = "";

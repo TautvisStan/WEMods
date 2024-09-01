@@ -78,45 +78,6 @@ namespace CollectibleCards2
                     continue;
                 }
             }
-
-
-
-            /**/
-            /*       int num6;
-                   int num7;
-                   int num8;
-                   do
-                   {
-                       int num5 = NAEEIFNFBBO.OMOADEKHHHO(MBLIOKEDHHB.AKICIDBAGOC, 0);
-                       num6 = MBLIOKEDHHB.LHFJJPOPIAA[num5].PFDGHMKKHOF;
-                       num7 = MBLIOKEDHHB.LHFJJPOPIAA[num5].EJPKJOFMIAI[NAEEIFNFBBO.PMEEFNOLAGF(0, MBLIOKEDHHB.LHFJJPOPIAA[num5].EJPKJOFMIAI.Length - 1, 0)];
-                       if (NAEEIFNFBBO.PMEEFNOLAGF(0, 3, 0) == 0)
-                       {
-                           num6 = 0;
-                           num7 = NAEEIFNFBBO.PMEEFNOLAGF(3, 24, 0);
-                       }
-                       if (Wrestler.EMDMDLNJFKP.gender > 0 && NAEEIFNFBBO.PMEEFNOLAGF(0, 1, 0) == 0)
-                       {
-                           num6 = 0;
-                           num7 = NAEEIFNFBBO.PMEEFNOLAGF(82, 83, 0);
-                       }
-                       if (Wrestler.EMDMDLNJFKP.injury != 0 && NAEEIFNFBBO.PMEEFNOLAGF(0, 1, 0) == 0)
-                       {
-                           num6 = 4;
-                           num7 = NAEEIFNFBBO.PMEEFNOLAGF(1, 6, 0);
-                       }
-                       num8 = 1;
-                       if (num6 == 3 && (num7 == 36 || num7 == 37 || num7 == 42))
-                       {
-                           num8 = 0;
-                       }
-                       if (num6 == 4 && num7 == 39)
-                       {
-                           num8 = 0;
-                       }
-                   }
-                   while (num8 == 0);*/
-            //Wrestler.FJHHJGONAFO(num6, (float)num7);
             Wrestler.KOLHFFPPCEE((float)(50 - 100 * Wrestler.EMDMDLNJFKP.heel));
             int num = NAEEIFNFBBO.OMOADEKHHHO(MBLIOKEDHHB.ABJFEMNCIMI);
             Wrestler.FEOFDJFFNMN = MBLIOKEDHHB.LHFJJPOPIAA[num].PFDGHMKKHOF;

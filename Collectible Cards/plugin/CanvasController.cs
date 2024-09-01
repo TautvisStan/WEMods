@@ -21,7 +21,7 @@ namespace CollectibleCards2
 
             foreach (string line in layers)
             {
-                string[] chunks = line.Split(' ');
+                string[] chunks = line.Split(new char[] { ' ' }, 2);
                 if(chunks.Length == 2)
                 {
                     string file = Path.Combine(Plugin.PluginPath, preset, chunks[1]);

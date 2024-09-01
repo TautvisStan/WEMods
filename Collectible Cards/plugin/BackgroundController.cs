@@ -34,7 +34,6 @@ namespace CollectibleCards2
             }
             else
             {
-                Debug.LogWarning("PERSP");
                 float distance = Mathf.Abs(cameraObject.transform.position.z - BackgroundObj.transform.position.z);
 
                 // Calculate the height in world units based on the camera's FOV

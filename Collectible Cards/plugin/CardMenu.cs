@@ -27,16 +27,18 @@ namespace CollectibleCards2
         public static List<CollectibleCard> ScanCards()
         {
             ConcurrentBag<CollectibleCard> cards = new();
-
             Parallel.ForEach(new DirectoryInfo(Plugin.CardsDirectory).EnumerateFiles("*.png"), file =>
             {
-                byte[] array = null;//File.ReadAllBytes(file.FullName);
                 var metadata = PngUtils.GetCardMetadata(file.FullName);
-
-                cards.Add(new CollectibleCard(file.Name, array, metadata));
+                cards.Add(new CollectibleCard(file.Name, metadata));
             });
-
-            return cards.ToList(); // Convert ConcurrentBag to List
+            List<CollectibleCard> cardsList = cards.ToList();
+            cardsList.Sort((card1, card2) => string.Compare(card1.FileName, card2.FileName, StringComparison.Ordinal));
+            for (int i = 0; i < cardsList.Count; i++)
+            {
+                cardsList[i].Index = i+1;
+            }
+            return cardsList;
         }
         //adding buttons
         [HarmonyPatch(typeof(LIPNHOMGGHF), nameof(LIPNHOMGGHF.ICGNAJFLAHL))]
@@ -51,7 +53,7 @@ namespace CollectibleCards2
                     Cards = ScanCards();
                     Cards.Sort((card1, card2) => string.Compare(card1.FileName, card2.FileName, StringComparison.Ordinal));
                     LIPNHOMGGHF.DFLLBNMHHIH();
-                    LIPNHOMGGHF.FKANHDIMMBJ[LIPNHOMGGHF.HOAOLPGEBKJ].ICGNAJFLAHL(3, "Card index", 0f, 280f, 1.5f, 1.5f);
+                    LIPNHOMGGHF.FKANHDIMMBJ[LIPNHOMGGHF.HOAOLPGEBKJ].ICGNAJFLAHL(3, "Card index", 0f, 300f, 1.5f, 1.5f);
                     TopSliderButton = LIPNHOMGGHF.HOAOLPGEBKJ;
 
                     LIPNHOMGGHF.DFLLBNMHHIH();
@@ -76,7 +78,8 @@ namespace CollectibleCards2
                             OldIndex = Cards.Count;
                             
                         }
-                        DisplayCard(Cards[DisplayedCardIndex-1].CardBytes);
+                        if (DisplayedCardIndex < 1) DisplayedCardIndex = 1;
+                        DisplayCard(Cards[DisplayedCardIndex-1]);
                     }
                 }
             }
@@ -100,7 +103,7 @@ namespace CollectibleCards2
                 DisplayedCardIndex = Mathf.RoundToInt(LIPNHOMGGHF.FKANHDIMMBJ[TopSliderButton].ODONMLDCHHF(DisplayedCardIndex, 1f, 10f, 1f, Cards.Count, 0));
                 if(OldIndex != DisplayedCardIndex && DisplayedCardIndex != 0 && DisplayedCardIndex <= Cards.Count)
                 {
-                    DisplayCard(Cards[DisplayedCardIndex - 1].CardBytes);
+                    DisplayCard(Cards[DisplayedCardIndex - 1]);
                 }
                 if (LIPNHOMGGHF.PIEMLEPEDFN == 5 && LIPNHOMGGHF.NNMDEFLLNBF == LeftButton)
                 {
@@ -109,7 +112,7 @@ namespace CollectibleCards2
                     {
                         DisplayedCardIndex = Cards.Count;
                     }
-                    DisplayCard(Cards[DisplayedCardIndex - 1].CardBytes);
+                    DisplayCard(Cards[DisplayedCardIndex - 1]);
                 }
                 if (LIPNHOMGGHF.PIEMLEPEDFN == 5 && LIPNHOMGGHF.NNMDEFLLNBF == RightButton)
                 {
@@ -118,7 +121,7 @@ namespace CollectibleCards2
                     {
                         DisplayedCardIndex = 1;
                     }
-                    DisplayCard(Cards[DisplayedCardIndex - 1].CardBytes);
+                    DisplayCard(Cards[DisplayedCardIndex - 1]);
                 }
 
 
@@ -133,7 +136,17 @@ namespace CollectibleCards2
                 if (LIPNHOMGGHF.PIEMLEPEDFN <= -5)
                 {
                     LIPNHOMGGHF.ODOAPLMOJPD = 0;
-                    LIPNHOMGGHF.ICGNAJFLAHL(0);
+                    if (Plugin.EntryMenu == 2)
+                    {
+                        Plugin.EntryMenu = 0;
+                        LIPNHOMGGHF.PMIIOCMHEAE(20);
+                    }
+                    else
+                    {
+                        Plugin.EntryMenu = 0;
+                        LIPNHOMGGHF.ICGNAJFLAHL(0);
+                    }
+                    
                 }
             }
             else
@@ -148,12 +161,22 @@ namespace CollectibleCards2
                     UnityEngine.Object.Destroy(CardDescription);
                     CardDescription = null;
                 }
+                if (rawImage != null)
+                {
+                    UnityEngine.Object.Destroy(rawImage);
+                    rawImage = null;
+                }
+                if (texture2D != null)
+                {
+                    UnityEngine.Object.Destroy(texture2D);
+                    texture2D = null;
+                }
             }
         }
 
-        public static void DisplayCard(byte[] array2)
+        public static void DisplayCard(CollectibleCard card)
         {
-           // byte[] array2 = File.ReadAllBytes(fileName);
+            byte[] array2 = card.GetCardBytes();
             if (array2 != null)
             {
                 if (CardObject == null)
@@ -199,7 +222,8 @@ namespace CollectibleCards2
                 CardDescription.transform.SetParent(LIPNHOMGGHF.JPABICKOAEO.transform, false);
                 CardDescription.AddComponent<Text>().font = VanillaFont;
                 CardDescription.AddComponent<Outline>().effectColor = new Color(0, 0, 0, 1);
-                CardDescription.AddComponent<Shadow>().effectDistance = new Vector2(2, -2);
+                CardDescription.GetComponent<Outline>().effectDistance = new Vector2(1, 1);
+                CardDescription.AddComponent<Shadow>().effectDistance = new Vector2(3, -3);
 
 
             }
@@ -208,9 +232,9 @@ namespace CollectibleCards2
             text.horizontalOverflow = HorizontalWrapMode.Wrap;
             text.verticalOverflow = VerticalWrapMode.Overflow;
             text.alignment = TextAnchor.UpperCenter;
-            text.fontSize = 42;
+            text.fontSize = 40;
             RectTransform rectTransform = text.GetComponent<RectTransform>();
-            rectTransform.sizeDelta = new Vector2(Screen.width * 0.9f, 0);
+            rectTransform.sizeDelta = new Vector2(1250, 0);
             rectTransform.anchoredPosition = new Vector2(0, -250);
 
 
