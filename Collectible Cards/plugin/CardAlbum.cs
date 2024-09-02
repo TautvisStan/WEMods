@@ -355,10 +355,18 @@ namespace CollectibleCards2
                 {
                     LIPNHOMGGHF.FKANHDIMMBJ[FoilFilterButton].FFCNPGPALPD = "No Filter";
                 }
+                if (FoilFilter == 0)
+                {
+                    LIPNHOMGGHF.FKANHDIMMBJ[FoilFilterButton].FFCNPGPALPD = "No Foil";
+                }
                 SignatureFilter = Mathf.RoundToInt(LIPNHOMGGHF.FKANHDIMMBJ[SignatureFilterButton].ODONMLDCHHF(SignatureFilter, 1f, 10f, -1f, 1, 0));
                 if (SignatureFilter == -1)
                 {
                     LIPNHOMGGHF.FKANHDIMMBJ[SignatureFilterButton].FFCNPGPALPD = "No Filter";
+                }
+                if (SignatureFilter == 0)
+                {
+                    LIPNHOMGGHF.FKANHDIMMBJ[SignatureFilterButton].FFCNPGPALPD = "No Signature";
                 }
                 if (LIPNHOMGGHF.PIEMLEPEDFN == 5 && LIPNHOMGGHF.FKANHDIMMBJ[ApplyFilterButton].CLMDCNDEBGD != 0)
                 {

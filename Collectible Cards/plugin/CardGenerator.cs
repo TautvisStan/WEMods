@@ -15,7 +15,7 @@ namespace CollectibleCards2
             ProportionalRandomSelector<int> randomSelector;
             if (CharID == -1) CharID = UnityEngine.Random.Range(1, Characters.no_chars + 1);
             Character character = Characters.c[CharID];
-            if (preset == "") preset = "Base_Fed_" + character.fed.ToString();
+            if (preset == "") preset = Path.Combine(Plugin.DefaultDesignDirectory, "Base_Fed_" + character.fed.ToString());
             if (borderRarity == -1)
             {
                 randomSelector = new();
@@ -58,7 +58,7 @@ namespace CollectibleCards2
                 { "FrontFinisher", MBLIOKEDHHB.DDIJBPJLEBF(Characters.c[Characters.foc].moveFront[0]) },
                 { "BackFinisher", MBLIOKEDHHB.DDIJBPJLEBF(Characters.c[Characters.foc].moveBack[0]) },
             };
-            (string[] scene, string[] canvas) = MetaTxtSplitter(Path.Combine(Plugin.PluginPath, preset, "meta.txt"));
+            (string[] scene, string[] canvas) = MetaTxtSplitter(Path.Combine(preset, "CardDesign.txt"));
             CameraController.SetupCamera(scene);
             LightController.SetupPictureLight();
             Background.SetupBackground(CameraController.CameraObj, preset);

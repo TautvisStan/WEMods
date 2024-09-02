@@ -27,7 +27,7 @@ namespace CardGen
 
         public static int CardsGenPage { get; set; } = CollectibleCards2.Plugin.CardsMenuPage-1;
         public static int CardsGenButton { get; set; }
-        public static List<string> Presets { get; set; } = new();
+        public static List<DirectoryInfo> Presets { get; set; } = new();
         public static GameObject CardObject { get; set; } = null;
         public static int CharButton { get; set; }
         public static int CharID { get; set; } = 0;
@@ -61,17 +61,20 @@ namespace CardGen
         }
         public static void ScanPresets()
         {
-            string path = CollectibleCards2.Plugin.PluginPath;
+
             Presets = new();
-            ScanFolder(path);
+            foreach (string modPath in Directory.GetDirectories(Path.Combine(Paths.BepInExRootPath, "plugins")))
+            {
+                ScanFolder(modPath);
+            }
         }
         static void ScanFolder(string path)
         {
             DirectoryInfo directoryInfo = new(path);
-            FileInfo[] files = directoryInfo.GetFiles("meta.txt");
+            FileInfo[] files = directoryInfo.GetFiles("CardDesign.txt");
             if (files.Length != 0)
             {
-                Presets.Add(directoryInfo.Name);
+                Presets.Add(directoryInfo);
             }
             else
             {
@@ -182,7 +185,7 @@ namespace CardGen
                 }
                 else
                 {
-                    LIPNHOMGGHF.FKANHDIMMBJ[PresetButton].FFCNPGPALPD = Presets[Preset];
+                    LIPNHOMGGHF.FKANHDIMMBJ[PresetButton].FFCNPGPALPD = Presets[Preset].Name;
                 }
                 Rarity = Mathf.RoundToInt(LIPNHOMGGHF.FKANHDIMMBJ[RarityButton].ODONMLDCHHF(Rarity, 1f, 10f, -1f, 3, 0));
                 switch (Rarity)
@@ -230,7 +233,7 @@ namespace CardGen
                     {
                         charid = CharID;
                     }
-                    string preset = Preset == -1 ? "" : Presets[Preset];
+                    string preset = Preset == -1 ? "" : Presets[Preset].FullName;
                     int rarity = Rarity == -1 ? -1 : Rarity;
                     CollectibleCards2.Plugin.GenerateSingleCard((fileName) =>
                     {

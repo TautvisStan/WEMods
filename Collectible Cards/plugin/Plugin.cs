@@ -1,4 +1,4 @@
-// scan whole plugins folder
+// move designs to a new folder
 
 using BepInEx;
 using BepInEx.Configuration;
@@ -36,6 +36,7 @@ namespace CollectibleCards2
         public static int EntryMenu { get; set; } = 0;
         public static string CardsDirectory { get; set; } = Path.Combine(Application.persistentDataPath, "Cards");
         private static bool ShouldAwardCard { get; set; } = false;
+        public static string DefaultDesignDirectory { get; set; } = Path.Combine(Path.Combine(Paths.BepInExRootPath, "plugins", "Card Designs"));
         public static Plugin ThisPlugin { get; set; }
         private void Awake()
         {
@@ -64,7 +65,39 @@ namespace CollectibleCards2
         {
             ThisPlugin.StartCoroutine(CollectibleCardGenerator.GenerateCollectibleCard(onGenerated, CharID, preset, borderRarity, foilRarity, signatureRarity, customGenerated));
         }
+   /*     public static void MoveDesignFolders()
+        {
+            //Move unique Fed videos to video folder
+            if (File.Exists(Path.Combine(Path.GetDirectoryName(assemblyPath), "Fed1.mp4")))
+            {
+                for (int i = 1; i <= 10; i++)
+                {
+                    string fileName = $"Fed{i}.mp4";
+                    sourceFilePath = Path.Combine(Path.GetDirectoryName(assemblyPath), fileName);
 
+                    if (File.Exists(sourceFilePath))
+                    {
+                        if (File.Exists(videosFolderPath + fileName))
+                        {
+                            //File already exists in destination directory
+                            File.Delete(sourceFilePath);
+                        }
+                        else
+                        {
+                            try
+                            {
+                                File.Move(sourceFilePath, videosFolderPath + fileName);
+                                Debug.Log($"File {fileName} moved successfully.");
+                            }
+                            catch (IOException e)
+                            {
+                                Debug.LogError("Error moving file: " + e.Message);
+                            }
+                        }
+                    }
+                }
+            }
+        }*/
         //adding new button to the main menu
         [HarmonyPatch(typeof(LIPNHOMGGHF), nameof(LIPNHOMGGHF.ICGNAJFLAHL))]
         [HarmonyPostfix]
