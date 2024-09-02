@@ -2,6 +2,7 @@
 using UnityEngine;
 using System.IO;
 using System.Collections.Generic;
+using System.Linq;
 
 namespace CollectibleCards2
 {
@@ -9,6 +10,17 @@ namespace CollectibleCards2
     {
         public static GameObject CanvasObj { get; set; } = null;
         private static List<Texture2D> oldTextures = new();
+        private static List<Material> oldMaterials = new();
+        public static Shader AdditiveShader { get; set; }
+        public static Shader MultiplyShader { get; set; }
+        public static Shader FancyShader { get; set; }
+        public static void LoadShaders()
+        {
+            var assetBundle = AssetBundle.LoadFromFile(Path.Combine(Plugin.PluginPath, "prefabs", "layershaders"));
+            AdditiveShader = assetBundle.LoadAsset<Shader>("AdditiveCardShader");
+            MultiplyShader = assetBundle.LoadAsset<Shader>("MultiplyCardShader");
+            FancyShader = assetBundle.LoadAsset<Shader>("FancyCardShader");
+        }
         public static void SetupCanvas(GameObject CameraObj, string preset, Dictionary<string, string> CardMeta, string[] layers)
         {
             Camera targetCamera = CameraObj.GetComponent<Camera>();
@@ -21,40 +33,58 @@ namespace CollectibleCards2
 
             foreach (string line in layers)
             {
-                string[] chunks = line.Split(new char[] { ' ' }, 2);
-                if(chunks.Length == 2)
+                string[] chunks = line.Split(' ');
+                if(chunks.Length >= 2)
                 {
+                    string transparency = "";
+                    if (chunks.Length == 3)
+                    {
+                        transparency = chunks[2];
+                    }
+                    Shader layershader = null;
+                    if (chunks[0].EndsWith("additive"))
+                    {
+                        layershader = AdditiveShader;
+                    }
+                    else if (chunks[0].EndsWith("multiply"))
+                    {
+                        layershader = MultiplyShader;
+                    }
+               /*     else if (chunks[0].EndsWith("fancy"))
+                    {
+                        AddOverlayTextureToCanvas(overlayCanvas, file, FancyShader, transparency);
+                    }*/
                     string file = Path.Combine(Plugin.PluginPath, preset, chunks[1]);
-                    if (chunks[0] == "border")
+                    if (chunks[0].StartsWith("border"))
                     {
                         switch (int.Parse(CardMeta["Border"]))
                         {
                             case 0: 
-                                AddOverlayTextureToCanvas(overlayCanvas, file);
+                                AddOverlayTextureToCanvas(overlayCanvas, file, layershader, transparency);
                                 break;
                             case 1: 
                                 if (File.Exists(Path.Combine(Plugin.PluginPath, preset, "bronze.png")))
                                 {
-                                    AddOverlayTextureToCanvas(overlayCanvas, Path.Combine(Plugin.PluginPath, preset, "bronze.png"));
+                                    AddOverlayTextureToCanvas(overlayCanvas, Path.Combine(Plugin.PluginPath, preset, "bronze.png"), layershader, transparency);
                                 }
                                 break;
                             case 2:
                                 if (File.Exists(Path.Combine(Plugin.PluginPath, preset, "silver.png")))
                                 {
-                                    AddOverlayTextureToCanvas(overlayCanvas, Path.Combine(Plugin.PluginPath, preset, "silver.png"));
+                                    AddOverlayTextureToCanvas(overlayCanvas, Path.Combine(Plugin.PluginPath, preset, "silver.png"), layershader, transparency);
                                 }
                                 break;
                             case 3:
                                 if (File.Exists(Path.Combine(Plugin.PluginPath, preset, "gold.png")))
                                 {
-                                    AddOverlayTextureToCanvas(overlayCanvas, Path.Combine(Plugin.PluginPath, preset, "gold.png"));
+                                    AddOverlayTextureToCanvas(overlayCanvas, Path.Combine(Plugin.PluginPath, preset, "gold.png"), layershader, transparency);
                                 }
                                 break;
                         }
                     }
-                    if (chunks[0] == "overlay")
+                    if (chunks[0].StartsWith("layer"))
                     {
-                        AddOverlayTextureToCanvas(overlayCanvas, file);
+                        AddOverlayTextureToCanvas(overlayCanvas, file, layershader, transparency);
                     }
                     if (chunks[0] == "name")
                     {
@@ -72,9 +102,9 @@ namespace CollectibleCards2
                     {
                         AddFedLogoToCanvas(overlayCanvas, file, int.Parse(CardMeta["CharID"]));
                     }
-                    if (chunks[0] == "foil" && CardMeta["Foil"] != "0")
+                    if (chunks[0].StartsWith("foil") && CardMeta["Foil"] != "0")
                     {
-                        AddOverlayTextureToCanvas(overlayCanvas, file);
+                        AddOverlayTextureToCanvas(overlayCanvas, file, layershader, transparency);
                     }
                     if (chunks[0] == "signature" && CardMeta["Signature"] != "0")
                     {
@@ -83,8 +113,8 @@ namespace CollectibleCards2
                 }
             }
         }
-        
-        public static void AddOverlayTextureToCanvas(Canvas canvas, string file)
+
+        public static void AddOverlayTextureToCanvas(Canvas canvas, string file, Shader shader, string transparency)
         {
             byte[] array2 = File.ReadAllBytes(file);
             if (array2 != null)
@@ -100,7 +130,21 @@ namespace CollectibleCards2
                 rectTransform.anchoredPosition = Vector2.zero;
                 rawImage.transform.SetAsLastSibling();
                 oldTextures.Add(texture2D);
+                if(shader != null)
+                {
+                    ApplyShader(rawImage, shader);
+                }
+                if(transparency != "")
+                {
+                    rawImage.material.color = new Color(1f, 1f, 1f, float.Parse(transparency));
+                }
             }
+        }
+        public static void ApplyShader(RawImage image, Shader shader)
+        {
+            var MaterialPrefab = new Material(shader);
+            image.material = MaterialPrefab;
+            oldMaterials.Add(MaterialPrefab);
         }
 
         public static void AddFedLogoToCanvas(Canvas canvas, string file, int id)
@@ -226,6 +270,18 @@ namespace CollectibleCards2
                     }
                 }
                 oldTextures = new();
+            }
+            if (oldMaterials != null)
+            {
+                for (int i = 0; i < oldMaterials.Count; i++)
+                {
+                    if (oldMaterials[i] != null)
+                    {
+                        GameObject.Destroy(oldMaterials[i]);
+                        oldMaterials[i] = null;
+                    }
+                }
+                oldMaterials = new();
             }
         }
     }

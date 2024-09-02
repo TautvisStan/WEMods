@@ -24,6 +24,7 @@ namespace CollectibleCards2
         public static int OldIndex { get; set; } = 1;
         public static GameObject CardDescription { get; set; } = null;
         public static Font VanillaFont { get; set; } = null;
+        public static GameObject LogoObject { get; set; } = null;
         public static List<CollectibleCard> ScanCards()
         {
             ConcurrentBag<CollectibleCard> cards = new();
@@ -49,6 +50,11 @@ namespace CollectibleCards2
             {
                 if (LIPNHOMGGHF.ODOAPLMOJPD == Plugin.CardsMenuPage)
                 {
+                    if (LogoObject == null)
+                    {
+                        LogoObject = GameObject.Find("Logo");
+                        LogoObject.SetActive(false);
+                    }
                     Cards.Clear();
                     Cards = ScanCards();
                     Cards.Sort((card1, card2) => string.Compare(card1.FileName, card2.FileName, StringComparison.Ordinal));
@@ -135,6 +141,11 @@ namespace CollectibleCards2
 
                 if (LIPNHOMGGHF.PIEMLEPEDFN <= -5)
                 {
+                    if (LogoObject != null)
+                    {
+                        LogoObject.SetActive(true);
+                        LogoObject = null;
+                    }
                     LIPNHOMGGHF.ODOAPLMOJPD = 0;
                     if (Plugin.EntryMenu == 2)
                     {
@@ -146,7 +157,6 @@ namespace CollectibleCards2
                         Plugin.EntryMenu = 0;
                         LIPNHOMGGHF.ICGNAJFLAHL(0);
                     }
-                    
                 }
             }
             else

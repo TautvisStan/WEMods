@@ -231,7 +231,7 @@ namespace CardGen
                         charid = CharID;
                     }
                     string preset = Preset == -1 ? "" : Presets[Preset];
-                    int rarity = Rarity == 0 ? -1 : Rarity;
+                    int rarity = Rarity == -1 ? -1 : Rarity;
                     CollectibleCards2.Plugin.GenerateSingleCard((fileName) =>
                     {
                         DisplayCard(fileName);

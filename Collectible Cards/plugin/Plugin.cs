@@ -30,8 +30,6 @@ namespace CollectibleCards2
         public static int CardWidth { get; set; } = 719;
         public static int CardHeight { get; set; } = 1000;
 
-        public static ConfigEntry<int> CameraMode { get; set; }
-
         public static int CardsMenuButton { get; set; }
         public static int CardsMenuButtonCareer { get; set; }
         public static int CardsMenuPage { get; set; } = 741;
@@ -48,11 +46,7 @@ namespace CollectibleCards2
             Background.GetShaderPrefab();
             OverlaytxtFileParser.LoadSigFont();
             OverlaytxtFileParser.LoadCardFont();
-
-            CameraMode = Config.Bind("General",
-             "Camera mode",
-             0,
-             "0 - perspective, 1 - orthographic");
+            CanvasController.LoadShaders();
         }
 
         private void OnEnable()
@@ -98,7 +92,7 @@ namespace CollectibleCards2
         //Setting up the main menu button redirect
         [HarmonyPatch(typeof(Scene_Titles), nameof(Scene_Titles.Update))]
         [HarmonyPostfix]
-        public static void Scene_Titles_Update_Patch()
+        public static void Scene_Titles_Update_Patch(Scene_Titles __instance)
         {
             if (LIPNHOMGGHF.PIEMLEPEDFN >= 5 && LIPNHOMGGHF.ODOAPLMOJPD == 0 && NAEEIFNFBBO.EKFJCKLKELN != 1)
             {
