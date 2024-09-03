@@ -8,14 +8,14 @@ using CollectibleCards2;
 using System.Collections.Generic;
 using UnityEngine.UI;
 
-namespace CardGen
+namespace CustomCardGenerator
 {
     [BepInPlugin(PluginGuid, PluginName, PluginVer)]
     [HarmonyPatch]
     public class Plugin : BaseUnityPlugin
     {
         public const string PluginGuid = "GeeEm.WrestlingEmpire.CardGen";
-        public const string PluginName = "CardGen";
+        public const string PluginName = "CustomCardGenerator";
         public const string PluginVer = "1.0.0";
 
         internal static ManualLogSource Log;

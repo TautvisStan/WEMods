@@ -137,8 +137,8 @@ namespace CollectibleCards2
             }
             catch (Exception e)
             {
-                Plugin.Log.LogError(e);
                 Characters.c[Wrestler.GOOKPABIPBC].height = realHeight;
+                throw e;
             }
         }
         public static void Cleanup()

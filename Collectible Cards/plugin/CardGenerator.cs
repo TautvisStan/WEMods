@@ -2,6 +2,7 @@
 using System.Collections;
 using System.Collections.Generic;
 using System.IO;
+using System.Linq.Expressions;
 using System.Text;
 using UnityEngine;
 
@@ -58,35 +59,63 @@ namespace CollectibleCards2
                 { "FrontFinisher", MBLIOKEDHHB.DDIJBPJLEBF(Characters.c[Characters.foc].moveFront[0]) },
                 { "BackFinisher", MBLIOKEDHHB.DDIJBPJLEBF(Characters.c[Characters.foc].moveBack[0]) },
             };
-            (string[] scene, string[] canvas) = MetaTxtSplitter(Path.Combine(preset, "CardDesign.txt"));
-            CameraController.SetupCamera(scene);
-            LightController.SetupPictureLight();
-            Background.SetupBackground(CameraController.CameraObj, preset);
-            CharacterController.SetupCharacter(CharID, scene);
-            CanvasController.SetupCanvas(CameraController.CameraObj, preset, CardMetaData, canvas);
+            try
+            {
+                (string[] scene, string[] canvas) = MetaTxtSplitter(Path.Combine(preset, "CardDesign.txt"));
+                CameraController.SetupCamera(scene);
+                LightController.SetupPictureLight();
+                Background.SetupBackground(CameraController.CameraObj, preset);
+                CharacterController.SetupCharacter(CharID, scene);
+                CanvasController.SetupCanvas(CameraController.CameraObj, preset, CardMetaData, canvas);
+            }
+            catch (Exception e)
+            {
+                Plugin.Log.LogError("There was an error generating custom card!");
+                Plugin.Log.LogError(e);
+
+                CameraController.Cleanup();
+                LightController.Cleanup();
+                Background.Cleanup();
+                CharacterController.Cleanup();
+                CanvasController.Cleanup();
+                GC.Collect();
+            }
 
             yield return frameEnd;
-            CharacterController.SetupBelts();
-            byte[] bytes = CameraController.CaptureScreenshot();
-            string filename = DateTime.Now.ToString("yyyy'-'MM'-'dd' 'HH'-'mm'-'ss'-'fff") + ".png";
-            string foldername = Plugin.CardsDirectory;
-            if (!Directory.Exists(foldername))
+            try
             {
-                Directory.CreateDirectory(foldername);
+                CharacterController.SetupBelts();
+                byte[] bytes = CameraController.CaptureScreenshot();
+                string filename = DateTime.Now.ToString("yyyy'-'MM'-'dd' 'HH'-'mm'-'ss'-'fff") + ".png";
+                string foldername = Plugin.CardsDirectory;
+                if (!Directory.Exists(foldername))
+                {
+                    Directory.CreateDirectory(foldername);
+                }
+                string filePath = Path.Combine(foldername, filename);
+                PngUtils.SaveWithMetadata(filePath, bytes, CardMetaData);
+                
+                Plugin.Log.LogInfo($"Saved card image to {filePath}");
+                action(filePath);
+                CameraController.Cleanup();
+                LightController.Cleanup();
+                Background.Cleanup();
+                CharacterController.Cleanup();
+                CanvasController.Cleanup();
+                GC.Collect();
             }
-            string filePath = Path.Combine(foldername, filename);
-            PngUtils.SaveWithMetadata(filePath, bytes, CardMetaData);
+            catch (Exception e)
+            {
+                Plugin.Log.LogError("There was an error generating custom card!");
+                Plugin.Log.LogError(e);
 
-            Plugin.Log.LogInfo($"Saved card image to {filePath}");
-
-            CameraController.Cleanup();
-            LightController.Cleanup();
-            Background.Cleanup();
-            CharacterController.Cleanup();
-            CanvasController.Cleanup();
-            GC.Collect();
-
-            action(filePath);
+                CameraController.Cleanup();
+                LightController.Cleanup();
+                Background.Cleanup();
+                CharacterController.Cleanup();
+                CanvasController.Cleanup();
+                GC.Collect();
+            }
         }
         public static (string[], string[]) MetaTxtSplitter(string file)
         {

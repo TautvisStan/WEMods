@@ -5,7 +5,7 @@ VisualStudioVersion = 17.1.32414.318
 MinimumVisualStudioVersion = 10.0.40219.1
 Project("{9A19103F-16F7-4668-BE54-9A1E7A4F7556}") = "CollectibleCards2", "CollectibleCards2.csproj", "{ECC3B42E-48E6-451D-8C3D-CF20182CCF9F}"
 EndProject
-Project("{9A19103F-16F7-4668-BE54-9A1E7A4F7556}") = "CardGen", "CardGen\CardGen.csproj", "{3E0F9B4A-6058-480F-BE08-CD0E5F495558}"
+Project("{9A19103F-16F7-4668-BE54-9A1E7A4F7556}") = "CustomCardGenerator", "CardGen\CustomCardGenerator.csproj", "{3E0F9B4A-6058-480F-BE08-CD0E5F495558}"
 EndProject
 Global
 	GlobalSection(SolutionConfigurationPlatforms) = preSolution

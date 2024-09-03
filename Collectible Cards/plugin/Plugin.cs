@@ -19,7 +19,7 @@ namespace CollectibleCards2
     {
         public const string PluginGuid = "GeeEm.WrestlingEmpire.CollectibleCards";
         public const string PluginName = "CollectibleCards";
-        public const string PluginVer = "0.9.0";
+        public const string PluginVer = "1.0.0";
 
         internal static ManualLogSource Log;
         internal readonly static Harmony Harmony = new(PluginGuid);
@@ -48,6 +48,8 @@ namespace CollectibleCards2
             OverlaytxtFileParser.LoadSigFont();
             OverlaytxtFileParser.LoadCardFont();
             CanvasController.LoadShaders();
+
+            MoveDesignFolders();
         }
 
         private void OnEnable()
@@ -65,39 +67,37 @@ namespace CollectibleCards2
         {
             ThisPlugin.StartCoroutine(CollectibleCardGenerator.GenerateCollectibleCard(onGenerated, CharID, preset, borderRarity, foilRarity, signatureRarity, customGenerated));
         }
-   /*     public static void MoveDesignFolders()
+        public static void MoveDesignFolders()
         {
-            //Move unique Fed videos to video folder
-            if (File.Exists(Path.Combine(Path.GetDirectoryName(assemblyPath), "Fed1.mp4")))
+            Directory.CreateDirectory(DefaultDesignDirectory);
+            if (Directory.Exists(Path.Combine(PluginPath, "Base_Fed_0")))
             {
-                for (int i = 1; i <= 10; i++)
+                foreach (string folder in Directory.EnumerateDirectories(PluginPath))
                 {
-                    string fileName = $"Fed{i}.mp4";
-                    sourceFilePath = Path.Combine(Path.GetDirectoryName(assemblyPath), fileName);
-
-                    if (File.Exists(sourceFilePath))
+                    if (folder.EndsWith("prefabs") == false)
                     {
-                        if (File.Exists(videosFolderPath + fileName))
+                        DirectoryInfo info = new DirectoryInfo(folder);
+                        if (Directory.Exists(Path.Combine(DefaultDesignDirectory, info.Name)))
                         {
-                            //File already exists in destination directory
-                            File.Delete(sourceFilePath);
+                            //Folder already exists
+                            Directory.Delete(folder, true);
                         }
                         else
                         {
                             try
                             {
-                                File.Move(sourceFilePath, videosFolderPath + fileName);
-                                Debug.Log($"File {fileName} moved successfully.");
+                                Directory.Move(folder, Path.Combine(DefaultDesignDirectory, info.Name));
+                                Log.LogInfo($"Folder {info.Name} moved successfully.");
                             }
                             catch (IOException e)
                             {
-                                Debug.LogError("Error moving file: " + e.Message);
+                                Log.LogError("Error moving folder: " + e.Message);
                             }
                         }
                     }
                 }
             }
-        }*/
+        }
         //adding new button to the main menu
         [HarmonyPatch(typeof(LIPNHOMGGHF), nameof(LIPNHOMGGHF.ICGNAJFLAHL))]
         [HarmonyPostfix]
