@@ -1,5 +1,3 @@
-// move designs to a new folder
-
 using BepInEx;
 using BepInEx.Configuration;
 using BepInEx.Logging;
@@ -19,7 +17,7 @@ namespace CollectibleCards2
     {
         public const string PluginGuid = "GeeEm.WrestlingEmpire.CollectibleCards";
         public const string PluginName = "CollectibleCards";
-        public const string PluginVer = "1.0.0";
+        public const string PluginVer = "1.0.1";
 
         internal static ManualLogSource Log;
         internal readonly static Harmony Harmony = new(PluginGuid);
@@ -50,6 +48,11 @@ namespace CollectibleCards2
             CanvasController.LoadShaders();
 
             MoveDesignFolders();
+            string foldername = Plugin.CardsDirectory;
+            if (!Directory.Exists(foldername))
+            {
+            	Directory.CreateDirectory(foldername);
+            }
         }
 
         private void OnEnable()
