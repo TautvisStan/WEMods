@@ -14,7 +14,7 @@ namespace DiscordRichPresence
     {
         public const string PluginGuid = "GeeEm.WrestlingEmpire.DiscordRichPresence";
         public const string PluginName = "DiscordRichPresence";
-        public const string PluginVer = "1.0.2";
+        public const string PluginVer = "1.0.3.1";
 
         internal static ManualLogSource Log;
         internal readonly static Harmony Harmony = new(PluginGuid);
@@ -34,30 +34,39 @@ namespace DiscordRichPresence
         }
         private void OnEnable()
         {
-            Harmony.PatchAll();
-            discord = new Discord.Discord(1227585524668170372, (System.UInt64)Discord.CreateFlags.NoRequireDiscord);
-            var activityManager = discord.GetActivityManager();
-            TimeStamp = new DateTimeOffset(DateTime.Now).ToUnixTimeSeconds();
-            var activity = new Discord.Activity
+            try
             {
-                Details = "Starting the game",
-               // State = "State123456",
-                Assets = new() { LargeImage = "logo"},
-                Timestamps = new() { Start = TimeStamp }
-            };
-            activityManager.UpdateActivity(activity, (res) =>
-            {
-                if (res == Discord.Result.Ok)
+                Harmony.PatchAll();
+                discord = new Discord.Discord(1227585524668170372, (System.UInt64)Discord.CreateFlags.NoRequireDiscord);
+                var activityManager = discord.GetActivityManager();
+                TimeStamp = new DateTimeOffset(DateTime.Now).ToUnixTimeSeconds();
+                var activity = new Discord.Activity
                 {
-                   // Debug.LogError("Everything is fine!");
-                }
-                else
+                    Details = "Starting the game",
+                    // State = "State123456",
+                    Assets = new() { LargeImage = "logo" },
+                    Timestamps = new() { Start = TimeStamp }
+                };
+                activityManager.UpdateActivity(activity, (res) =>
                 {
-                    Log.LogError(res);
-                }
-            });
+                    if (res == Discord.Result.Ok)
+                    {
+                        // Debug.LogError("Everything is fine!");
+                    }
+                    else
+                    {
+                        Log.LogError(res);
+                        this.enabled = false;
+                    }
+                });
 
-            Logger.LogInfo($"Loaded {PluginName}!");
+                Logger.LogInfo($"Loaded {PluginName}!");
+            }
+            catch (Exception e)
+            {
+                Log.LogError(e);
+                this.enabled = false;
+            }
         }
 
         private void OnDisable()
@@ -75,7 +84,13 @@ namespace DiscordRichPresence
                 UpdateStatus();
                 timePassed = 0f;
             }
-            discord.RunCallbacks();
+            if(discord != null)
+                discord.RunCallbacks();
+            else
+            {
+                Log.LogError("Failed to connect to Discord!");
+                this.enabled = false;
+            }
         }
         private void UpdateStatus()
         {
@@ -154,6 +169,7 @@ namespace DiscordRichPresence
                 else
                 {
                     Log.LogError(res);
+
                 }
             });
         }
