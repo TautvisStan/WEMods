@@ -17,7 +17,7 @@ namespace CollectibleCards2
     {
         public const string PluginGuid = "GeeEm.WrestlingEmpire.CollectibleCards";
         public const string PluginName = "CollectibleCards";
-        public const string PluginVer = "1.0.1";
+        public const string PluginVer = "1.0.2";
 
         internal static ManualLogSource Log;
         internal readonly static Harmony Harmony = new(PluginGuid);
@@ -66,9 +66,9 @@ namespace CollectibleCards2
             Harmony.UnpatchSelf();
             Logger.LogInfo($"Unloaded {PluginName}!");
         }
-        public static void GenerateSingleCard(Action<string> onGenerated, int CharID = -1, string preset = "", int borderRarity = -1, int foilRarity = -1, int signatureRarity = -1, bool customGenerated = false)
+        public static void GenerateSingleCard(Action<string> onGenerated, int CharID = -1, int costume = 0, string preset = "", int borderRarity = -1, int foilRarity = -1, int signatureRarity = -1, bool customGenerated = false)
         {
-            ThisPlugin.StartCoroutine(CollectibleCardGenerator.GenerateCollectibleCard(onGenerated, CharID, preset, borderRarity, foilRarity, signatureRarity, customGenerated));
+            ThisPlugin.StartCoroutine(CollectibleCardGenerator.GenerateCollectibleCard(onGenerated, CharID, costume, preset, borderRarity, foilRarity, signatureRarity, customGenerated));
         }
         public static void MoveDesignFolders()
         {

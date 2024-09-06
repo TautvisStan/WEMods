@@ -8,23 +8,16 @@ namespace CollectibleCards2
         public static DFOGOCNBECG Wrestler { get; set; } = null;
         public static GameObject ParentObj { get; set; } = null;
         public static float Size { get; set; } = 1f;
-        public static void SetupCharacter(int id, string[] setup)
+        public static void SetupCharacter(int id, int costume, string[] setup)
         {
             ParentObj = new("Parent");
-            int BDHHBIIKMLP;
-            if (Characters.c[id].role == 1)
-                BDHHBIIKMLP = 1;
-            else if (Characters.c[id].role == 3)
-                BDHHBIIKMLP = 3;
-            else
-                BDHHBIIKMLP = 2;
             int GOOKPABIPBC = id;
             if (NJBJIIIACEP.OAAMGFLINOB == null) NJBJIIIACEP.PIMGMPBCODM(1);
             NJBJIIIACEP.NBBBLJDBLNM = 1;
             Wrestler = NJBJIIIACEP.OAAMGFLINOB[1];
             Wrestler.GOOKPABIPBC = GOOKPABIPBC;
             Wrestler.EMDMDLNJFKP = Characters.c[Wrestler.GOOKPABIPBC];
-            Wrestler.OEGJEBDBGJA = Wrestler.EMDMDLNJFKP.costume[BDHHBIIKMLP];
+            Wrestler.OEGJEBDBGJA = Wrestler.EMDMDLNJFKP.costume[costume];
             Wrestler.PLFGKLGCOMD = 1;
             if (Wrestler.PCNHIIPBNEK[0] != null)
             {

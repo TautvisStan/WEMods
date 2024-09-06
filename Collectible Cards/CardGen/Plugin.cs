@@ -16,7 +16,7 @@ namespace CustomCardGenerator
     {
         public const string PluginGuid = "GeeEm.WrestlingEmpire.CardGen";
         public const string PluginName = "CustomCardGenerator";
-        public const string PluginVer = "1.0.0";
+        public const string PluginVer = "1.0.2";
 
         internal static ManualLogSource Log;
         internal readonly static Harmony Harmony = new(PluginGuid);
@@ -31,6 +31,8 @@ namespace CustomCardGenerator
         public static GameObject CardObject { get; set; } = null;
         public static int CharButton { get; set; }
         public static int CharID { get; set; } = 0;
+        public static int CostumeButton { get; set; }
+        public static int Costume { get; set; } = 0;
         public static int PresetButton { get; set; }
         public static int Preset { get; set; } = -1;
         public static int RarityButton { get; set; }
@@ -106,12 +108,16 @@ namespace CustomCardGenerator
                     ScanPresets();
 
                     LIPNHOMGGHF.DFLLBNMHHIH();
-                    LIPNHOMGGHF.FKANHDIMMBJ[LIPNHOMGGHF.HOAOLPGEBKJ].ICGNAJFLAHL(3, "Character", 0f, 250f, 2.5f, 2.5f);
+                    LIPNHOMGGHF.FKANHDIMMBJ[LIPNHOMGGHF.HOAOLPGEBKJ].ICGNAJFLAHL(3, "Character", -100f, 250f, 2.5f, 2.5f);
                     CharButton = LIPNHOMGGHF.HOAOLPGEBKJ;
 
                     LIPNHOMGGHF.DFLLBNMHHIH();
-                    LIPNHOMGGHF.FKANHDIMMBJ[LIPNHOMGGHF.HOAOLPGEBKJ].ICGNAJFLAHL(2, "Preset", 375f, 150f, 1.5f, 1.5f);
+                    LIPNHOMGGHF.FKANHDIMMBJ[LIPNHOMGGHF.HOAOLPGEBKJ].ICGNAJFLAHL(2, "Preset", 375f, 250f, 1.5f, 1.5f);
                     PresetButton = LIPNHOMGGHF.HOAOLPGEBKJ;
+
+                    LIPNHOMGGHF.DFLLBNMHHIH();
+                    LIPNHOMGGHF.FKANHDIMMBJ[LIPNHOMGGHF.HOAOLPGEBKJ].ICGNAJFLAHL(2, "Costume", 375f, 150f, 1.5f, 1.5f);
+                    CostumeButton = LIPNHOMGGHF.HOAOLPGEBKJ;
 
                     LIPNHOMGGHF.DFLLBNMHHIH();
                     LIPNHOMGGHF.FKANHDIMMBJ[LIPNHOMGGHF.HOAOLPGEBKJ].ICGNAJFLAHL(2, "Rarity", 375f, 50f, 1.5f, 1.5f);
@@ -178,6 +184,22 @@ namespace CustomCardGenerator
                 {
                     LIPNHOMGGHF.FKANHDIMMBJ[CharButton].FFCNPGPALPD = $"[{CharID}] {Characters.c[CharID].name}";
                 }
+                Costume = Mathf.RoundToInt(LIPNHOMGGHF.FKANHDIMMBJ[CostumeButton].ODONMLDCHHF(Costume, 1f, 10f, 0f, 3, 0));
+                switch (Costume)
+                {
+                    case 0:
+                        LIPNHOMGGHF.FKANHDIMMBJ[CostumeButton].FFCNPGPALPD = "Random, based on role";
+                        break;
+                    case 1:
+                        LIPNHOMGGHF.FKANHDIMMBJ[CostumeButton].FFCNPGPALPD = "Wrestling";
+                        break;
+                    case 2:
+                        LIPNHOMGGHF.FKANHDIMMBJ[CostumeButton].FFCNPGPALPD = "Casual";
+                        break;
+                    case 3:
+                        LIPNHOMGGHF.FKANHDIMMBJ[CostumeButton].FFCNPGPALPD = "Referee";
+                        break;
+                }
                 Preset = Mathf.RoundToInt(LIPNHOMGGHF.FKANHDIMMBJ[PresetButton].ODONMLDCHHF(Preset, 1f, 10f, -1f, Presets.Count-1, 0));
                 if (Preset == -1)
                 {
@@ -238,7 +260,7 @@ namespace CustomCardGenerator
                     CollectibleCards2.Plugin.GenerateSingleCard((fileName) =>
                     {
                         DisplayCard(fileName);
-                    }, charid, preset, rarity, Foil, Signature, true);
+                    }, CharID:charid, costume:Costume, preset:preset, borderRarity:rarity, foilRarity:Foil, signatureRarity:Signature, customGenerated:true);
                     
                 }
                 if (LIPNHOMGGHF.PIEMLEPEDFN > 5 || LIPNHOMGGHF.FKANHDIMMBJ[CharButton].CLMDCNDEBGD != 0)

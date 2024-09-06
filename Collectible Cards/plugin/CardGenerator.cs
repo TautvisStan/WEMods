@@ -11,12 +11,29 @@ namespace CollectibleCards2
     public static class CollectibleCardGenerator
     {
         public static WaitForEndOfFrame frameEnd = new();
-        public static IEnumerator GenerateCollectibleCard(Action<string> action, int CharID, string preset, int borderRarity, int foilRarity, int signatureRarity, bool customGenerated)
+        public static IEnumerator GenerateCollectibleCard(Action<string> action, int CharID, int costume, string preset, int borderRarity, int foilRarity, int signatureRarity, bool customGenerated)
         {
             ProportionalRandomSelector<int> randomSelector;
             if (CharID == -1) CharID = UnityEngine.Random.Range(1, Characters.no_chars + 1);
             Character character = Characters.c[CharID];
             if (preset == "") preset = Path.Combine(Plugin.DefaultDesignDirectory, "Base_Fed_" + character.fed.ToString());
+            if (costume == 0)
+            {
+                int wrCostume = 5;
+                int caCostume = 5;
+                int reCostume = 5;
+                if (Characters.c[CharID].role == 1)
+                    wrCostume += 85;
+                else if (Characters.c[CharID].role == 3)
+                    reCostume += 85;
+                else
+                    caCostume += 85;
+                randomSelector = new();
+                randomSelector.AddPercentageItem(1, wrCostume);
+                randomSelector.AddPercentageItem(2, caCostume);
+                randomSelector.AddPercentageItem(3, reCostume);
+                costume = randomSelector.SelectItem();
+            }
             if (borderRarity == -1)
             {
                 randomSelector = new();
@@ -65,7 +82,7 @@ namespace CollectibleCards2
                 CameraController.SetupCamera(scene);
                 LightController.SetupPictureLight();
                 Background.SetupBackground(CameraController.CameraObj, preset);
-                CharacterController.SetupCharacter(CharID, scene);
+                CharacterController.SetupCharacter(CharID, costume, scene);
                 CanvasController.SetupCanvas(CameraController.CameraObj, preset, CardMetaData, canvas);
             }
             catch (Exception e)
