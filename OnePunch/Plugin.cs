@@ -2,7 +2,10 @@ using BepInEx;
 using BepInEx.Configuration;
 using BepInEx.Logging;
 using HarmonyLib;
+using System;
+using System.Diagnostics;
 using System.IO;
+using UnityEngine;
 
 namespace OnePunch
 {
@@ -12,7 +15,7 @@ namespace OnePunch
     {
         public const string PluginGuid = "GeeEm.WrestlingEmpire.OnePunch";
         public const string PluginName = "OnePunch";
-        public const string PluginVer = "1.1.2";
+        public const string PluginVer = "1.1.4.1";
 
         internal static ManualLogSource Log;
         internal readonly static Harmony Harmony = new(PluginGuid);
@@ -26,6 +29,7 @@ namespace OnePunch
         public static ConfigEntry<bool> InjureTarget;
         public static ConfigEntry<bool> KOTarget;
 
+        public static ConfigEntry<int> Dismemberment;
 
         private void Awake()
         {
@@ -49,6 +53,11 @@ namespace OnePunch
              "Knock out",
              false,
              "Punches will DQ and knock out the target");
+
+            Dismemberment = Config.Bind("General",
+ "Dismemberment",
+ 0, new ConfigDescription("(Experimental) 0: Disabled; 1: random limbs are removed; 2: All limbs are removed", new AcceptableValueRange<int>(0, 2))
+ );
         }
 
         private void OnEnable()
@@ -75,6 +84,19 @@ namespace OnePunch
                 if (Plugin.Dizzyness.Value) DizzyTarget(ELPIOHCPOIJ);
                 if (Plugin.InjureTarget.Value) Injure(ELPIOHCPOIJ);
                 if (Plugin.KOTarget.Value) KnockOut(ELPIOHCPOIJ);
+                if (Plugin.Dismemberment.Value == 1) RandomDismemberment(ELPIOHCPOIJ);
+                if (Plugin.Dismemberment.Value == 2) FullObliterate(ELPIOHCPOIJ);
+                /*  if (Plugin.Dismemberment.Value)
+                  {
+                      if (DODBHICKEPB == 1)
+                      {
+                          ELPIOHCPOIJ.CMOPOKMFJMG(3, 10000000, 1f);
+                      }
+                      if (DODBHICKEPB == 88)
+                      {
+                          ELPIOHCPOIJ.CMOPOKMFJMG(1, 10000000, 1f);
+                      }
+                  }*/
 
             }
             [HarmonyPatch(nameof(DFOGOCNBECG.MHNNBEOCPGA))]
@@ -89,6 +111,18 @@ namespace OnePunch
                     if (Plugin.Dizzyness.Value) DizzyTarget(__instance.ELPIOHCPOIJ);
                     if (Plugin.InjureTarget.Value) Injure(__instance.ELPIOHCPOIJ);
                     if (Plugin.KOTarget.Value) KnockOut(__instance.ELPIOHCPOIJ);
+                    if (Plugin.Dismemberment.Value == 1) RandomDismemberment(__instance.ELPIOHCPOIJ);
+                    if (Plugin.Dismemberment.Value == 2) FullObliterate(__instance.ELPIOHCPOIJ);
+                    /* if (Plugin.Dismemberment.Value)
+                     {
+                         if (__instance.DPHHFKLDOOG > 0 || __instance.ELPIOHCPOIJ.NLDPMDNKGIC == 643 || __instance.ELPIOHCPOIJ.NLDPMDNKGIC == 644)
+                         {
+                             if (MKCPMOJGBEM == 2 || MKCPMOJGBEM == 4)
+                             {
+                                 __instance.ELPIOHCPOIJ.CMOPOKMFJMG(3, 10000000, 1f);
+                             }
+                         }
+                     }*/
                 }
             }
             [HarmonyPatch(nameof(DFOGOCNBECG.LKGOPCPNDNK))]
@@ -100,6 +134,12 @@ namespace OnePunch
                 if (Plugin.Dizzyness.Value) DizzyTarget(__0);
                 if (Plugin.InjureTarget.Value) Injure(__0);
                 if (Plugin.KOTarget.Value) KnockOut(__0);
+                if (Plugin.Dismemberment.Value == 1) RandomDismemberment(__0);
+                if (Plugin.Dismemberment.Value == 2) FullObliterate(__0);
+                /*  if (Plugin.Dismemberment.Value)
+                  {
+
+                  }*/
 
             }
             [HarmonyPatch(nameof(DFOGOCNBECG.PFGONEIPHLJ))]
@@ -135,7 +175,7 @@ namespace OnePunch
                             num9 += 4f * (__instance.JNLAJNFCDHA * dfogocnbecg.JNLAJNFCDHA);
                             if (i == __instance.NNMDEFLLNBF)
                             {
-
+                                //Debug.Log("impactY=" + JHCBBFEIKHL.ToString() + " topY=" + num9.ToString());
                             }
                             if (JHCBBFEIKHL > dfogocnbecg.FNNBCDPJBIO - 3f && JHCBBFEIKHL <= num9)
                             {
@@ -162,7 +202,7 @@ namespace OnePunch
                                     {
                                         num10 = 0;
                                     }
-                                    if (UnityEngine.Mathf.Abs(__instance.EKOHAKPAOGN - dfogocnbecg.EKOHAKPAOGN) > 2f || UnityEngine.Mathf.Abs(__instance.FNNBCDPJBIO - dfogocnbecg.FNNBCDPJBIO) > 2f || __instance.NELODEMHJHN != dfogocnbecg.NELODEMHJHN)
+                                    if (Mathf.Abs(__instance.EKOHAKPAOGN - dfogocnbecg.EKOHAKPAOGN) > 2f || Mathf.Abs(__instance.FNNBCDPJBIO - dfogocnbecg.FNNBCDPJBIO) > 2f || __instance.NELODEMHJHN != dfogocnbecg.NELODEMHJHN)
                                     {
                                         num10 = 0;
                                     }
@@ -180,6 +220,10 @@ namespace OnePunch
                                     num10 = 0;
                                 }
                                 if (GIMNNPMAKNJ.DMPAOJMIAHN(__instance.NJDGEELLAKG, __instance.DFINJNKKMFL(1), __instance.BMFDFFLPBOJ, dfogocnbecg.NJDGEELLAKG, dfogocnbecg.DFINJNKKMFL(1), dfogocnbecg.BMFDFFLPBOJ) > 0)
+                                {
+                                    num10 = 0;
+                                }
+                                if (dfogocnbecg.NELODEMHJHN > 0 && HAPFAOIMGOL.OMOGPIJGMKO[dfogocnbecg.NELODEMHJHN].HOBALCFBGBK() != 0)
                                 {
                                     num10 = 0;
                                 }
@@ -233,12 +277,44 @@ namespace OnePunch
                     DFOGOCNBECG dfogocnbecg = NJBJIIIACEP.OAAMGFLINOB[i];
                     if (Plugin.NoHealthAndStun.Value) DamageStun(dfogocnbecg);
                     if (Plugin.Dizzyness.Value) DizzyTarget(dfogocnbecg);
-                    if (Plugin.InjureTarget.Value) Injure(dfogocnbecg);
-                    if (Plugin.KOTarget.Value) KnockOut(dfogocnbecg);
+                    if (Plugin.Dismemberment.Value == 1) RandomDismemberment(dfogocnbecg);
+                    if (Plugin.Dismemberment.Value == 2) FullObliterate(dfogocnbecg);
                 }
             }
 
 
+
+
+     /*       [HarmonyPatch(nameof(DFOGOCNBECG.CMOPOKMFJMG))]
+            [HarmonyPrefix] //Dismemberment
+            static void CMOPOKMFJMG_Prefix(DFOGOCNBECG __instance, ref int IKBHGAKKJMM, ref float DGJAEIBKLJO, ref float BEMKANDCFCP)
+            {
+                if(Dismemberment.Value == true)
+                {
+                    StackFrame frame = new StackFrame(1, true);
+                    var method = frame.GetMethod();
+                    if(method.Name == "DIIMPIPKAFK") // Submission strikes
+                    {
+                        DGJAEIBKLJO = 1000000f;
+                    }
+                    if (method.Name == "DIIMPIPKAFK") // Submission strikes
+                    {
+                        DGJAEIBKLJO = 1000000f;
+                    }
+                } 
+            }*/
+        }
+        public static void RandomDismemberment(DFOGOCNBECG instance)
+        {
+            int limb = UnityEngine.Random.Range(3, 16);
+            instance.CMOPOKMFJMG(limb, 1000000f, 10f);
+        }
+        public static void FullObliterate(DFOGOCNBECG instance)
+        {
+            for (int i = 3; i <= 15; i++)
+            {
+                instance.CMOPOKMFJMG(i, 1000000f, 10f);
+            }
         }
         public static void Injure(DFOGOCNBECG instance)
         {

@@ -16,7 +16,7 @@ namespace MultiBind
     {
         public const string PluginGuid = "GeeEm.WrestlingEmpire.MultiBind";
         public const string PluginName = "MultiBind";
-        public const string PluginVer = "1.1.5";
+        public const string PluginVer = "1.1.6";
 
         internal static ManualLogSource Log;
         internal readonly static Harmony Harmony = new(PluginGuid);
@@ -52,7 +52,7 @@ namespace MultiBind
 
         }
         public static ControlScheme[] Player = new ControlScheme[4] { new(), new(), new(), new() };
-        public AcceptableValueList<string> KeyboardButtons = new AcceptableValueList<string>("None", "Backspace", "Delete", "Tab", "Clear", "Return", "Pause", "Escape", "Space", "Quote", "Comma", "Minus", "Period", "Slash", "Alpha0", "Alpha1", "Alpha2", "Alpha3", "Alpha4", "Alpha5", "Alpha6", "Alpha7", "Alpha8", "Alpha9", "Semicolon", "Equals", "LeftBracket", "Backslash", "RightBracket", "BackQuote", "A", "B", "C", "D", "E", "F", "G", "H", "I", "J", "K", "L", "M", "N", "O", "P", "Q", "R", "S", "T", "U", "V", "W", "X", "Y", "Z", "Delete", "Keypad0", "Keypad1", "Keypad2", "Keypad3", "Keypad4", "Keypad5", "Keypad6", "Keypad7", "Keypad8", "Keypad9", "KeypadPeriod", "KeypadDivide", "KeypadMultiply", "KeypadMinus", "KeypadPlus", "KeypadEnter", "KeypadEquals", "UpArrow", "DownArrow", "RightArrow", "LeftArrow", "Insert", "Home", "End", "PageUp", "PageDown", "F1", "F2", "F3", "F4", "F5", "F6", "F7", "F8", "F9", "F10", "F11", "F12", "F13", "F14", "F15", "Numlock", "CapsLock", "ScrollLock", "RightShift", "LeftShift", "RightControl", "LeftControl", "RightAlt", "LeftAlt", "RightCommand", "RightApple", "LeftCommand", "LeftApple", "LeftWindows", "RightWindows", "Print", "Menu", "Mouse0", "Mouse1", "Mouse2", "Mouse3", "Mouse4", "Mouse5", "Mouse6");
+        public AcceptableValueList<string> KeyboardButtons = new AcceptableValueList<string>("None", "Backspace", "Delete", "Tab", "Clear", "Return", "Pause", "Escape", "Space", "Quote", "Comma", "Minus", "Period", "Slash", "Alpha0", "Alpha1", "Alpha2", "Alpha3", "Alpha4", "Alpha5", "Alpha6", "Alpha7", "Alpha8", "Alpha9", "Semicolon", "Equals", "LeftBracket", "Backslash", "RightBracket", "BackQuote", "A", "B", "C", "D", "E", "F", "G", "H", "I", "J", "K", "L", "M", "N", "O", "P", "Q", "R", "S", "T", "U", "V", "W", "X", "Y", "Z", "Keypad0", "Keypad1", "Keypad2", "Keypad3", "Keypad4", "Keypad5", "Keypad6", "Keypad7", "Keypad8", "Keypad9", "KeypadPeriod", "KeypadDivide", "KeypadMultiply", "KeypadMinus", "KeypadPlus", "KeypadEnter", "KeypadEquals", "UpArrow", "DownArrow", "RightArrow", "LeftArrow", "Insert", "Home", "End", "PageUp", "PageDown", "F1", "F2", "F3", "F4", "F5", "F6", "F7", "F8", "F9", "F10", "F11", "F12", "F13", "F14", "F15", "Numlock", "CapsLock", "ScrollLock", "RightShift", "LeftShift", "RightControl", "LeftControl", "RightAlt", "LeftAlt", "RightCommand", "RightApple", "LeftCommand", "LeftApple", "LeftWindows", "RightWindows", "Print", "Menu", "Mouse0", "Mouse1", "Mouse2", "Mouse3", "Mouse4", "Mouse5", "Mouse6");
 
         private void SetupControls(ControlScheme controlScheme, string player)
         {
@@ -363,18 +363,6 @@ namespace MultiBind
             }
 
 
-            __instance.JLBOEDNDIPI = 0f;
-            __instance.MGJCMCPCPDN = 0f;
-            __instance.IOIJFFLMBCH[1] = 0;
-            __instance.IOIJFFLMBCH[2] = 0;
-            __instance.IOIJFFLMBCH[3] = 0;
-            __instance.IOIJFFLMBCH[4] = 0;
-            __instance.IOIJFFLMBCH[5] = 0;
-            __instance.IOIJFFLMBCH[6] = 0;
-            __instance.FHBEOIPFFDA = 0;
-            __instance.OHEIJEDGKLJ = 0;
-            __instance.EMJMDDNMFFA = 0;
-            __instance.PNGFDALFGLE = 0;
 
             if (Input.GetKey(Ulil.GetKeyCode(scheme.ConfigJoin.Value)))
             {
@@ -482,6 +470,15 @@ namespace MultiBind
             if (LIPNHOMGGHF.FAKHAFKOBPB == 50 && __instance.BPJFLJPKKJK >= 2 && __instance.AHBNKMMMGFI > 0 && __instance.FOAPDJMIFGP == 0 && __instance.DHBFOHLEFOD[2] > 0)
             {
                 __instance.JIIMLBLGKAL(0);
+            }
+            if (NAEEIFNFBBO.JPNIIADMEIE == 0 && LIPNHOMGGHF.FAKHAFKOBPB == 50 && LIPNHOMGGHF.GCJKOBOBIGA == 0 && __instance.BPJFLJPKKJK >= 2 && __instance.PLFGKLGCOMD == HKJOAJOKOIJ.EMLDNFEIKCK && (__instance.MGJCMCPCPDN != 0f || __instance.JLBOEDNDIPI != 0f))
+            {
+                __instance.IMBKMMOCBBF = __instance.LFGHFKBKHOJ;
+                __instance.PNLIFOBMMGG = __instance.APEDCJMNPFK;
+                BLNKDHIGFAN.IFPJBJLEEDB = __instance.MGJCMCPCPDN;
+                BLNKDHIGFAN.LHBKHGBDPLH = -__instance.JLBOEDNDIPI * 0.2f;
+                BLNKDHIGFAN.KHKIEPDJELK = __instance.JLBOEDNDIPI * 0.75f;
+                BLNKDHIGFAN.GIBHLNFEPKE = 2f;
             }
         }
         public static class Ulil
