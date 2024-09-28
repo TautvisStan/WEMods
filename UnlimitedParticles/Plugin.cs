@@ -15,12 +15,13 @@ namespace UnlimitedParticles
     {
         public const string PluginGuid = "GeeEm.WrestlingEmpire.UnlimitedParticles";
         public const string PluginName = "UnlimitedParticles";
-        public const string PluginVer = "1.0.2";
+        public const string PluginVer = "1.0.3";
 
         internal static ManualLogSource Log;
         internal readonly static Harmony Harmony = new(PluginGuid);
         public static ConfigEntry<int> configSize;
         public static ConfigEntry<bool> configScars;
+        public static ConfigEntry<bool> configLostLimbBleed;
         internal static string PluginPath;
         public static Dictionary<int, float> _overrideTimers = new Dictionary<int, float>();
         public static float PuddleSpeed = 0;
@@ -38,6 +39,10 @@ namespace UnlimitedParticles
              "Preserve scars",
              true,
              "Having this enabled will also prevent body scars from disappearing");
+            configLostLimbBleed = Config.Bind("General",
+ "Permanent lost limb bleed",
+ false,
+ "If enabled, lost limbs will never stop bleeding (Requires 'Preserve scars' to be enabled)");
         }
 
         private void OnEnable()
@@ -52,6 +57,7 @@ namespace UnlimitedParticles
             Logger.LogInfo($"Unloaded {PluginName}!");
         }
 
+        //extending array
         [HarmonyPatch(typeof(ALIGLHEIAGO), nameof(ALIGLHEIAGO.ICGNAJFLAHL))]
         [HarmonyPostfix]
         public static void ALIGLHEIAGO_ICGNAJFLAHL()
@@ -69,7 +75,7 @@ namespace UnlimitedParticles
 
 
 
-
+        //save scars from disappearing naturally
         static int[] oldGEPLNBJEDLH = new int[17];
         [HarmonyPatch(typeof(DFOGOCNBECG), nameof(DFOGOCNBECG.JEJGJPAOCBG))]
         [HarmonyPrefix]
@@ -111,6 +117,7 @@ namespace UnlimitedParticles
                             {
                                 if (__instance.GEPLNBJEDLH[i] != oldGEPLNBJEDLH[i])
                                 {
+                                    if (__instance.GEPLNBJEDLH[i] < 0 && !configLostLimbBleed.Value) return;
                                     __instance.GEPLNBJEDLH[i] = oldGEPLNBJEDLH[i];
                                 }
                             }
@@ -123,7 +130,7 @@ namespace UnlimitedParticles
 
 
 
-
+        //prevent puddles from disappearing
         [HarmonyPatch(typeof(MEHJAJJNHLL), nameof(MEHJAJJNHLL.DIJBHIAAIOF))]
         [HarmonyPostfix]
         public static void ALIGLHEIAGOO_DIJBHIAAIOF(MEHJAJJNHLL __instance)
