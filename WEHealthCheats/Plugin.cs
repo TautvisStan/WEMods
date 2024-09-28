@@ -14,7 +14,7 @@ namespace HealthCheats
     {
         public const string PluginGuid = "GeeEm.WrestlingEmpire.HealthCheats";
         public const string PluginName = "HealthCheats";
-        public const string PluginVer = "1.3.0";
+        public const string PluginVer = "1.4.0";
 
         internal static ManualLogSource Log;
         internal readonly static Harmony Harmony = new(PluginGuid);
@@ -37,10 +37,12 @@ namespace HealthCheats
         public static ConfigEntry<string> ConfigKOMax;
         public static ConfigEntry<string> ConfigKOMin;
         public static ConfigEntry<string> ConfigBlowUp;
+        public static ConfigEntry<string> ConfigDismember;
+        public static ConfigEntry<string> ConfigRestoreLimbs;
 
 
 
-        public AcceptableValueList<string> KeyboardButtons = new AcceptableValueList<string>("None", "Backspace", "Delete", "Tab", "Clear", "Return", "Pause", "Escape", "Space", "Quote", "Comma", "Minus", "Period", "Slash", "Alpha0", "Alpha1", "Alpha2", "Alpha3", "Alpha4", "Alpha5", "Alpha6", "Alpha7", "Alpha8", "Alpha9", "Semicolon", "Equals", "LeftBracket", "Backslash", "RightBracket", "BackQuote", "A", "B", "C", "D", "E", "F", "G", "H", "I", "J", "K", "L", "M", "N", "O", "P", "Q", "R", "S", "T", "U", "V", "W", "X", "Y", "Z", "Delete", "Keypad0", "Keypad1", "Keypad2", "Keypad3", "Keypad4", "Keypad5", "Keypad6", "Keypad7", "Keypad8", "Keypad9", "KeypadPeriod", "KeypadDivide", "KeypadMultiply", "KeypadMinus", "KeypadPlus", "KeypadEnter", "KeypadEquals", "UpArrow", "DownArrow", "RightArrow", "LeftArrow", "Insert", "Home", "End", "PageUp", "PageDown", "F1", "F2", "F3", "F4", "F5", "F6", "F7", "F8", "F9", "F10", "F11", "F12", "F13", "F14", "F15", "Numlock", "CapsLock", "ScrollLock", "RightShift", "LeftShift", "RightControl", "LeftControl", "RightAlt", "LeftAlt", "RightCommand", "RightApple", "LeftCommand", "LeftApple", "LeftWindows", "RightWindows", "Print", "Menu", "Mouse0", "Mouse1", "Mouse2", "Mouse3", "Mouse4", "Mouse5", "Mouse6");
+        public AcceptableValueList<string> KeyboardButtons = new AcceptableValueList<string>("None", "Backspace", "Delete", "Tab", "Clear", "Return", "Pause", "Escape", "Space", "Quote", "Comma", "Minus", "Period", "Slash", "Alpha0", "Alpha1", "Alpha2", "Alpha3", "Alpha4", "Alpha5", "Alpha6", "Alpha7", "Alpha8", "Alpha9", "Semicolon", "Equals", "LeftBracket", "Backslash", "RightBracket", "BackQuote", "A", "B", "C", "D", "E", "F", "G", "H", "I", "J", "K", "L", "M", "N", "O", "P", "Q", "R", "S", "T", "U", "V", "W", "X", "Y", "Z", "Keypad0", "Keypad1", "Keypad2", "Keypad3", "Keypad4", "Keypad5", "Keypad6", "Keypad7", "Keypad8", "Keypad9", "KeypadPeriod", "KeypadDivide", "KeypadMultiply", "KeypadMinus", "KeypadPlus", "KeypadEnter", "KeypadEquals", "UpArrow", "DownArrow", "RightArrow", "LeftArrow", "Insert", "Home", "End", "PageUp", "PageDown", "F1", "F2", "F3", "F4", "F5", "F6", "F7", "F8", "F9", "F10", "F11", "F12", "F13", "F14", "F15", "Numlock", "CapsLock", "ScrollLock", "RightShift", "LeftShift", "RightControl", "LeftControl", "RightAlt", "LeftAlt", "RightCommand", "RightApple", "LeftCommand", "LeftApple", "LeftWindows", "RightWindows", "Print", "Menu", "Mouse0", "Mouse1", "Mouse2", "Mouse3", "Mouse4", "Mouse5", "Mouse6");
 
         public int PlayerNum;
 
@@ -162,6 +164,19 @@ namespace HealthCheats
                 "Spawn an explosion on target",
                 KeyboardButtons));
 
+            ConfigDismember = Config.Bind("Controls",
+ "Dismember",
+ "N",
+ new ConfigDescription(
+    "Dismember a random limb from the target",
+    KeyboardButtons));
+
+            ConfigRestoreLimbs = Config.Bind("Controls",
+ "Restore limbs",
+ "M",
+ new ConfigDescription(
+    "Restore all lost limbs",
+    KeyboardButtons));
 
 
         }
@@ -205,7 +220,9 @@ namespace HealthCheats
             InjureMin,
             KOMax,
             KOMin,
-            Explode
+            Explode,
+            Dismember,
+            RestoreLimbs
         }
         private void Update()
         {
@@ -289,6 +306,14 @@ namespace HealthCheats
             {
                 SendFurther(targetInsteadOfSelf, CommandList.Explode);
             }
+            if (Input.GetKeyDown(Ulil.GetKeyCode(ConfigDismember.Value))) //Dismember
+            {
+                SendFurther(targetInsteadOfSelf, CommandList.Dismember);
+            }
+            if (Input.GetKeyDown(Ulil.GetKeyCode(ConfigRestoreLimbs.Value))) //Restore limbs
+            {
+                SendFurther(targetInsteadOfSelf, CommandList.RestoreLimbs);
+            }
         }
         public void SendFurther(bool targetInsteadOfSelf, CommandList command)
         {
@@ -321,6 +346,8 @@ namespace HealthCheats
                 case CommandList.KOMax: { KnockOut(instance); break; }
                 case CommandList.KOMin: { Recover(instance); break; }
                 case CommandList.Explode: { BlowUp(instance); break; }
+                case CommandList.Dismember: { Dismember(instance); break; }
+                case CommandList.RestoreLimbs: { RestoreLimbs(instance); break; }
             }
 
 
@@ -458,6 +485,28 @@ namespace HealthCheats
         public static void BlowUp(DFOGOCNBECG instance)
         {
             ALIGLHEIAGO.MDFJMAEDJMG(3, 2, new UnityEngine.Color(10f, 10f, 10f), 5, null, instance.NJDGEELLAKG, (float)(instance.FNNBCDPJBIO + 2.5), instance.BMFDFFLPBOJ, 0f, 0f, 0f, 1);
+        }
+        public static void Dismember(DFOGOCNBECG instance)
+        {
+            int limb = UnityEngine.Random.Range(3, 16);
+            instance.CMOPOKMFJMG(limb, 1000000f, 10f);
+        }
+        public static void RestoreLimbs(DFOGOCNBECG instance)
+        {
+            for (int i = 1; i <= 16; i++)
+            {
+                if (instance.GEPLNBJEDLH[i] < 0)
+                {
+                    instance.GEPLNBJEDLH[i] = 0;
+                    instance.PCNHIIPBNEK[i].SetActive(true);
+                }
+                if (instance.EMDMDLNJFKP.scar[i] < 0)
+                {
+                    instance.EMDMDLNJFKP.scar[i] = 0;
+                }
+            }
+            instance.EMDMDLNJFKP.injury = 0;
+            instance.PGJEOKAEPCL = 0;
         }
     }
         public static class Ulil

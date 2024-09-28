@@ -14,7 +14,7 @@ namespace MoreInjuries
     {
         public const string PluginGuid = "GeeEm.WrestlingEmpire.MoreInjuries";
         public const string PluginName = "MoreInjuries";
-        public const string PluginVer = "1.0.0";
+        public const string PluginVer = "1.1.0";
 
         internal static ManualLogSource Log;
         internal readonly static Harmony Harmony = new(PluginGuid);
@@ -22,6 +22,7 @@ namespace MoreInjuries
         internal static string PluginPath;
 
         public static ConfigEntry<int> configIncreasedTimes;
+        public static ConfigEntry<int> configIncreasedLimbs;
         private void Awake()
         {
             Plugin.Log = base.Logger;
@@ -33,6 +34,11 @@ namespace MoreInjuries
              "Increased times",
              50,
              new ConfigDescription("How many times injuries are likely"));
+
+            configIncreasedLimbs = Config.Bind("General",
+ "Increased times (limbs)",
+ 10,
+ new ConfigDescription("How many times lost limbs are likely"));
         }
 
         private void OnEnable()
@@ -47,13 +53,19 @@ namespace MoreInjuries
             Logger.LogInfo($"Unloaded {PluginName}!");
         }
         [HarmonyPatch(typeof(DFOGOCNBECG))]
-        public static class ProgressPatch
+        public static class DFOGOCNBECGPatch
         {
             [HarmonyPrefix]
             [HarmonyPatch(nameof(DFOGOCNBECG.KCFNOONDGKE))]
             public static void KCFNOONDGKEPatch(DFOGOCNBECG __instance, int __result, int CNHJJIPILFK,ref float DGJAEIBKLJO)
             {
                 DGJAEIBKLJO *= configIncreasedTimes.Value;
+            }
+            [HarmonyPrefix]
+            [HarmonyPatch(nameof(DFOGOCNBECG.CMOPOKMFJMG))]
+            public static void CMOPOKMFJMGPatch(DFOGOCNBECG __instance, int IKBHGAKKJMM, ref float DGJAEIBKLJO, float BEMKANDCFCP)
+            {
+                DGJAEIBKLJO *= configIncreasedLimbs.Value;
             }
         }
     }
