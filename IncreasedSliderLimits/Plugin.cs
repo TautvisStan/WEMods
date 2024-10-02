@@ -13,7 +13,7 @@ namespace IncreasedSliderLimits
     {
         public const string PluginGuid = "GeeEm.WrestlingEmpire.IncreasedSliderLimits";
         public const string PluginName = "IncreasedSliderLimits";
-        public const string PluginVer = "1.0.1";
+        public const string PluginVer = "1.1.0";
 
         internal static ManualLogSource Log;
         internal readonly static Harmony Harmony = new(PluginGuid);
@@ -27,6 +27,13 @@ namespace IncreasedSliderLimits
         public static ConfigEntry<bool> KeepPopAttLocked;
         public static ConfigEntry<float> minMusic;
         public static ConfigEntry<float> maxMusic;
+
+        public static ConfigEntry<float> minbodyMass;
+        public static ConfigEntry<float> maxbodyMass;
+        public static ConfigEntry<float> minmuscleMass;
+        public static ConfigEntry<float> maxmuscleMass;
+        public static ConfigEntry<float> minarmMass;
+        public static ConfigEntry<float> maxarmMass;
 
         private void Awake()
         {
@@ -62,6 +69,32 @@ namespace IncreasedSliderLimits
              1.2f,
              "The max theme song speed limit");
 
+
+            minbodyMass = Config.Bind("General",
+ "Min body mass",
+ -100f,
+ "The min body mass limit");
+            maxbodyMass = Config.Bind("General",
+"Max body mass",
+100f,
+"The max body mass limit");
+            minmuscleMass = Config.Bind("General",
+"Min muscle mass",
+0f,
+"The min muslce mass limit");
+            maxmuscleMass = Config.Bind("General",
+"Max muscle mass",
+100f,
+"The max muscle mass limit");
+            minarmMass = Config.Bind("General",
+"Min arm mass",
+-100f,
+"The min body mass limit");
+            maxarmMass = Config.Bind("General",
+"Max body mass",
+100f,
+"The max body mass limit");
+
         }
 
         private void OnEnable()
@@ -79,7 +112,7 @@ namespace IncreasedSliderLimits
 
         [HarmonyPatch(typeof(AKFIIKOMPLL), nameof(AKFIIKOMPLL.ODONMLDCHHF))]
         [HarmonyPrefix]
-        static bool Prefix(AKFIIKOMPLL __instance, float __0, float __1, float __2, ref float __3, ref float __4, int __5)
+        static void AKFIIKOMPLL_ODONMLDCHHF_Prefix(AKFIIKOMPLL __instance, float __0, float __1, float __2, ref float __3, ref float __4, int __5)
         {
             if (__1 == 1f && __2 == 5f && __3 == 50f && __4 == 99f && __5 == 0 && (__instance == LIPNHOMGGHF.FKANHDIMMBJ[1] || __instance == LIPNHOMGGHF.FKANHDIMMBJ[2] || __instance == LIPNHOMGGHF.FKANHDIMMBJ[3] || __instance == LIPNHOMGGHF.FKANHDIMMBJ[4] || __instance == LIPNHOMGGHF.FKANHDIMMBJ[5] || __instance == LIPNHOMGGHF.FKANHDIMMBJ[6]) && LIPNHOMGGHF.CHLJMEPFJOK == 1)
             {
@@ -101,11 +134,25 @@ namespace IncreasedSliderLimits
                 __3 = Plugin.minMusic.Value;
                 __4 = Plugin.maxMusic.Value;
             }
-            return true;
+            if (__1 == 5f && __2 == 10f && __3 == -100f && __4 == 100f && __5 == 0 && (__instance == LIPNHOMGGHF.FKANHDIMMBJ[4]) && LIPNHOMGGHF.CHLJMEPFJOK == 2)
+            {
+                __3 = Plugin.minbodyMass.Value;
+                __4 = Plugin.maxbodyMass.Value;
+            }
+            if (__1 == 5f && __2 == 10f && __3 == 0f && __4 == 100f && __5 == 0 && (__instance == LIPNHOMGGHF.FKANHDIMMBJ[5]) && LIPNHOMGGHF.CHLJMEPFJOK == 2)
+            {
+                __3 = Plugin.minmuscleMass.Value;
+                __4 = Plugin.maxmuscleMass.Value;
+            }
+            if (__1 == 5f && __2 == 10f && __3 == -100f && __4 == 100f && __5 == 0 && (__instance == LIPNHOMGGHF.FKANHDIMMBJ[6]) && LIPNHOMGGHF.CHLJMEPFJOK == 2)
+            {
+                __3 = Plugin.minarmMass.Value;
+                __4 = Plugin.maxarmMass.Value;
+            }
         }
         [HarmonyPatch(typeof(Character), nameof(Character.IMMIIDECGCF))] //!!!!
         [HarmonyPrefix]
-        static bool CharacterIMMIIDECGCF(Character __instance, int LGLHGGDPNPD, ref float OEGLNPMNEOE)
+        static bool Character_IMMIIDECGCF(Character __instance, int LGLHGGDPNPD, ref float OEGLNPMNEOE)
         {
             if (NAEEIFNFBBO.CBMHGKFFHJE > 0)
             {
@@ -248,6 +295,68 @@ namespace IncreasedSliderLimits
                 }
             }
             return false;
+        }
+        [HarmonyPatch(typeof(Character), nameof(Character.CGCGAAFNCED))]  //!!!!
+        [HarmonyPrefix]
+        static bool CharacterLLJKACBKKJM(Character __instance, float JIJABCGMCAG, float FHMHIGJBMHO)
+        {
+            {
+                JIJABCGMCAG *= MBLIOKEDHHB.MCJHGEHEPMD;
+                FHMHIGJBMHO *= MBLIOKEDHHB.MCJHGEHEPMD;
+                JIJABCGMCAG *= 1.5f;
+                FHMHIGJBMHO *= 1.5f;
+                int num = Mathf.RoundToInt(__instance.CLDFPOBFKKK());
+                __instance.bodyMass += JIJABCGMCAG;
+                if (__instance.bodyMass < minbodyMass.Value)
+                {
+                    __instance.bodyMass = minbodyMass.Value;
+                }
+                if (__instance.bodyMass > maxbodyMass.Value)
+                {
+                    __instance.bodyMass = maxbodyMass.Value;
+                }
+                __instance.muscleMass += FHMHIGJBMHO;
+                if (__instance.muscleMass < minmuscleMass.Value)
+                {
+                    __instance.muscleMass = minmuscleMass.Value;
+                }
+                if (__instance.muscleMass > maxmuscleMass.Value)
+                {
+                    __instance.muscleMass = maxmuscleMass.Value;
+                }
+                __instance.armMass += (JIJABCGMCAG + FHMHIGJBMHO) / 2f;
+                if (__instance.armMass < minarmMass.Value)
+                {
+                    __instance.armMass = minarmMass.Value;
+                }
+                if (__instance.armMass > maxarmMass.Value)
+                {
+                    __instance.armMass = maxarmMass.Value;
+                }
+                if ((LIPNHOMGGHF.FAKHAFKOBPB == 50 || LIPNHOMGGHF.FAKHAFKOBPB == 60 || LIPNHOMGGHF.FAKHAFKOBPB == 70) && __instance.player >= 1 && __instance.player <= NJBJIIIACEP.NBBBLJDBLNM)
+                {
+                    NJBJIIIACEP.OAAMGFLINOB[__instance.player].CAOJENFCEPF();
+                }
+                if (LIPNHOMGGHF.FAKHAFKOBPB == 50 && NAEEIFNFBBO.CBMHGKFFHJE == 1 && __instance.id == Characters.star && __instance.player == NJBJIIIACEP.MLLALIOOPEP && NJBJIIIACEP.DCAFAIGGFCC != null)
+                {
+                    int num2 = Mathf.RoundToInt(__instance.CLDFPOBFKKK());
+                    if (NJBJIIIACEP.DCAFAIGGFCC[1].GHGLMKCECOI == 0f && num2 == NAEEIFNFBBO.HCAHNIBLCMI(num2, 5))
+                    {
+                        if (num2 < num)
+                        {
+                            CHLPMKEGJBJ.DNNPEAOCDOG(CHLPMKEGJBJ.MBEMMCMOJFF, 1f, 0.5f);
+                            NJBJIIIACEP.DCAFAIGGFCC[1].BFBKLJHKKGE("Weight: " + num2.ToString("0") + "lbs", new Color(0.1f, 0.9f, 0.1f));
+                        }
+                        if (num2 > num)
+                        {
+                            CHLPMKEGJBJ.DNNPEAOCDOG(CHLPMKEGJBJ.AEJEOKACNBJ, 1f, 0.5f);
+                            NJBJIIIACEP.DCAFAIGGFCC[1].BFBKLJHKKGE("Weight: " + num2.ToString("0") + "lbs", new Color(0.9f, 0.1f, 0.1f));
+                            NEGAFEHECNL.PCMJIACMFFN(67, 0, Progress.fed, 10);
+                        }
+                    }
+                }
+                return false;
+            }
         }
     }
 }
