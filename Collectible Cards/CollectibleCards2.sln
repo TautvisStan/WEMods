@@ -7,6 +7,8 @@ Project("{9A19103F-16F7-4668-BE54-9A1E7A4F7556}") = "CollectibleCards2", "Collec
 EndProject
 Project("{9A19103F-16F7-4668-BE54-9A1E7A4F7556}") = "CustomCardGenerator", "CardGen\CustomCardGenerator.csproj", "{3E0F9B4A-6058-480F-BE08-CD0E5F495558}"
 EndProject
+Project("{9A19103F-16F7-4668-BE54-9A1E7A4F7556}") = "CardGame", "CardGame\CardGame.csproj", "{D184272A-8B47-4812-AB2D-15AD77A64B55}"
+EndProject
 Global
 	GlobalSection(SolutionConfigurationPlatforms) = preSolution
 		Debug|Any CPU = Debug|Any CPU
@@ -21,6 +23,10 @@ Global
 		{3E0F9B4A-6058-480F-BE08-CD0E5F495558}.Debug|Any CPU.Build.0 = Debug|Any CPU
 		{3E0F9B4A-6058-480F-BE08-CD0E5F495558}.Release|Any CPU.ActiveCfg = Release|Any CPU
 		{3E0F9B4A-6058-480F-BE08-CD0E5F495558}.Release|Any CPU.Build.0 = Release|Any CPU
+		{D184272A-8B47-4812-AB2D-15AD77A64B55}.Debug|Any CPU.ActiveCfg = Debug|Any CPU
+		{D184272A-8B47-4812-AB2D-15AD77A64B55}.Debug|Any CPU.Build.0 = Debug|Any CPU
+		{D184272A-8B47-4812-AB2D-15AD77A64B55}.Release|Any CPU.ActiveCfg = Release|Any CPU
+		{D184272A-8B47-4812-AB2D-15AD77A64B55}.Release|Any CPU.Build.0 = Release|Any CPU
 	EndGlobalSection
 	GlobalSection(SolutionProperties) = preSolution
 		HideSolutionNode = FALSE

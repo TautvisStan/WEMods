@@ -1,0 +1,119 @@
+﻿using System;
+using System.Collections.Generic;
+using System.Text;
+using Steamworks;
+using UnityEngine;
+
+namespace CardGame
+{
+    public class SteamLobby : MonoBehaviour
+    {
+        protected Callback<LobbyCreated_t> m_LobbyCreated;
+        protected Callback<LobbyEnter_t> m_LobbyEntered;
+        protected Callback<LobbyChatUpdate_t> m_LobbyChatUpdated;
+
+        internal static CSteamID currentLobbyID;
+
+        public static int SteamLobbyMemberIndex { get; set; } = -1;
+
+        private const string HostAddressKey = "HostAddress";
+
+        public void StartLobby()
+        {
+            Debug.LogWarning("STARTING STEAM LOBBY");
+            if (!SteamManager.LHAIOCMDOLP) return;
+
+
+            m_LobbyCreated = Callback<LobbyCreated_t>.Create(OnLobbyCreated);
+            m_LobbyEntered = Callback<LobbyEnter_t>.Create(OnLobbyEntered);
+            m_LobbyChatUpdated = Callback<LobbyChatUpdate_t>.Create(OnLobbyChatUpdate);
+
+            // Create a public lobby (can be friends-only or private)
+            SteamMatchmaking.CreateLobby(ELobbyType.k_ELobbyTypeFriendsOnly, 2);
+        }
+        public void LeaveLobby()
+        {
+            if (currentLobbyID != CSteamID.Nil)
+            {
+                SteamMatchmaking.LeaveLobby(currentLobbyID);
+                Debug.LogWarning("Left the lobby: " + currentLobbyID);
+                currentLobbyID = CSteamID.Nil;  // Clear the lobby ID after leaving
+                SteamLobbyMemberIndex = -1;
+            }
+        }
+        void OnLobbyCreated(LobbyCreated_t result)
+        {
+            if (result.m_eResult != EResult.k_EResultOK)
+            {
+                Debug.LogWarning("Failed to create lobby.");
+                return;
+            }
+
+            // Set the host's Steam ID for other players to find them
+            SteamMatchmaking.SetLobbyData(new CSteamID(result.m_ulSteamIDLobby), HostAddressKey, SteamUser.GetSteamID().ToString());
+
+            Debug.LogWarning("Lobby created! Lobby ID: " + result.m_ulSteamIDLobby);
+        }
+        public int GetCurrentIndexInLobby()
+        {
+            for (int i = 0; i < SteamMatchmaking.GetNumLobbyMembers(SteamLobby.currentLobbyID); i++)
+            {
+                if (SteamMatchmaking.GetLobbyMemberByIndex(currentLobbyID, i) == SteamUser.GetSteamID()) return i;
+            }
+            return -1;
+        }
+        void OnLobbyEntered(LobbyEnter_t result)
+        {
+            currentLobbyID = new CSteamID(result.m_ulSteamIDLobby);
+            Debug.LogWarning("Entered Lobby: " + currentLobbyID);
+            SteamLobbyMemberIndex = GetCurrentIndexInLobby();
+            // Log all current members in the lobby
+            int memberCount = SteamMatchmaking.GetNumLobbyMembers(currentLobbyID);
+            for (int i = 0; i < memberCount; i++)
+            {
+                CSteamID memberID = SteamMatchmaking.GetLobbyMemberByIndex(currentLobbyID, i);
+                Debug.LogWarning("Lobby Member: " + SteamFriends.GetFriendPersonaName(memberID));
+            }
+            
+
+            // If you are not the host, get the host's Steam ID
+            if (!SteamUser.GetSteamID().Equals(SteamMatchmaking.GetLobbyOwner(new CSteamID(result.m_ulSteamIDLobby))))
+            {
+                string hostAddress = SteamMatchmaking.GetLobbyData(new CSteamID(result.m_ulSteamIDLobby), HostAddressKey);
+                Debug.LogWarning("Host Steam ID: " + hostAddress);
+
+                // You can now connect to the host via P2P
+            }
+
+        }
+        void OnLobbyChatUpdate(LobbyChatUpdate_t callback)
+        {
+            CSteamID userChanged = new CSteamID(callback.m_ulSteamIDUserChanged);
+            CSteamID makingChange = new CSteamID(callback.m_ulSteamIDMakingChange);
+            EChatMemberStateChange stateChange = (EChatMemberStateChange)callback.m_rgfChatMemberStateChange;
+
+            // Check if someone joined
+            if (stateChange == EChatMemberStateChange.k_EChatMemberStateChangeEntered)
+            {
+                Debug.LogWarning("User joined: " + SteamFriends.GetFriendPersonaName(userChanged));
+            }
+            // Check if the user left or was disconnected
+            if (stateChange == EChatMemberStateChange.k_EChatMemberStateChangeLeft ||
+                stateChange == EChatMemberStateChange.k_EChatMemberStateChangeDisconnected)
+            {
+                Debug.LogWarning("Player left or disconnected: " + SteamFriends.GetFriendPersonaName(userChanged));
+
+                // Check if this is the host (lobby will be destroyed if the host leaves)
+                if (userChanged == SteamUser.GetSteamID())
+                {
+                    Debug.LogWarning("Host left. Lobby will be closed.");
+                    // Clear lobby data and update UI
+                    currentLobbyID = CSteamID.Nil;
+                    SteamLobbyMemberIndex = -1;
+                }
+            }
+        }
+    }
+
+
+}

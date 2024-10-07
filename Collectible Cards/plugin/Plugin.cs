@@ -3,11 +3,8 @@ using BepInEx.Configuration;
 using BepInEx.Logging;
 using HarmonyLib;
 using System;
-using System.Collections;
-using System.Collections.Generic;
 using System.IO;
 using UnityEngine;
-using UnityEngine.UI;
 
 namespace CollectibleCards2
 {
@@ -27,6 +24,8 @@ namespace CollectibleCards2
 
         public static int CardWidth { get; set; } = 719;
         public static int CardHeight { get; set; } = 1000;
+
+
 
         public static int CardsMenuButton { get; set; }
         public static int CardsMenuButtonCareer { get; set; }
@@ -53,6 +52,7 @@ namespace CollectibleCards2
             {
             	Directory.CreateDirectory(foldername);
             }
+            WECCLHandler.CheckWECCLStatus();
         }
 
         private void OnEnable()
@@ -66,6 +66,8 @@ namespace CollectibleCards2
             Harmony.UnpatchSelf();
             Logger.LogInfo($"Unloaded {PluginName}!");
         }
+
+
         public static void GenerateSingleCard(Action<string> onGenerated, int CharID = -1, int costume = 0, string preset = "", int borderRarity = -1, int foilRarity = -1, int signatureRarity = -1, bool customGenerated = false)
         {
             ThisPlugin.StartCoroutine(CollectibleCardGenerator.GenerateCollectibleCard(onGenerated, CharID, costume, preset, borderRarity, foilRarity, signatureRarity, customGenerated));

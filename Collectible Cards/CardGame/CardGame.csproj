@@ -1,7 +1,7 @@
 ﻿<Project Sdk="Microsoft.NET.Sdk">
 
     <PropertyGroup>
-        <AssemblyName>CollectibleCards2</AssemblyName>
+        <AssemblyName>CardGame</AssemblyName>
         <AssemblyVersion>1.0.0</AssemblyVersion>
         <ReleaseVersion>1.0.0</ReleaseVersion>
         <TargetFramework>netstandard2.1</TargetFramework>
@@ -15,18 +15,8 @@
     </PropertyGroup>
 
     <ItemGroup>
-      <Compile Remove="CardGame\**" />
-      <Compile Remove="CardGen\**" />
-      <EmbeddedResource Remove="CardGame\**" />
-      <EmbeddedResource Remove="CardGen\**" />
-      <None Remove="CardGame\**" />
-      <None Remove="CardGen\**" />
-    </ItemGroup>
-
-    <ItemGroup>
         <PackageReference Include="BepInEx.Analyzers" Version="1.*" PrivateAssets="all" />
         <PackageReference Include="BepInEx.Core" Version="5.4.21" />
-        <PackageReference Include="Newtonsoft.Json" Version="13.0.3" />
         <PackageReference Include="UnityEngine.Modules" Version="2020.3.43" IncludeAssets="compile" />
     </ItemGroup>
 
@@ -35,14 +25,15 @@
     </ItemGroup>
 
     <ItemGroup>
+      <ProjectReference Include="..\CollectibleCards2.csproj" />
+    </ItemGroup>
+
+    <ItemGroup>
       <Reference Include="Assembly-CSharp">
-        <HintPath>lib\Assembly-CSharp_public.dll</HintPath>
+        <HintPath>..\items\Assembly-CSharp.dll</HintPath>
       </Reference>
-      <Reference Include="Pngcs">
-        <HintPath>Pngcs45.dll</HintPath>
-      </Reference>
-      <Reference Include="UnityEngine.UI">
-        <HintPath>UnityEngine.UI.dll</HintPath>
+      <Reference Include="com.rlabrecque.steamworks.net">
+        <HintPath>..\items\com.rlabrecque.steamworks.net.dll</HintPath>
       </Reference>
     </ItemGroup>
 

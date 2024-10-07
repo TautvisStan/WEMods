@@ -22,9 +22,8 @@ namespace CustomCardGenerator
         internal readonly static Harmony Harmony = new(PluginGuid);
 
         internal static string PluginPath;
-        private static RawImage rawImage;
-        private static Texture2D texture2D;
-
+        private static RawImage rawImage { get; set; }
+        private static Texture2D texture2D { get; set; }
         public static int CardsGenPage { get; set; } = CollectibleCards2.Plugin.CardsMenuPage-1;
         public static int CardsGenButton { get; set; }
         public static List<DirectoryInfo> Presets { get; set; } = new();
