@@ -29,15 +29,14 @@ namespace CardGame
     {
         protected Callback<P2PSessionRequest_t> m_P2PSessionRequest;
         protected Callback<P2PSessionConnectFail_t> m_P2PConnectFail;
-        public static SteamP2PNetworking thisInstance = null;
+        public SteamLobby lobby = Plugin.steamLobby;
         void Start()
         {
             if (!SteamManager.LHAIOCMDOLP) return;
-
+            if (Plugin.CallbacksAlreadyDone) return;
             // Set up a callback to handle incoming P2P packets
             m_P2PSessionRequest = Callback<P2PSessionRequest_t>.Create(OnP2PSessionRequest);
             m_P2PConnectFail = Callback<P2PSessionConnectFail_t>.Create(OnP2PConnectFail);
-            thisInstance = this;
         }
 
         void Update()
@@ -81,33 +80,33 @@ namespace CardGame
                 }
             }
         }
-        public static void SEND_CARD(CollectibleCard card)
+        public void SEND_CARD(CollectibleCard card)
         {
             PlayableCard playablecard = new(card);
             playablecard.WrestlerName = playablecard.WrestlerName.Trim();
             string encodedCard = JsonConvert.SerializeObject(playablecard);
-            NetworkMessage message = new(NetworkMessage.TYPE_CARD, SteamUser.GetSteamID(), SteamLobby.SteamLobbyMemberIndex, encodedCard);
+            NetworkMessage message = new(NetworkMessage.TYPE_CARD, SteamUser.GetSteamID(), lobby.SteamLobbyMemberIndex, encodedCard);
             Debug.LogWarning($"Sending card: {playablecard.WrestlerName}");
             SendMessageToAll(JsonConvert.SerializeObject(message));
         }
-        public static void SEND_TEXT(string text)
+        public void SEND_TEXT(string text)
         {
-            NetworkMessage message = new(NetworkMessage.TYPE_TEXT_MESSAGE, SteamUser.GetSteamID(), SteamLobby.SteamLobbyMemberIndex, text);
+            NetworkMessage message = new(NetworkMessage.TYPE_TEXT_MESSAGE, SteamUser.GetSteamID(), lobby.SteamLobbyMemberIndex, text);
             Debug.LogWarning($"Sending text message: {message}");
             SendMessageToAll(JsonConvert.SerializeObject(message));
         }
-        public static void SendMessageToAll(string message)
+        public void SendMessageToAll(string message)
         {
-            if (SteamLobby.currentLobbyID == null) return;
+            if (lobby.currentLobbyID == null) return;
             Debug.LogWarning($"Sending message to all: {message}");
             // Get the number of players in the lobby
-            int numPlayers = SteamMatchmaking.GetNumLobbyMembers(SteamLobby.currentLobbyID);
+            int numPlayers = SteamMatchmaking.GetNumLobbyMembers(lobby.currentLobbyID);
             byte[] data = Encoding.UTF8.GetBytes(message);
 
             // Send message to each player in the lobby
             for (int i = 0; i < numPlayers; i++)
             {
-                CSteamID playerID = SteamMatchmaking.GetLobbyMemberByIndex(SteamLobby.currentLobbyID, i);
+                CSteamID playerID = SteamMatchmaking.GetLobbyMemberByIndex(lobby.currentLobbyID, i);
                 SteamNetworking.SendP2PPacket(playerID, data, (uint)data.Length, EP2PSend.k_EP2PSendReliable);
             }
         }

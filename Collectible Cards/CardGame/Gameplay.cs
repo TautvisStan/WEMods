@@ -48,10 +48,9 @@ namespace CardGame
             CompareStat("Attitude", card1.Attitude, card2.Attitude);
             if(P1Score == P2Score)
             {
-                Debug.LogWarning("Bonus overall round!");
-                CompareStat("Attitude", card1.CalculateOverall(), card2.CalculateOverall());
+                Debug.LogWarning("Bonus!");
+                CompareStat("Overall", card1.CalculateOverall(), card2.CalculateOverall());
             }
-            Debug.LogWarning($"Score: {P1Score}-{P2Score}");
             if(P1Score == P2Score) 
             {
                 Debug.LogWarning("THIS ROUND WAS A DRAW!");
@@ -87,8 +86,8 @@ namespace CardGame
         }
         public static int CompareSingleNumbers(float a, float b)
         {
-            if (a < b) { return -1; }
-            else if (a > b) { return 1; }
+            if (a > b) { return -1; }
+            else if (a < b) { return 1; }
             else { return 0; }
         }
     }

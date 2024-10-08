@@ -11,25 +11,63 @@ namespace CardGame
         protected Callback<LobbyCreated_t> m_LobbyCreated;
         protected Callback<LobbyEnter_t> m_LobbyEntered;
         protected Callback<LobbyChatUpdate_t> m_LobbyChatUpdated;
+        protected Callback<GameLobbyJoinRequested_t> m_GameLobbyJoinRequested;
 
-        internal static CSteamID currentLobbyID;
-
-        public static int SteamLobbyMemberIndex { get; set; } = -1;
+        internal CSteamID currentLobbyID;
+        public int SteamLobbyMemberIndex { get; set; } = -1;
 
         private const string HostAddressKey = "HostAddress";
 
-        public void StartLobby()
+        void Start()
         {
-            Debug.LogWarning("STARTING STEAM LOBBY");
             if (!SteamManager.LHAIOCMDOLP) return;
-
-
+            if (Plugin.CallbacksAlreadyDone) return;
             m_LobbyCreated = Callback<LobbyCreated_t>.Create(OnLobbyCreated);
             m_LobbyEntered = Callback<LobbyEnter_t>.Create(OnLobbyEntered);
             m_LobbyChatUpdated = Callback<LobbyChatUpdate_t>.Create(OnLobbyChatUpdate);
+            m_GameLobbyJoinRequested = Callback<GameLobbyJoinRequested_t>.Create(OnGameLobbyJoinRequested);
+        }
+        void OnGameLobbyJoinRequested(GameLobbyJoinRequested_t callback)
+        {
 
+            Debug.LogWarning("Received a join request. Joining lobby: " + callback.m_steamIDLobby);
+            if (LIPNHOMGGHF.ODOAPLMOJPD == Plugin.MPLobbyPage)
+            {
+                // Attempt to join the lobby via the Steam ID received in the callback
+                SteamMatchmaking.JoinLobby(callback.m_steamIDLobby);
+            }
+            else
+            {
+                Debug.LogWarning("WARNING! NOT IN THE LOBBY MENU!!!!");
+            }
+        }
+        public void JoinLobby(string lobbyID)
+        {
+            SteamMatchmaking.JoinLobby(new CSteamID(ulong.Parse(lobbyID)));
+        }
+        public void StartLobby(int type)
+        {
+            
+            Debug.LogWarning("STARTING STEAM LOBBY");
+            if (!SteamManager.LHAIOCMDOLP) return;
+            switch (type)
+            {
+                case 0:
+                    SteamMatchmaking.CreateLobby(ELobbyType.k_ELobbyTypeInvisible, 2);
+                    break;
+                case 1:
+                    SteamMatchmaking.CreateLobby(ELobbyType.k_ELobbyTypeFriendsOnly, 2);
+                    break;
+                case 2: SteamMatchmaking.CreateLobby(ELobbyType.k_ELobbyTypePrivate, 2);
+                    break;
+            }
+                
+            //SteamMatchmaking.CreateLobby(ELobbyType.k_ELobbyTypeFriendsOnly, 2);
             // Create a public lobby (can be friends-only or private)
-            SteamMatchmaking.CreateLobby(ELobbyType.k_ELobbyTypeFriendsOnly, 2);
+        }
+        public void InviteFriends()
+        {
+            SteamFriends.ActivateGameOverlayInviteDialog(currentLobbyID);
         }
         public void LeaveLobby()
         {
@@ -53,10 +91,11 @@ namespace CardGame
             SteamMatchmaking.SetLobbyData(new CSteamID(result.m_ulSteamIDLobby), HostAddressKey, SteamUser.GetSteamID().ToString());
 
             Debug.LogWarning("Lobby created! Lobby ID: " + result.m_ulSteamIDLobby);
+            if (LobbyMenu.HostType == 0) LobbyMenu.LobbyID = result.m_ulSteamIDLobby.ToString();
         }
         public int GetCurrentIndexInLobby()
         {
-            for (int i = 0; i < SteamMatchmaking.GetNumLobbyMembers(SteamLobby.currentLobbyID); i++)
+            for (int i = 0; i < SteamMatchmaking.GetNumLobbyMembers(currentLobbyID); i++)
             {
                 if (SteamMatchmaking.GetLobbyMemberByIndex(currentLobbyID, i) == SteamUser.GetSteamID()) return i;
             }
