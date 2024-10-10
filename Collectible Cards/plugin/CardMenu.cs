@@ -23,6 +23,7 @@ namespace CollectibleCards2
         public static int DisplayedCardIndex { get; set; } = 1;
         public static int OldIndex { get; set; } = 1;
         public static GameObject CardDescription { get; set; } = null;
+        public static GameObject CardStats { get; set; } = null;
         public static Font VanillaFont { get; set; } = null;
         public static GameObject LogoObject { get; set; } = null;
         public static List<CollectibleCard> ScanCards()
@@ -171,6 +172,11 @@ namespace CollectibleCards2
                     UnityEngine.Object.Destroy(CardDescription);
                     CardDescription = null;
                 }
+                if (CardStats != null)
+                {
+                    UnityEngine.Object.Destroy(CardStats);
+                    CardStats = null;
+                }
                 if (rawImage != null)
                 {
                     UnityEngine.Object.Destroy(rawImage);
@@ -209,6 +215,7 @@ namespace CollectibleCards2
                 rawImage.transform.SetAsLastSibling();
             }
             DisplayCardInfo();
+            DisplayCardStats();
         }
         //disabling annoying audio
         [HarmonyPatch(typeof(CHLPMKEGJBJ), nameof(CHLPMKEGJBJ.DNNPEAOCDOG))]
@@ -234,8 +241,6 @@ namespace CollectibleCards2
                 CardDescription.AddComponent<Outline>().effectColor = new Color(0, 0, 0, 1);
                 CardDescription.GetComponent<Outline>().effectDistance = new Vector2(1, 1);
                 CardDescription.AddComponent<Shadow>().effectDistance = new Vector2(3, -3);
-
-
             }
             Text text = CardDescription.GetComponent<Text>();
             text.text = Cards[DisplayedCardIndex - 1].GetDescription();
@@ -246,8 +251,27 @@ namespace CollectibleCards2
             RectTransform rectTransform = text.GetComponent<RectTransform>();
             rectTransform.sizeDelta = new Vector2(1250, 0);
             rectTransform.anchoredPosition = new Vector2(0, -250);
-
-
+        }
+        public static void DisplayCardStats()
+        {
+            if (CardStats == null)
+            {
+                CardStats = new GameObject("Stats");
+                CardStats.transform.SetParent(LIPNHOMGGHF.JPABICKOAEO.transform, false);
+                CardStats.AddComponent<Text>().font = VanillaFont;
+                CardStats.AddComponent<Outline>().effectColor = new Color(0, 0, 0, 1);
+                CardStats.GetComponent<Outline>().effectDistance = new Vector2(1, 1);
+                CardStats.AddComponent<Shadow>().effectDistance = new Vector2(3, -3);
+            }
+            Text text = CardStats.GetComponent<Text>();
+            text.text = Cards[DisplayedCardIndex - 1].GetStatsString();
+            text.horizontalOverflow = HorizontalWrapMode.Wrap;
+            text.verticalOverflow = VerticalWrapMode.Overflow;
+            text.alignment = TextAnchor.UpperRight;
+            text.fontSize = 30;
+            RectTransform rectTransform = text.GetComponent<RectTransform>();
+            rectTransform.sizeDelta = new Vector2(300, 0);
+            rectTransform.anchoredPosition = new Vector2(-350, -75);
         }
 
     }

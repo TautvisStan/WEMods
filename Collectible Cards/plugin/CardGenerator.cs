@@ -126,7 +126,11 @@ namespace CollectibleCards2
                 }
                 if(WECCLHandler.WECCLLoaded)
                 {
-                    CardMetaData["CharData"] = WECCLHandler.GetCharacterDataJson(CharID);
+                    string charData = WECCLHandler.GetCharacterDataJson(CharID);
+                    if (!charData.Contains("Custom/"))
+                    {
+                        CardMetaData["CharData"] = charData;
+                    }
                 }
                 string filePath = Path.Combine(foldername, filename);
                 PngUtils.SaveWithMetadata(filePath, bytes, CardMetaData);

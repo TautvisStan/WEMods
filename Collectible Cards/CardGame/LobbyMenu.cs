@@ -1,11 +1,14 @@
 ﻿using System;
+using System.Collections;
 using System.Collections.Generic;
+using System.Diagnostics;
 using System.Text;
 using CollectibleCards2;
 using HarmonyLib;
 using Steamworks;
+using TextCopy;
 using UnityEngine;
-using UnityEngine.TextCore;
+using UnityEngine.UI;
 
 namespace CardGame
 {
@@ -27,8 +30,81 @@ namespace CardGame
         public static string LobbyID { get; set; } = "";
         public static string IDToJoin { get; set; }
 
+        public static GameObject MPLobbyText { get; set; } = null;
+        public static GameObject HostText { get; set; } = null;
+        public static GameObject JoinText { get; set; } = null;
+        public static GameObject LobbyStatusText { get; set; } = null;
 
+        public static IEnumerator SendCard(CollectibleCard card)
+        {
+            Plugin.steamNetworking.SEND_CARD(card);
+            yield return new WaitForSecondsRealtime(1f);
+            Plugin.steamNetworking.SendFULLTextureToPlayers(card);
+        }
+        public static void DisplayLobbyTextTop()
+        {
+            if (MPLobbyText == null)
+            {
+                MPLobbyText = new GameObject("Multiplayer Lobby");
+                MPLobbyText.transform.SetParent(LIPNHOMGGHF.JPABICKOAEO.transform, false);
+                MPLobbyText.AddComponent<Text>().font = MCDCDEBALPI.IMPJPDIEKDF[1].GetComponentInChildren<Text>().font;
+                MPLobbyText.AddComponent<Outline>().effectColor = new Color(0, 0, 0, 1);
+                MPLobbyText.GetComponent<Outline>().effectDistance = new Vector2(1, 1);
+                MPLobbyText.AddComponent<Shadow>().effectDistance = new Vector2(3, -3);
+            }
+            Text text = MPLobbyText.GetComponent<Text>();
+            text.text = "Multiplayer Lobby Menu";
+            text.horizontalOverflow = HorizontalWrapMode.Overflow;
+            text.verticalOverflow = VerticalWrapMode.Overflow;
+            text.alignment = TextAnchor.MiddleCenter;
+            text.fontSize = 30;
+            RectTransform rectTransform = text.GetComponent<RectTransform>();
+            rectTransform.sizeDelta = new Vector2(300, 0);
+            rectTransform.anchoredPosition = new Vector2(0, 300);
+        }
 
+        public static void DisplayHostText()
+        {
+            if (HostText == null)
+            {
+                HostText = new GameObject("Host Lobby");
+                HostText.transform.SetParent(LIPNHOMGGHF.JPABICKOAEO.transform, false);
+                HostText.AddComponent<Text>().font = MCDCDEBALPI.IMPJPDIEKDF[1].GetComponentInChildren<Text>().font;
+                HostText.AddComponent<Outline>().effectColor = new Color(0, 0, 0, 1);
+                HostText.GetComponent<Outline>().effectDistance = new Vector2(1, 1);
+                HostText.AddComponent<Shadow>().effectDistance = new Vector2(3, -3);
+            }
+            Text text = HostText.GetComponent<Text>();
+            text.text = "Host Lobby";
+            text.horizontalOverflow = HorizontalWrapMode.Overflow;
+            text.verticalOverflow = VerticalWrapMode.Overflow;
+            text.alignment = TextAnchor.MiddleCenter;
+            text.fontSize = 30;
+            RectTransform rectTransform = text.GetComponent<RectTransform>();
+            rectTransform.sizeDelta = new Vector2(300, 0);
+            rectTransform.anchoredPosition = new Vector2(-300, 150);
+        }
+        public static void DisplayJoinText()
+        {
+            if (JoinText == null)
+            {
+                JoinText = new GameObject("Join Lobby");
+                JoinText.transform.SetParent(LIPNHOMGGHF.JPABICKOAEO.transform, false);
+                JoinText.AddComponent<Text>().font = MCDCDEBALPI.IMPJPDIEKDF[1].GetComponentInChildren<Text>().font;
+                JoinText.AddComponent<Outline>().effectColor = new Color(0, 0, 0, 1);
+                JoinText.GetComponent<Outline>().effectDistance = new Vector2(1, 1);
+                JoinText.AddComponent<Shadow>().effectDistance = new Vector2(3, -3);
+            }
+            Text text = JoinText.GetComponent<Text>();
+            text.text = "Join Lobby";
+            text.horizontalOverflow = HorizontalWrapMode.Overflow;
+            text.verticalOverflow = VerticalWrapMode.Overflow;
+            text.alignment = TextAnchor.MiddleCenter;
+            text.fontSize = 30;
+            RectTransform rectTransform = text.GetComponent<RectTransform>();
+            rectTransform.sizeDelta = new Vector2(300, 0);
+            rectTransform.anchoredPosition = new Vector2(300, 150);
+        }
         //disabling annoying audio
         [HarmonyPatch(typeof(CHLPMKEGJBJ), nameof(CHLPMKEGJBJ.DNNPEAOCDOG))]
         [HarmonyPrefix]
@@ -60,28 +136,31 @@ namespace CardGame
                 {
 
                     LobbyID = "";
+                    DisplayLobbyTextTop();
+                    DisplayHostText();
+                    DisplayJoinText();
                     LIPNHOMGGHF.DFLLBNMHHIH();
-                    LIPNHOMGGHF.FKANHDIMMBJ[LIPNHOMGGHF.HOAOLPGEBKJ].ICGNAJFLAHL(2, "Lobby Type", -450f, 150f, 1.25f, 1.25f);
+                    LIPNHOMGGHF.FKANHDIMMBJ[LIPNHOMGGHF.HOAOLPGEBKJ].ICGNAJFLAHL(2, "Lobby Type", -425f, 100f, 1f, 1f);
                     HostTypeButton = LIPNHOMGGHF.HOAOLPGEBKJ;
 
                     LIPNHOMGGHF.DFLLBNMHHIH();
-                    LIPNHOMGGHF.FKANHDIMMBJ[LIPNHOMGGHF.HOAOLPGEBKJ].ICGNAJFLAHL(1, "Host Lobby", -150f, 150f, 1.25f, 1.25f);
+                    LIPNHOMGGHF.FKANHDIMMBJ[LIPNHOMGGHF.HOAOLPGEBKJ].ICGNAJFLAHL(1, "Host Lobby", -175f, 100f, 1f, 1f);
                     HostLobbyButton = LIPNHOMGGHF.HOAOLPGEBKJ;
 
                     LIPNHOMGGHF.DFLLBNMHHIH();
-                    LIPNHOMGGHF.FKANHDIMMBJ[LIPNHOMGGHF.HOAOLPGEBKJ].ICGNAJFLAHL(2, "Lobby ID", -450f, 50f, 1.25f, 1.25f);
+                    LIPNHOMGGHF.FKANHDIMMBJ[LIPNHOMGGHF.HOAOLPGEBKJ].ICGNAJFLAHL(2, "Lobby ID (Click to Copy)", -425f, 50f, 1f, 1f);
                     LobbyIDButton = LIPNHOMGGHF.HOAOLPGEBKJ;
 
                     LIPNHOMGGHF.DFLLBNMHHIH();
-                    LIPNHOMGGHF.FKANHDIMMBJ[LIPNHOMGGHF.HOAOLPGEBKJ].ICGNAJFLAHL(1, "Invite Friends", -150f, 50f, 1.25f, 1.25f);
+                    LIPNHOMGGHF.FKANHDIMMBJ[LIPNHOMGGHF.HOAOLPGEBKJ].ICGNAJFLAHL(1, "Invite Friends", -175f, 50f, 1f, 1f);
                     InviteFriendsButton = LIPNHOMGGHF.HOAOLPGEBKJ;
 
                     LIPNHOMGGHF.DFLLBNMHHIH();
-                    LIPNHOMGGHF.FKANHDIMMBJ[LIPNHOMGGHF.HOAOLPGEBKJ].ICGNAJFLAHL(2, "ID To Join", 150f, 150f, 1.25f, 1.25f);
+                    LIPNHOMGGHF.FKANHDIMMBJ[LIPNHOMGGHF.HOAOLPGEBKJ].ICGNAJFLAHL(2, "ID To Join (Click to Paste)", 175f, 100f, 1f, 1f);
                     IDToJoinButton = LIPNHOMGGHF.HOAOLPGEBKJ;
 
                     LIPNHOMGGHF.DFLLBNMHHIH();
-                    LIPNHOMGGHF.FKANHDIMMBJ[LIPNHOMGGHF.HOAOLPGEBKJ].ICGNAJFLAHL(1, "Join Lobby", 450f, 150f, 1.25f, 1.25f);
+                    LIPNHOMGGHF.FKANHDIMMBJ[LIPNHOMGGHF.HOAOLPGEBKJ].ICGNAJFLAHL(1, "Join Lobby", 436f, 100f, 1f, 1f);
                     JoinButton = LIPNHOMGGHF.HOAOLPGEBKJ;
 
                     LIPNHOMGGHF.DFLLBNMHHIH();
@@ -92,6 +171,26 @@ namespace CardGame
                 else
                 {
                     Plugin.EndCardGameNetworking();
+                    if (MPLobbyText != null)
+                    {
+                        UnityEngine.Object.Destroy(MPLobbyText);
+                        MPLobbyText = null;
+                    }
+                    if (LobbyStatusText != null)
+                    {
+                        UnityEngine.Object.Destroy(LobbyStatusText);
+                        LobbyStatusText = null;
+                    }
+                    if (HostText != null)
+                    {
+                        UnityEngine.Object.Destroy(HostText);
+                        HostText = null;
+                    }
+                    if (JoinText != null)
+                    {
+                        UnityEngine.Object.Destroy(JoinText);
+                        JoinText = null;
+                    }
                 }
             }
         }
@@ -110,7 +209,27 @@ namespace CardGame
             }
             if (LIPNHOMGGHF.ODOAPLMOJPD == Plugin.MPLobbyPage)
             {
+                if (Plugin.steamLobby.currentLobbyID == CSteamID.Nil)
+                {
+                    LIPNHOMGGHF.FKANHDIMMBJ[HostTypeButton].AHBNKMMMGFI = 1;
+                    LIPNHOMGGHF.FKANHDIMMBJ[HostLobbyButton].AHBNKMMMGFI = 1;
+                    LIPNHOMGGHF.FKANHDIMMBJ[LobbyIDButton].AHBNKMMMGFI = 0;
+                    LIPNHOMGGHF.FKANHDIMMBJ[InviteFriendsButton].AHBNKMMMGFI = 0;
+                    LIPNHOMGGHF.FKANHDIMMBJ[IDToJoinButton].AHBNKMMMGFI = 1;
+                    LIPNHOMGGHF.FKANHDIMMBJ[JoinButton].AHBNKMMMGFI = 1;
+
+                }
+                else
+                {
+                    LIPNHOMGGHF.FKANHDIMMBJ[HostTypeButton].AHBNKMMMGFI = 0;
+                    LIPNHOMGGHF.FKANHDIMMBJ[HostLobbyButton].AHBNKMMMGFI = 0;
+                    LIPNHOMGGHF.FKANHDIMMBJ[LobbyIDButton].AHBNKMMMGFI = 1;
+                    LIPNHOMGGHF.FKANHDIMMBJ[InviteFriendsButton].AHBNKMMMGFI = 1;
+                    LIPNHOMGGHF.FKANHDIMMBJ[IDToJoinButton].AHBNKMMMGFI = 0;
+                    LIPNHOMGGHF.FKANHDIMMBJ[JoinButton].AHBNKMMMGFI = 0;
+                }
                 HostType = Mathf.RoundToInt(LIPNHOMGGHF.FKANHDIMMBJ[HostTypeButton].ODONMLDCHHF(HostType, 1f, 10f, 0f, 2f, 0));
+
                 switch (HostType)
                 {
                     case 0:
@@ -127,10 +246,18 @@ namespace CardGame
                 {
                     Plugin.steamLobby.StartLobby(HostType);
                 }
-                LIPNHOMGGHF.FKANHDIMMBJ[LobbyIDButton].FFCNPGPALPD = LobbyID;
+                if (HostType == 0)
+                {
+                    LIPNHOMGGHF.FKANHDIMMBJ[LobbyIDButton].FFCNPGPALPD = LobbyID;
+                }
+                else
+                {
+                    LIPNHOMGGHF.FKANHDIMMBJ[LobbyIDButton].FFCNPGPALPD = "";
+                    LIPNHOMGGHF.FKANHDIMMBJ[LobbyIDButton].AHBNKMMMGFI = 0;
+                }
                 if (LIPNHOMGGHF.PIEMLEPEDFN == 5 && LIPNHOMGGHF.FKANHDIMMBJ[LobbyIDButton].CLMDCNDEBGD != 0)
                 {
-                    // Clipboard.SetText("Hello, clipboard"); <- windows only
+                    ClipboardService.SetText(LobbyID); 
                 }
                 if (LIPNHOMGGHF.PIEMLEPEDFN == 5 && LIPNHOMGGHF.FKANHDIMMBJ[InviteFriendsButton].CLMDCNDEBGD != 0)
                 {
@@ -138,86 +265,40 @@ namespace CardGame
                 }
 
 
-                if (LIPNHOMGGHF.NNMDEFLLNBF == IDToJoinButton)
+                if (LIPNHOMGGHF.PIEMLEPEDFN == 5 && LIPNHOMGGHF.FKANHDIMMBJ[IDToJoinButton].CLMDCNDEBGD != 0)
                 {
-                    if (Input.GetKeyDown(KeyCode.Alpha0) || Input.GetKeyDown(KeyCode.Keypad0)) IDToJoin += "0";
-                    if (Input.GetKeyDown(KeyCode.Alpha1) || Input.GetKeyDown(KeyCode.Keypad1)) IDToJoin += "1";
-                    if (Input.GetKeyDown(KeyCode.Alpha2) || Input.GetKeyDown(KeyCode.Keypad2)) IDToJoin += "2";
-                    if (Input.GetKeyDown(KeyCode.Alpha3) || Input.GetKeyDown(KeyCode.Keypad3)) IDToJoin += "3";
-                    if (Input.GetKeyDown(KeyCode.Alpha4) || Input.GetKeyDown(KeyCode.Keypad4)) IDToJoin += "4";
-                    if (Input.GetKeyDown(KeyCode.Alpha5) || Input.GetKeyDown(KeyCode.Keypad5)) IDToJoin += "5";
-                    if (Input.GetKeyDown(KeyCode.Alpha6) || Input.GetKeyDown(KeyCode.Keypad6)) IDToJoin += "6";
-                    if (Input.GetKeyDown(KeyCode.Alpha7) || Input.GetKeyDown(KeyCode.Keypad7)) IDToJoin += "7";
-                    if (Input.GetKeyDown(KeyCode.Alpha8) || Input.GetKeyDown(KeyCode.Keypad8)) IDToJoin += "8";
-                    if (Input.GetKeyDown(KeyCode.Alpha9) || Input.GetKeyDown(KeyCode.Keypad9)) IDToJoin += "9";
-                    if(Input.GetKeyDown(KeyCode.Backspace) && IDToJoin.Length != 0) IDToJoin = IDToJoin.Remove(IDToJoin.Length-1);
+                    IDToJoin = ClipboardService.GetText();
                 }
                 LIPNHOMGGHF.FKANHDIMMBJ[IDToJoinButton].FFCNPGPALPD = IDToJoin;
 
 
                 if (LIPNHOMGGHF.PIEMLEPEDFN == 5 && LIPNHOMGGHF.FKANHDIMMBJ[JoinButton].CLMDCNDEBGD != 0)
-                    {
-                        Plugin.steamLobby.JoinLobby(IDToJoin);
-                    }
-                    if (LIPNHOMGGHF.PIEMLEPEDFN == 5 && LIPNHOMGGHF.FKANHDIMMBJ[SendCardButton].CLMDCNDEBGD != 0)
-                    {
-                        int cardIndex = UnityEngine.Random.Range(0, CardMenu.Cards.Count + 1);
-                        Plugin.steamNetworking.SEND_CARD(CardMenu.Cards[cardIndex]);
-                    }
-
-
-
-
-
-                    
-                    if (LIPNHOMGGHF.PIEMLEPEDFN > 5)
-                    {
-                        LIPNHOMGGHF.PIEMLEPEDFN = 0;
-                    }
-
-
-                    if (LIPNHOMGGHF.PIEMLEPEDFN <= -5)
-                    {
-                        LIPNHOMGGHF.ODOAPLMOJPD = CollectibleCards2.Plugin.CardsMenuPage;
-                        LIPNHOMGGHF.ICGNAJFLAHL(0);
-                    }
+                {
+                    Plugin.steamLobby.JoinLobby(IDToJoin);
                 }
+                if (LIPNHOMGGHF.PIEMLEPEDFN == 5 && LIPNHOMGGHF.FKANHDIMMBJ[SendCardButton].CLMDCNDEBGD != 0)
+                {
+                    int cardIndex = UnityEngine.Random.Range(0, CardMenu.Cards.Count);
+                    Plugin.steamNetworking.StartCoroutine(SendCard(CardMenu.Cards[cardIndex]));
+                }
+
+
+
+
+
+
+                if (LIPNHOMGGHF.PIEMLEPEDFN > 5)
+                {
+                    LIPNHOMGGHF.PIEMLEPEDFN = 0;
+                }
+
+
+                if (LIPNHOMGGHF.PIEMLEPEDFN <= -5)
+                {
+                    LIPNHOMGGHF.ODOAPLMOJPD = CollectibleCards2.Plugin.CardsMenuPage;
+                    LIPNHOMGGHF.ICGNAJFLAHL(0);
+                }
+            }
         }
     }
 }
-/*
- * public static class Clipboard
-{
-    public static void SetText(string text)
-    {
-        var powershell = new Process
-        {
-            StartInfo = new ProcessStartInfo
-            {
-                FileName = "powershell",
-                Arguments = $"-command \"Set-Clipboard -Value \\\"{text}\\\"\""
-            }
-        };
-        powershell.Start();
-        powershell.WaitForExit();
-    }
-
-    public static string GetText()
-    {
-        var powershell = new Process
-        {
-            StartInfo = new ProcessStartInfo
-            {
-                RedirectStandardOutput = true,
-                FileName = "powershell",
-                Arguments = "-command \"Get-Clipboard\""
-            }
-        };
-
-        powershell.Start();
-        string text = powershell.StandardOutput.ReadToEnd();
-        powershell.StandardOutput.Close();
-        powershell.WaitForExit();
-        return text.TrimEnd();
-    }
-}*/

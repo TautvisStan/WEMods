@@ -53,7 +53,7 @@ namespace CardGame
             switch (type)
             {
                 case 0:
-                    SteamMatchmaking.CreateLobby(ELobbyType.k_ELobbyTypeInvisible, 2);
+                    SteamMatchmaking.CreateLobby(ELobbyType.k_ELobbyTypePublic, 2);
                     break;
                 case 1:
                     SteamMatchmaking.CreateLobby(ELobbyType.k_ELobbyTypeFriendsOnly, 2);
@@ -62,8 +62,6 @@ namespace CardGame
                     break;
             }
                 
-            //SteamMatchmaking.CreateLobby(ELobbyType.k_ELobbyTypeFriendsOnly, 2);
-            // Create a public lobby (can be friends-only or private)
         }
         public void InviteFriends()
         {

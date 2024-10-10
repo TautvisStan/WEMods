@@ -26,6 +26,7 @@ namespace CollectibleCards2
         public string Attitude { get; set; }
         public string FrontFinisher { get; set; }
         public string BackFinisher { get; set; }
+        public string CharData { get; set; }
         public CollectibleCard(string fileName, Dictionary<string, string> metadata)
         {
             FileName = fileName;
@@ -44,6 +45,7 @@ namespace CollectibleCards2
             Attitude = metadata["Attitude"];
             FrontFinisher = metadata["FrontFinisher"];
             BackFinisher = metadata["BackFinisher"];
+            CharData = metadata["CharData"];
         }
         //Some kind of caching? But then mem usage goes up...
         public byte[] GetCardBytes()
@@ -60,7 +62,26 @@ namespace CollectibleCards2
             text += GetID();
             text += GetName();
             text += GetFed();
+            if (HasCharData()) text += " *";
             return text.Trim();
+        }
+        public float GetOvr()
+        {
+            return (float.Parse(Popularity) + float.Parse(Strength) + float.Parse(Skill) + float.Parse(Agility) + float.Parse(Stamina) + float.Parse(Attitude)) / 6.0f;
+        }
+        public string GetStatsString()
+        {
+            string text = "";
+            if (Popularity != "" && Strength != "" && Skill != "" && Agility != "" && Stamina != "" && Attitude != "")
+            {
+                text = $"Pop: {Popularity}; Str: {Strength}; Skl: {Skill}; Agl: {Agility}; Sta: {Stamina}; Att: {Attitude}; Ovr: {Math.Round(GetOvr(), 2)}";
+            }
+            return text.Trim();
+        }
+        public bool HasCharData()
+        {
+            if (CharData != "") return true;
+            else return false;
         }
         public bool IsCustom()
         {

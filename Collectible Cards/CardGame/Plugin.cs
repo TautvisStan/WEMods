@@ -14,7 +14,7 @@ namespace CardGame
     {
         public const string PluginGuid = "GeeEm.WrestlingEmpire.CardGame";
         public const string PluginName = "CardGame";
-        public const string PluginVer = "0.0.2";
+        public const string PluginVer = "0.0.3";
 
         internal static ManualLogSource Log;
         internal readonly static Harmony Harmony = new(PluginGuid);
@@ -34,7 +34,6 @@ namespace CardGame
         }
         private void Start()
         {
-            Debug.LogWarning("PREPARING STEAM OBJECT");
             SteamObject = Instantiate(new GameObject("CardGameSteamObject"));
             steamLobby = SteamObject.AddComponent<SteamLobby>();
             steamNetworking = SteamObject.AddComponent<SteamP2PNetworking>();

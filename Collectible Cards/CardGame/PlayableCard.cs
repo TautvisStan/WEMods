@@ -30,7 +30,8 @@ namespace CardGame
         }
         public float CalculateOverall()
         {
-            return (Popularity + Strength + Skill + Agility + Stamina + Attitude) / 6;
+            float stats = (Popularity + Strength + Skill + Agility + Stamina + Attitude) / 6f;
+            return (int)Math.Round(stats, 2);
         }
         public static bool VerifyCard(CollectibleCard card)
         {

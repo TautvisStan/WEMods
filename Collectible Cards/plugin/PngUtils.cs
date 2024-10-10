@@ -3,10 +3,11 @@ using Hjg.Pngcs.Chunks;
 using System;
 using System.Collections.Generic;
 using System.IO;
+using UnityEngine;
 
 namespace CollectibleCards2
 {
-    internal static class PngUtils
+    public static class PngUtils
     {
         public static Dictionary<string, string> GetFullMetadata(string file, Dictionary<string, string> metadataRequest)
         {
@@ -43,7 +44,8 @@ namespace CollectibleCards2
                 { "Stamina", pngmeta.GetTxtForKey("Stamina") },
                 { "Attitude", pngmeta.GetTxtForKey("Attitude") },
                 { "FrontFinisher", pngmeta.GetTxtForKey("FrontFinisher") },
-                { "BackFinisher", pngmeta.GetTxtForKey("BackFinisher") }
+                { "BackFinisher", pngmeta.GetTxtForKey("BackFinisher") },
+                { "CharData", pngmeta.GetTxtForKey("CharData") }
             };
 
             pngr.End();
@@ -91,6 +93,18 @@ namespace CollectibleCards2
                 { key, value }
             };
             SaveWithMetadata(origFilename, bytes, data);
+        }
+        public static Texture2D ResizeTexture(Texture2D original, int width, int height)
+        {
+            RenderTexture rt = RenderTexture.GetTemporary(width, height);
+            RenderTexture.active = rt;
+            Graphics.Blit(original, rt);
+            Texture2D resized = new(width, height);
+            resized.ReadPixels(new Rect(0, 0, width, height), 0, 0);
+            resized.Apply();
+            RenderTexture.active = null;
+            RenderTexture.ReleaseTemporary(rt);
+            return resized;
         }
 
     }

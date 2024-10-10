@@ -47,12 +47,9 @@ namespace CollectibleCards2
                 var chardatafileobj = constructor.Invoke();
                 FieldInfo CharacterDataField = chardatafileobj.GetType().GetField("characterData");
                 FieldInfo OverrideModeField = chardatafileobj.GetType().GetField("overrideMode");
-                Debug.LogWarning(CharacterDataField != null);
-                Debug.LogWarning(OverrideModeField != null);
-
                 CharacterDataField.SetValue(chardatafileobj, chardataobj);
                 OverrideModeField.SetValue(chardatafileobj, "append");
-                json = JsonConvert.SerializeObject(chardatafileobj, Newtonsoft.Json.Formatting.Indented);
+                json = JsonConvert.SerializeObject(chardatafileobj);
             }
             catch (Exception e)
             {
