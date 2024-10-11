@@ -23,7 +23,6 @@ namespace CardGame
         public static int InviteFriendsButton { get; set; }
         public static int IDToJoinButton { get; set; }
         public static int JoinButton { get; set; }
-        public static int SendCardButton { get; set; }
 
 
         public static int HostType { get; set; } = 0;
@@ -35,12 +34,6 @@ namespace CardGame
         public static GameObject JoinText { get; set; } = null;
         public static GameObject LobbyStatusText { get; set; } = null;
 
-        public static IEnumerator SendCard(CollectibleCard card)
-        {
-            Plugin.steamNetworking.SEND_CARD(card);
-            yield return new WaitForSecondsRealtime(1f);
-            Plugin.steamNetworking.SendFULLTextureToPlayers(card);
-        }
         public static void DisplayLobbyTextTop()
         {
             if (MPLobbyText == null)
@@ -105,6 +98,32 @@ namespace CardGame
             rectTransform.sizeDelta = new Vector2(300, 0);
             rectTransform.anchoredPosition = new Vector2(300, 150);
         }
+        public static void DisplayStatusText()
+        {
+            if (JoinText == null)
+            {
+                JoinText = new GameObject("Lobby Status");
+                JoinText.transform.SetParent(LIPNHOMGGHF.JPABICKOAEO.transform, false);
+                JoinText.AddComponent<Text>().font = MCDCDEBALPI.IMPJPDIEKDF[1].GetComponentInChildren<Text>().font;
+                JoinText.AddComponent<Outline>().effectColor = new Color(0, 0, 0, 1);
+                JoinText.GetComponent<Outline>().effectDistance = new Vector2(1, 1);
+                JoinText.AddComponent<Shadow>().effectDistance = new Vector2(3, -3);
+            }
+            Text text = JoinText.GetComponent<Text>();
+            text.text = "";
+            text.horizontalOverflow = HorizontalWrapMode.Overflow;
+            text.verticalOverflow = VerticalWrapMode.Overflow;
+            text.alignment = TextAnchor.MiddleCenter;
+            text.fontSize = 30;
+            RectTransform rectTransform = text.GetComponent<RectTransform>();
+            rectTransform.sizeDelta = new Vector2(300, 0);
+            rectTransform.anchoredPosition = new Vector2(0, -300);
+        }
+        public static void UpdateStatusText()
+        {
+            if(JoinText != null)
+                JoinText.GetComponent<Text>().text = "Lobby Status: " + Plugin.steamLobby.GetLobbyStatusText();
+        }
         //disabling annoying audio
         [HarmonyPatch(typeof(CHLPMKEGJBJ), nameof(CHLPMKEGJBJ.DNNPEAOCDOG))]
         [HarmonyPrefix]
@@ -139,6 +158,7 @@ namespace CardGame
                     DisplayLobbyTextTop();
                     DisplayHostText();
                     DisplayJoinText();
+                    DisplayStatusText();
                     LIPNHOMGGHF.DFLLBNMHHIH();
                     LIPNHOMGGHF.FKANHDIMMBJ[LIPNHOMGGHF.HOAOLPGEBKJ].ICGNAJFLAHL(2, "Lobby Type", -425f, 100f, 1f, 1f);
                     HostTypeButton = LIPNHOMGGHF.HOAOLPGEBKJ;
@@ -163,14 +183,14 @@ namespace CardGame
                     LIPNHOMGGHF.FKANHDIMMBJ[LIPNHOMGGHF.HOAOLPGEBKJ].ICGNAJFLAHL(1, "Join Lobby", 436f, 100f, 1f, 1f);
                     JoinButton = LIPNHOMGGHF.HOAOLPGEBKJ;
 
-                    LIPNHOMGGHF.DFLLBNMHHIH();
-                    LIPNHOMGGHF.FKANHDIMMBJ[LIPNHOMGGHF.HOAOLPGEBKJ].ICGNAJFLAHL(1, "Send a Random Card", 0f, -100f, 1.5f, 1.5f);
-                    SendCardButton = LIPNHOMGGHF.HOAOLPGEBKJ;
                     Plugin.InitCardGameNetworking();
                 }
                 else
                 {
-                    Plugin.EndCardGameNetworking();
+                    if(LIPNHOMGGHF.ODOAPLMOJPD != Plugin.GameplayPage)
+                    {
+                        Plugin.EndCardGameNetworking();
+                    }
                     if (MPLobbyText != null)
                     {
                         UnityEngine.Object.Destroy(MPLobbyText);
@@ -209,6 +229,7 @@ namespace CardGame
             }
             if (LIPNHOMGGHF.ODOAPLMOJPD == Plugin.MPLobbyPage)
             {
+                UpdateStatusText();
                 if (Plugin.steamLobby.currentLobbyID == CSteamID.Nil)
                 {
                     LIPNHOMGGHF.FKANHDIMMBJ[HostTypeButton].AHBNKMMMGFI = 1;
@@ -276,14 +297,11 @@ namespace CardGame
                 {
                     Plugin.steamLobby.JoinLobby(IDToJoin);
                 }
-                if (LIPNHOMGGHF.PIEMLEPEDFN == 5 && LIPNHOMGGHF.FKANHDIMMBJ[SendCardButton].CLMDCNDEBGD != 0)
+                if(Plugin.steamLobby.ConnectedPlayers == Gameplay.Players)
                 {
-                    int cardIndex = UnityEngine.Random.Range(0, CardMenu.Cards.Count);
-                    Plugin.steamNetworking.StartCoroutine(SendCard(CardMenu.Cards[cardIndex]));
+                    LIPNHOMGGHF.ODOAPLMOJPD = Plugin.GameplayPage;
+                    LIPNHOMGGHF.ICGNAJFLAHL(0);
                 }
-
-
-
 
 
 

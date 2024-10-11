@@ -14,6 +14,7 @@ namespace CardGame
         protected Callback<GameLobbyJoinRequested_t> m_GameLobbyJoinRequested;
 
         internal CSteamID currentLobbyID;
+        public int ConnectedPlayers = 0;
         public int SteamLobbyMemberIndex { get; set; } = -1;
 
         private const string HostAddressKey = "HostAddress";
@@ -63,6 +64,13 @@ namespace CardGame
             }
                 
         }
+        public string GetLobbyStatusText()
+        {
+            string text = "";
+            if (currentLobbyID == CSteamID.Nil) text = "Not in a lobby";
+            if (currentLobbyID != CSteamID.Nil) text = "In a lobby. Connected players: " + ConnectedPlayers;
+            return text;
+        }
         public void InviteFriends()
         {
             SteamFriends.ActivateGameOverlayInviteDialog(currentLobbyID);
@@ -75,6 +83,7 @@ namespace CardGame
                 Debug.LogWarning("Left the lobby: " + currentLobbyID);
                 currentLobbyID = CSteamID.Nil;  // Clear the lobby ID after leaving
                 SteamLobbyMemberIndex = -1;
+                ConnectedPlayers = 0;
             }
         }
         void OnLobbyCreated(LobbyCreated_t result)
@@ -111,7 +120,7 @@ namespace CardGame
                 CSteamID memberID = SteamMatchmaking.GetLobbyMemberByIndex(currentLobbyID, i);
                 Debug.LogWarning("Lobby Member: " + SteamFriends.GetFriendPersonaName(memberID));
             }
-            
+            ConnectedPlayers = memberCount;
 
             // If you are not the host, get the host's Steam ID
             if (!SteamUser.GetSteamID().Equals(SteamMatchmaking.GetLobbyOwner(new CSteamID(result.m_ulSteamIDLobby))))
@@ -133,12 +142,14 @@ namespace CardGame
             if (stateChange == EChatMemberStateChange.k_EChatMemberStateChangeEntered)
             {
                 Debug.LogWarning("User joined: " + SteamFriends.GetFriendPersonaName(userChanged));
+                ConnectedPlayers++;
             }
             // Check if the user left or was disconnected
             if (stateChange == EChatMemberStateChange.k_EChatMemberStateChangeLeft ||
                 stateChange == EChatMemberStateChange.k_EChatMemberStateChangeDisconnected)
             {
                 Debug.LogWarning("Player left or disconnected: " + SteamFriends.GetFriendPersonaName(userChanged));
+                ConnectedPlayers--;
 
                 // Check if this is the host (lobby will be destroyed if the host leaves)
                 if (userChanged == SteamUser.GetSteamID())

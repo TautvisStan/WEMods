@@ -31,7 +31,13 @@ namespace CardGame
         public float CalculateOverall()
         {
             float stats = (Popularity + Strength + Skill + Agility + Stamina + Attitude) / 6f;
-            return (int)Math.Round(stats, 2);
+            return (float)Math.Round(stats, 2);
+        }
+        public string GetStatsString()
+        {
+            string text = "";
+            text = $"Pop: {Popularity}; Str: {Strength}; Skl: {Skill}; Agl: {Agility}; Sta: {Stamina}; Att: {Attitude}; Ovr: {CalculateOverall()}";
+            return text.Trim();
         }
         public static bool VerifyCard(CollectibleCard card)
         {

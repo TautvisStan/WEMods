@@ -86,12 +86,12 @@ namespace CardGame
 
             Debug.Log("Texture sent in " + numChunks + " chunks.");
         }
-        public void SendFULLTextureToPlayers(CollectibleCard card)
+        public void SendFULLTextureToPlayers(Texture2D texture2D)
         {
-            byte[] array2 = card.GetCardBytes();
+        //    byte[] array2 = card.GetCardBytes();
         //    Texture2D texture2D = new Texture2D(1, 1);
         //    ImageConversion.LoadImage(texture2D, array2);
-       //     byte[] textureBytes = texture2D.EncodeToPNG();
+            byte[] array2 = texture2D.EncodeToPNG();
             NetworkMessage message = new(NetworkMessage.TYPE_TEXTURE, SteamUser.GetSteamID(), lobby.SteamLobbyMemberIndex, array2);
             string m = JsonConvert.SerializeObject(message);
             byte[] data = Encoding.UTF8.GetBytes(m);
@@ -151,18 +151,19 @@ namespace CardGame
                         {
                             Debug.LogWarning($"IMAGE DATA RECEIVED! TRYING TO SAVE TEXTURE");
                             PngUtils.SaveWithMetadata(Path.Combine(Plugin.PluginPath, "downloaded.png"), networkMessage.GetImageBytes(), new Dictionary<string, string>());
+                            Gameplay.ReceiveCardTexture(networkMessage.GetImageBytes(), networkMessage.LobbyIndex);
                         }
                     }
                 }
             }
         }
-        public void SEND_CARD(CollectibleCard card)
+        public void SEND_CARD(PlayableCard card)
         {
-            PlayableCard playablecard = new(card);
-            playablecard.WrestlerName = playablecard.WrestlerName.Trim();
-            string encodedCard = JsonConvert.SerializeObject(playablecard);
+           // PlayableCard playablecard = new(card);
+            card.WrestlerName = card.WrestlerName.Trim();
+            string encodedCard = JsonConvert.SerializeObject(card);
             NetworkMessage message = new(NetworkMessage.TYPE_CARD, SteamUser.GetSteamID(), lobby.SteamLobbyMemberIndex, encodedCard);
-            Debug.LogWarning($"Sending card: {playablecard.WrestlerName}");
+            Debug.LogWarning($"Sending card: {card.WrestlerName}");
             SendMessageToAll(JsonConvert.SerializeObject(message));
         }
         public void SEND_TEXT(string text)
