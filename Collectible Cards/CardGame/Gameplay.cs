@@ -236,6 +236,14 @@ namespace CardGame
         {
             Deck.Clear();
 
+
+            foreach (CollectibleCard card in CollectibleCards2.CardMenu.Cards)
+            {
+                if (PlayableCard.VerifyCard(card)) Deck.Add(new PlayableCard(card));
+            }
+        }
+        public static void FillupDeckTextures()
+        {
             for (int i = 0; i < DeckCardTexture.Count; i++)
             {
                 if (DeckCardTexture[i] != null)
@@ -247,9 +255,7 @@ namespace CardGame
             DeckCardTexture = new();
             for (int i = 0; i < 10; i++)
             {
-                int index = UnityEngine.Random.Range(0, CardMenu.Cards.Count);
-                Deck.Add(new PlayableCard(CardMenu.Cards[index]));
-                AddResizedTexture(CardMenu.Cards[index]);
+                AddResizedTexture(CardMenu.Cards[Deck[i].LocalIndex]);
             }
         }
         public static void AddResizedTexture(CollectibleCard card)

@@ -1,7 +1,6 @@
 ﻿using System;
 using System.Collections;
 using System.Collections.Generic;
-using System.Diagnostics;
 using System.Text;
 using CollectibleCards2;
 using HarmonyLib;
@@ -100,16 +99,16 @@ namespace CardGame
         }
         public static void DisplayStatusText()
         {
-            if (JoinText == null)
+            if (LobbyStatusText == null)
             {
-                JoinText = new GameObject("Lobby Status");
-                JoinText.transform.SetParent(LIPNHOMGGHF.JPABICKOAEO.transform, false);
-                JoinText.AddComponent<Text>().font = MCDCDEBALPI.IMPJPDIEKDF[1].GetComponentInChildren<Text>().font;
-                JoinText.AddComponent<Outline>().effectColor = new Color(0, 0, 0, 1);
-                JoinText.GetComponent<Outline>().effectDistance = new Vector2(1, 1);
-                JoinText.AddComponent<Shadow>().effectDistance = new Vector2(3, -3);
+                LobbyStatusText = new GameObject("Lobby Status");
+                LobbyStatusText.transform.SetParent(LIPNHOMGGHF.JPABICKOAEO.transform, false);
+                LobbyStatusText.AddComponent<Text>().font = MCDCDEBALPI.IMPJPDIEKDF[1].GetComponentInChildren<Text>().font;
+                LobbyStatusText.AddComponent<Outline>().effectColor = new Color(0, 0, 0, 1);
+                LobbyStatusText.GetComponent<Outline>().effectDistance = new Vector2(1, 1);
+                LobbyStatusText.AddComponent<Shadow>().effectDistance = new Vector2(3, -3);
             }
-            Text text = JoinText.GetComponent<Text>();
+            Text text = LobbyStatusText.GetComponent<Text>();
             text.text = "";
             text.horizontalOverflow = HorizontalWrapMode.Overflow;
             text.verticalOverflow = VerticalWrapMode.Overflow;
@@ -121,8 +120,8 @@ namespace CardGame
         }
         public static void UpdateStatusText()
         {
-            if(JoinText != null)
-                JoinText.GetComponent<Text>().text = "Lobby Status: " + Plugin.steamLobby.GetLobbyStatusText();
+            if(LobbyStatusText != null)
+                LobbyStatusText.GetComponent<Text>().text = "Lobby Status: " + Plugin.steamLobby.GetLobbyStatusText();
         }
         //disabling annoying audio
         [HarmonyPatch(typeof(CHLPMKEGJBJ), nameof(CHLPMKEGJBJ.DNNPEAOCDOG))]
@@ -147,9 +146,16 @@ namespace CardGame
             {
                 if (LIPNHOMGGHF.ODOAPLMOJPD == CollectibleCards2.Plugin.CardsMenuPage)
                 {
+
                     LIPNHOMGGHF.DFLLBNMHHIH();
-                    LIPNHOMGGHF.FKANHDIMMBJ[LIPNHOMGGHF.HOAOLPGEBKJ].ICGNAJFLAHL(1, "MP Lobby", 350f, -150f, 1.5f, 1.5f);
+                    LIPNHOMGGHF.FKANHDIMMBJ[LIPNHOMGGHF.HOAOLPGEBKJ].ICGNAJFLAHL(1, "Multiplayer Card Game", 350f, -150f, 1.5f, 1.5f);
                     LobbyButton = LIPNHOMGGHF.HOAOLPGEBKJ;
+                    Gameplay.FillupDeck();
+                    Debug.LogWarning("FOUND CARDS " + Gameplay.Deck.Count);
+                    if (Gameplay.Deck.Count < 10)
+                    {
+                        LIPNHOMGGHF.FKANHDIMMBJ[LobbyButton].AHBNKMMMGFI = 0;
+                    }
                 }
                 if (LIPNHOMGGHF.ODOAPLMOJPD == Plugin.MPLobbyPage)
                 {

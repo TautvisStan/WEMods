@@ -4,7 +4,7 @@
         <AssemblyName>IncreasedSliderLimits</AssemblyName>
         <AssemblyVersion>1.0.0</AssemblyVersion>
         <ReleaseVersion>1.0.0</ReleaseVersion>
-        <TargetFramework>netstandard2.0</TargetFramework>
+        <TargetFramework>netstandard2.1</TargetFramework>
         <LangVersion>latest</LangVersion>
         <AllowUnsafeBlocks>true</AllowUnsafeBlocks>
         <DebugType>full</DebugType>
@@ -26,7 +26,7 @@
 
     <ItemGroup>
       <Reference Include="Assembly-CSharp">
-        <HintPath>lib\Assembly-CSharp_public.dll</HintPath>
+        <HintPath>..\..\..\..\..\..\Program Files (x86)\Steam\steamapps\common\Wrestling Empire\Wrestling Empire_Data\Managed\Assembly-CSharp.dll</HintPath>
       </Reference>
     </ItemGroup>
 

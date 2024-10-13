@@ -8,6 +8,7 @@ namespace CardGame
     public class PlayableCard
     {
         public string WrestlerName { get; set; }
+        internal int LocalIndex { get; set; }
         public int Popularity { get; set; }
         public int Strength { get; set; }
         public int Skill { get; set; }
@@ -17,6 +18,7 @@ namespace CardGame
         public PlayableCard(CollectibleCard card)
         {
             WrestlerName = card.GetName();
+            LocalIndex = card.Index;
             Popularity = int.Parse(card.Popularity);
             Strength = int.Parse(card.Strength);
             Skill = int.Parse(card.Skill);
