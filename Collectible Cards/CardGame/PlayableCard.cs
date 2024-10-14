@@ -18,7 +18,7 @@ namespace CardGame
         public PlayableCard(CollectibleCard card)
         {
             WrestlerName = card.GetName();
-            LocalIndex = card.Index;
+            LocalIndex = card.Index-1;
             Popularity = int.Parse(card.Popularity);
             Strength = int.Parse(card.Strength);
             Skill = int.Parse(card.Skill);

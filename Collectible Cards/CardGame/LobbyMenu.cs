@@ -32,6 +32,7 @@ namespace CardGame
         public static GameObject HostText { get; set; } = null;
         public static GameObject JoinText { get; set; } = null;
         public static GameObject LobbyStatusText { get; set; } = null;
+        private static bool CardsChecked = false;
 
         public static void DisplayLobbyTextTop()
         {
@@ -45,7 +46,7 @@ namespace CardGame
                 MPLobbyText.AddComponent<Shadow>().effectDistance = new Vector2(3, -3);
             }
             Text text = MPLobbyText.GetComponent<Text>();
-            text.text = "Multiplayer Lobby Menu";
+            text.text = "Multiplayer Card Game Lobby Menu";
             text.horizontalOverflow = HorizontalWrapMode.Overflow;
             text.verticalOverflow = VerticalWrapMode.Overflow;
             text.alignment = TextAnchor.MiddleCenter;
@@ -150,12 +151,8 @@ namespace CardGame
                     LIPNHOMGGHF.DFLLBNMHHIH();
                     LIPNHOMGGHF.FKANHDIMMBJ[LIPNHOMGGHF.HOAOLPGEBKJ].ICGNAJFLAHL(1, "Multiplayer Card Game", 350f, -150f, 1.5f, 1.5f);
                     LobbyButton = LIPNHOMGGHF.HOAOLPGEBKJ;
-                    Gameplay.FillupDeck();
-                    Debug.LogWarning("FOUND CARDS " + Gameplay.Deck.Count);
-                    if (Gameplay.Deck.Count < 10)
-                    {
-                        LIPNHOMGGHF.FKANHDIMMBJ[LobbyButton].AHBNKMMMGFI = 0;
-                    }
+                    CardsChecked = false;
+
                 }
                 if (LIPNHOMGGHF.ODOAPLMOJPD == Plugin.MPLobbyPage)
                 {
@@ -232,6 +229,17 @@ namespace CardGame
                     LIPNHOMGGHF.ODOAPLMOJPD = Plugin.MPLobbyPage;
                     LIPNHOMGGHF.ICGNAJFLAHL(0);
                 }
+                if(!CardsChecked)
+                {
+                    Debug.LogWarning("CHECKING MP CARDS");
+                    Gameplay.FillupDeck();
+                    Debug.LogWarning("FOUND CARDS " + Gameplay.Deck.Count);
+                    if (Gameplay.Deck.Count < 10)
+                    {
+                        LIPNHOMGGHF.FKANHDIMMBJ[LobbyButton].AHBNKMMMGFI = 0;
+                    }
+                    CardsChecked = true;
+                }
             }
             if (LIPNHOMGGHF.ODOAPLMOJPD == Plugin.MPLobbyPage)
             {
@@ -303,7 +311,7 @@ namespace CardGame
                 {
                     Plugin.steamLobby.JoinLobby(IDToJoin);
                 }
-                if(Plugin.steamLobby.ConnectedPlayers == Gameplay.Players)
+                if(Plugin.steamLobby.ConnectedPlayers == 1/*Gameplay.Players*/)
                 {
                     LIPNHOMGGHF.ODOAPLMOJPD = Plugin.GameplayPage;
                     LIPNHOMGGHF.ICGNAJFLAHL(0);

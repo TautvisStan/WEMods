@@ -20,6 +20,8 @@ namespace CardGame
         public static List<Texture2D> DeckCardTexture { get; set; } = new();
         public static int P1Score { get; set; } = 0;
         public static int P2Score { get; set; } = 0;
+        public static int P1Total { get; set; } = 0;
+        public static int P2Total { get; set; } = 0;
         public static GameObject ScoreText { get; set;} = null;
         public static PlayableCardDisplay[] DeckCardElements = new PlayableCardDisplay[3];
 
@@ -146,7 +148,21 @@ namespace CardGame
                 DeckCardElements[i].Cleanup();
             }
         }
-
+        public static void RandomizeDeck()
+        {
+            int n = Deck.Count;
+            while (n > 0)
+            {
+                int k = UnityEngine.Random.Range(0, n-- +1);
+                (Deck[n], Deck[k]) = (Deck[k], Deck[n]);
+            }
+            List<PlayableCard> ProperDeck = new();
+            for (int i = 0; i < 10; i++)
+            {
+                ProperDeck.Add(Deck[i]);
+            }
+            Deck = ProperDeck;
+        }
         public static void PlaceCards()
         {
             for (int i = 0; i < 3; i++)
@@ -188,7 +204,8 @@ namespace CardGame
             {
                 if (LIPNHOMGGHF.ODOAPLMOJPD == Plugin.GameplayPage)
                 {
-                    FillupDeck();
+                    RandomizeDeck();
+                    FillupDeckTextures();
                     PlaceCards();
                     SetupCards();
 
@@ -244,7 +261,8 @@ namespace CardGame
         }
         public static void FillupDeckTextures()
         {
-            for (int i = 0; i < DeckCardTexture.Count; i++)
+            Debug.LogWarning("TRYING TO FILL DECK TEXTURES, DECK SIZE " + Deck.Count);
+            for (int i = 0; i < DeckCardTexture.Count; i++)  
             {
                 if (DeckCardTexture[i] != null)
                 {
@@ -255,6 +273,7 @@ namespace CardGame
             DeckCardTexture = new();
             for (int i = 0; i < 10; i++)
             {
+                Debug.LogWarning(i + " " + Deck[i].LocalIndex);
                 AddResizedTexture(CardMenu.Cards[Deck[i].LocalIndex]);
             }
         }
