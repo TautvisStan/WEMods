@@ -141,7 +141,7 @@ namespace CardGame
                             PlayableCard receivedCard = null;
                             receivedCard = JsonConvert.DeserializeObject<PlayableCard>(content);
                             Debug.LogWarning($"CARD RECEIVED: {receivedCard.WrestlerName} from {remoteID} (lobby index {networkMessage.LobbyIndex})");
-                            Gameplay.ReceiveCard(receivedCard, networkMessage.LobbyIndex);
+                            SingleRound.ReceiveCard(receivedCard, networkMessage.LobbyIndex);
                         }
                         if (networkMessage.Type == NetworkMessage.TYPE_TEXT_MESSAGE)
                         { 
@@ -151,7 +151,7 @@ namespace CardGame
                         {
                             Debug.LogWarning($"IMAGE DATA RECEIVED! TRYING TO SAVE TEXTURE");
                             PngUtils.SaveWithMetadata(Path.Combine(Plugin.PluginPath, "downloaded.png"), networkMessage.GetImageBytes(), new Dictionary<string, string>());
-                            Gameplay.ReceiveCardTexture(networkMessage.GetImageBytes(), networkMessage.LobbyIndex);
+                            SingleRound.ReceiveCardTexture(networkMessage.GetImageBytes(), networkMessage.LobbyIndex);
                         }
                     }
                 }

@@ -8,24 +8,26 @@ using System.Reflection;
 using HarmonyLib;
 using UnityEngine.UI;
 using UnityEngine.XR;
+using Steamworks;
 
 namespace CardGame
 {
     [HarmonyPatch]
     public static class Gameplay
     {
+        
         public static int Players { get; set; } = 2;
-        public static PlayableCard[] PlayedCards { get; set; } = null;
+        
         public static List<PlayableCard> Deck { get; set; } = new();
         public static List<Texture2D> DeckCardTexture { get; set; } = new();
-        public static int P1Score { get; set; } = 0;
-        public static int P2Score { get; set; } = 0;
+
         public static int P1Total { get; set; } = 0;
         public static int P2Total { get; set; } = 0;
         public static GameObject ScoreText { get; set;} = null;
         public static PlayableCardDisplay[] DeckCardElements = new PlayableCardDisplay[3];
 
-        public static PlayableCardDisplay[] PlayedCardElements = new PlayableCardDisplay[2];
+
+
         public class PlayableCardDisplay
         {
             public int DisplayIndex;
@@ -107,10 +109,9 @@ namespace CardGame
                             Debug.LogWarning("CLICKED ON CARD " + DisplayIndex);
                             Plugin.steamNetworking.SEND_CARD(Card);
                             Plugin.steamNetworking.SendFULLTextureToPlayers(texture2D);
-                            PlayedCardElements[Plugin.steamLobby.SteamLobbyMemberIndex].Card = Card;
-                            PlayedCardElements[Plugin.steamLobby.SteamLobbyMemberIndex].texture2D = texture2D;
-                            PlayedCardElements[Plugin.steamLobby.SteamLobbyMemberIndex].DisplayCard();
-                            
+                            SingleRound.ReceiveCard(Card, Plugin.steamLobby.SteamLobbyMemberIndex);
+                            SingleRound.ReceiveCardTexture(texture2D.EncodeToPNG(), Plugin.steamLobby.SteamLobbyMemberIndex);
+                            RemoveCardFromDeck(DisplayIndex);
                         }
                     }
                 }
@@ -151,17 +152,37 @@ namespace CardGame
         public static void RandomizeDeck()
         {
             int n = Deck.Count;
-            while (n > 0)
+            while (n > 1)
             {
-                int k = UnityEngine.Random.Range(0, n-- +1);
+                int k = UnityEngine.Random.Range(0, n--);
+                Debug.LogWarning(n + " " + k);
                 (Deck[n], Deck[k]) = (Deck[k], Deck[n]);
             }
             List<PlayableCard> ProperDeck = new();
             for (int i = 0; i < 10; i++)
             {
+                Debug.LogWarning(i);
                 ProperDeck.Add(Deck[i]);
             }
             Deck = ProperDeck;
+        }
+        public static void RemoveCardFromDeck(int index)
+        {
+            Deck.RemoveAt(index);
+            GameObject.Destroy(DeckCardTexture[index]);
+            DeckCardTexture.RemoveAt(index);
+            for (int i = 0; i < 3; i++)
+            {
+                if (i < Deck.Count)
+                {
+                    DeckCardElements[i].Card = Deck[i];
+                    DeckCardElements[i].DisplayCard();
+                }
+                else
+                {
+                    DeckCardElements[i].Cleanup();
+                }
+            }
         }
         public static void PlaceCards()
         {
@@ -181,16 +202,16 @@ namespace CardGame
             }
             for (int i = 0; i < 2; i++)
             {
-                if (PlayedCardElements[i] == null)
+                if (SingleRound.PlayedCardElements[i] == null)
                 {
-                    PlayedCardElements[i] = new();
-                    PlayedCardElements[i].DisplayIndex = -1;
+                    SingleRound.PlayedCardElements[i] = new();
+                    SingleRound.PlayedCardElements[i].DisplayIndex = -1;
                     int col = i;
                     int x;
                     int y;
                     y = -200;
                     x = -350 + (700 * col);
-                    PlayedCardElements[i].Position = new Vector2(x, y);
+                    SingleRound.PlayedCardElements[i].Position = new Vector2(x, y);
 
                 }
             }
@@ -242,13 +263,7 @@ namespace CardGame
                 return true;
             }
         }
-        public static void ResetPlayedCards()
-        {
-            for (int i = 0; i < Players; i++) 
-            {
-                PlayedCards[i] = null;
-            }
-        }
+
         public static void FillupDeck()
         {
             Deck.Clear();
@@ -286,83 +301,6 @@ namespace CardGame
             GameObject.Destroy(texture2D);
             texture2D = null;
         }
-        public static void ReceiveCard(PlayableCard card, int playerIndex)
-        {
-            if(PlayedCards == null)
-            {
-                PlayedCards = new PlayableCard[Players];
-            }
-            PlayedCards[playerIndex] = card;
-            PlayedCardElements[playerIndex].Card = card;
-            if (PlayedCards[0] != null && PlayedCards[1] != null) 
-            {
-                CompareCards(PlayedCards[0], PlayedCards[1]);
-                ResetPlayedCards();
-            }
-        }
-        public static void ReceiveCardTexture(byte[] bytes, int playerIndex)
-        {
-            if (PlayedCardElements[playerIndex].texture2D == null) PlayedCardElements[playerIndex].texture2D = new Texture2D(1, 1);
-            ImageConversion.LoadImage(PlayedCardElements[playerIndex].texture2D, bytes);
-            PlayedCardElements[playerIndex].DisplayCard();
-        }
-        public static void CompareCards(PlayableCard card1,  PlayableCard card2)
-        {
-            Debug.LogWarning("Comparing cards...");
-            Debug.LogWarning($"Card 1: {card1.WrestlerName}");
-            Debug.LogWarning($"Card 2: {card2.WrestlerName}");
 
-            CompareStat("Popularity", card1.Popularity, card2.Popularity);
-            CompareStat("Strength", card1.Strength, card2.Strength);
-            CompareStat("Skill", card1.Skill, card2.Skill);
-            CompareStat("Agility", card1.Agility, card2.Agility);
-            CompareStat("Stamina", card1.Stamina, card2.Stamina);
-            CompareStat("Attitude", card1.Attitude, card2.Attitude);
-            if(P1Score == P2Score)
-            {
-                Debug.LogWarning("Bonus!");
-                CompareStat("Overall", card1.CalculateOverall(), card2.CalculateOverall());
-            }
-            if(P1Score == P2Score) 
-            {
-                Debug.LogWarning("THIS ROUND WAS A DRAW!");
-            }
-            else if (P1Score > P2Score)
-            {
-                Debug.LogWarning("P1 Wins!");
-            }
-            else
-            {
-                Debug.LogWarning("P2 Wins!");
-            }
-            P1Score = 0;
-            P2Score = 0;
-        }
-        public static void CompareStat(string stat, float card1stat, float card2stat)
-        {
-            Debug.LogWarning($"Comparing {stat}: {card1stat} vs {card2stat}");
-            int result = CompareSingleNumbers(card1stat, card2stat);
-            if (result < 0)
-            {
-                Debug.LogWarning("Card 1 wins.");
-                P1Score++;
-            }
-            else if (result > 0)
-            {
-                Debug.LogWarning("Card 2 wins.");
-                P2Score++;
-            }
-            else
-            {
-                Debug.LogWarning("Draw!");
-            }
-            Debug.LogWarning($"Score: {P1Score}-{P2Score}");
-        }
-        public static int CompareSingleNumbers(float a, float b)
-        {
-            if (a > b) { return -1; }
-            else if (a < b) { return 1; }
-            else { return 0; }
-        }
     }
 }
