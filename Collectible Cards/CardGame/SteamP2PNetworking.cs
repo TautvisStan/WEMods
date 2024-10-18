@@ -147,6 +147,11 @@ namespace CardGame
                         { 
                             Debug.LogWarning($"MESSAGE RECEIVED: '{networkMessage.Content}' from {remoteID} (lobby index {networkMessage.LobbyIndex})");
                         }
+                        if (networkMessage.Type == NetworkMessage.TYPE_READY)
+                        {
+                            Debug.LogWarning($"Player is ready: {remoteID} (lobby index {networkMessage.LobbyIndex})");
+                            SingleRound.ReceiveReady(networkMessage.LobbyIndex);
+                        }
                         if (networkMessage.Type == NetworkMessage.TYPE_TEXTURE)
                         {
                             Debug.LogWarning($"IMAGE DATA RECEIVED! TRYING TO SAVE TEXTURE");
@@ -170,6 +175,12 @@ namespace CardGame
         {
             NetworkMessage message = new(NetworkMessage.TYPE_TEXT_MESSAGE, SteamUser.GetSteamID(), lobby.SteamLobbyMemberIndex, text);
             Debug.LogWarning($"Sending text message: {message}");
+            SendMessageToAll(JsonConvert.SerializeObject(message));
+        }
+        public void SEND_READY()
+        {
+            NetworkMessage message = new(NetworkMessage.TYPE_READY, SteamUser.GetSteamID(), lobby.SteamLobbyMemberIndex, "");
+            Debug.LogWarning($"Sending ready message");
             SendMessageToAll(JsonConvert.SerializeObject(message));
         }
         public void SendMessageToAll(string message)

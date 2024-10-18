@@ -311,7 +311,7 @@ namespace CardGame
                 {
                     Plugin.steamLobby.JoinLobby(IDToJoin);
                 }
-                if(Plugin.steamLobby.ConnectedPlayers == 1/*Gameplay.Players*/)
+                if(Plugin.steamLobby.ConnectedPlayers == Gameplay.Players)
                 {
                     LIPNHOMGGHF.ODOAPLMOJPD = Plugin.GameplayPage;
                     LIPNHOMGGHF.ICGNAJFLAHL(0);

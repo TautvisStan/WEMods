@@ -46,7 +46,6 @@ namespace CardGame
                     rectTransform.anchoredPosition = Position;
                     rawImage.transform.SetAsLastSibling();
                     DisplayCardInfo();
-                    Debug.LogWarning(rawImage.texture);
                 }
 
             }
@@ -64,20 +63,20 @@ namespace CardGame
 
                 }
                 Text text = CardStats.GetComponent<Text>();
-                text.text = $"{Card.WrestlerName}\n{Card.GetStatsString()}";
+                text.text = $"{Card.WrestlerName}\nPop: {Card.Popularity}\nStr: {Card.Strength}\nSkl: {Card.Skill}\nAgl: {Card.Agility}\nSta: {Card.Stamina}\nOvr: {Card.CalculateOverall()}";
                 text.horizontalOverflow = HorizontalWrapMode.Wrap;
                 text.verticalOverflow = VerticalWrapMode.Overflow;
-                text.alignment = TextAnchor.UpperCenter;
+                text.alignment = TextAnchor.MiddleCenter;
                 text.fontSize = 30;
                 RectTransform rectTransform = text.GetComponent<RectTransform>();
-                rectTransform.sizeDelta = new Vector2(300, 0);
-                if (DisplayIndex != -1)
+                rectTransform.sizeDelta = new Vector2(250, 0);
+                if (DisplayIndex == 0)
                 {
-                    rectTransform.anchoredPosition = new Vector2(Position.x, Position.y - 150);
-                }
+                    rectTransform.anchoredPosition = new Vector2(Position.x + 200, Position.y);
+                } 
                 else
                 {
-                    rectTransform.anchoredPosition = new Vector2(Position.x, Position.y + 50);
+                    rectTransform.anchoredPosition = new Vector2(Position.x - 200, Position.y);
                 }
             }
             public void Cleanup()
@@ -113,6 +112,16 @@ namespace CardGame
                 ResetPlayedCards();
             }
         }
+        public static void ReceiveReady(int playerIndex)
+        {
+            Gameplay.PlayersReady[playerIndex] = true;
+            if (Gameplay.PlayersReady[0] && Gameplay.PlayersReady[1])
+            {
+                Gameplay.HidePlayed();
+                Gameplay.ShowHand();
+                LIPNHOMGGHF.FKANHDIMMBJ[Gameplay.ContinueButton].NKEDCLBOOMJ = "Click a Card to Play";
+            }
+        }
         public static void ReceiveCardTexture(byte[] bytes, int playerIndex)
         {
             if (PlayedCardElements[playerIndex].texture2D != null) GameObject.Destroy(PlayedCardElements[playerIndex].texture2D);
@@ -132,11 +141,7 @@ namespace CardGame
             CompareStat("Agility", card1.Agility, card2.Agility);
             CompareStat("Stamina", card1.Stamina, card2.Stamina);
             CompareStat("Attitude", card1.Attitude, card2.Attitude);
-            if (P1Score == P2Score)
-            {
-                Debug.LogWarning("Bonus!");
-                CompareStat("Overall", card1.CalculateOverall(), card2.CalculateOverall());
-            }
+            CompareStat("Overall", card1.CalculateOverall(), card2.CalculateOverall());
             if (P1Score == P2Score)
             {
                 Debug.LogWarning("THIS ROUND WAS A DRAW!");
@@ -153,6 +158,9 @@ namespace CardGame
             }
             P1Score = 0;
             P2Score = 0;
+            Gameplay.ScoreText.GetComponent<Text>().text = $"Score: {Gameplay.P1Total}-{Gameplay.P2Total}";
+            LIPNHOMGGHF.FKANHDIMMBJ[Gameplay.ContinueButton].AHBNKMMMGFI = 1;
+            LIPNHOMGGHF.FKANHDIMMBJ[Gameplay.ContinueButton].NKEDCLBOOMJ = "Click to continue";
         }
         public static void CompareStat(string stat, float card1stat, float card2stat)
         {

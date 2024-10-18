@@ -17,6 +17,7 @@ namespace CardGame
     {
         
         public static int Players { get; set; } = 2;
+        public static bool[] PlayersReady = new bool[Players];
         
         public static List<PlayableCard> Deck { get; set; } = new();
         public static List<Texture2D> DeckCardTexture { get; set; } = new();
@@ -24,9 +25,9 @@ namespace CardGame
         public static int P1Total { get; set; } = 0;
         public static int P2Total { get; set; } = 0;
         public static GameObject ScoreText { get; set;} = null;
-        public static PlayableCardDisplay[] DeckCardElements = new PlayableCardDisplay[3];
+        public static PlayableCardDisplay[] DeckCardElements { get; set; } = new PlayableCardDisplay[3];
 
-
+        public static int ContinueButton { get; set; }
 
         public class PlayableCardDisplay
         {
@@ -89,29 +90,29 @@ namespace CardGame
                 text.fontSize = 30;
                 RectTransform rectTransform = text.GetComponent<RectTransform>();
                 rectTransform.sizeDelta = new Vector2(300, 0);
-                if (DisplayIndex != -1)
-                {
-                    rectTransform.anchoredPosition = new Vector2(Position.x, Position.y - 150);
-                }
-                else
-                {
-                    rectTransform.anchoredPosition = new Vector2(Position.x, Position.y+50);
-                }
+                rectTransform.anchoredPosition = new Vector2(Position.x, Position.y - 125);
             }
             public void HandleClicks()
             {
                 if (HKJOAJOKOIJ.EOOBMIDCKIF == 1f && HKJOAJOKOIJ.LMADDGDMBGB == 0f)
                 {
-                    if (Mathf.Abs(HKJOAJOKOIJ.GMCCPOAIBHC - CardObject.transform.position.x) < 70f * NAEEIFNFBBO.IADPBBEPJKF && Mathf.Abs(HKJOAJOKOIJ.MINFPCEENFN - CardObject.transform.position.y) < 100f * NAEEIFNFBBO.PNHIGOBEEBB)
+                    if (Mathf.Abs(HKJOAJOKOIJ.GMCCPOAIBHC - CardObject.transform.position.x) < 70f * NAEEIFNFBBO.IADPBBEPJKF && Mathf.Abs(HKJOAJOKOIJ.MINFPCEENFN - CardObject.transform.position.y) < 100f * NAEEIFNFBBO.PNHIGOBEEBB && CardObject.activeSelf)
                     {
                         if (DisplayIndex != -1)
                         {
                             Debug.LogWarning("CLICKED ON CARD " + DisplayIndex);
                             Plugin.steamNetworking.SEND_CARD(Card);
                             Plugin.steamNetworking.SendFULLTextureToPlayers(texture2D);
-                            SingleRound.ReceiveCard(Card, Plugin.steamLobby.SteamLobbyMemberIndex);
+                    //        SingleRound.ReceiveCard(Card, Plugin.steamLobby.SteamLobbyMemberIndex);
                             SingleRound.ReceiveCardTexture(texture2D.EncodeToPNG(), Plugin.steamLobby.SteamLobbyMemberIndex);
+
+                      //      SingleRound.ReceiveCard(Card, Plugin.steamLobby.SteamLobbyMemberIndex+1);
+                     //       SingleRound.ReceiveCardTexture(texture2D.EncodeToPNG(), Plugin.steamLobby.SteamLobbyMemberIndex+1);
+
+
                             RemoveCardFromDeck(DisplayIndex);
+                            HideHand();
+                            ShowPlayed();
                         }
                     }
                 }
@@ -147,6 +148,61 @@ namespace CardGame
                     continue;
                 }
                 DeckCardElements[i].Cleanup();
+            }
+        }
+        public static void DisplayStatusText()
+        {
+            if (ScoreText == null)
+            {
+                ScoreText = new GameObject("Status");
+                ScoreText.transform.SetParent(LIPNHOMGGHF.JPABICKOAEO.transform, false);
+                ScoreText.AddComponent<Text>().font = CardMenu.VanillaFont;
+                ScoreText.AddComponent<Outline>().effectColor = new Color(0, 0, 0, 1);
+                ScoreText.GetComponent<Outline>().effectDistance = new Vector2(1, 1);
+                ScoreText.AddComponent<Shadow>().effectDistance = new Vector2(3, -3);
+
+
+            }
+            Text text = ScoreText.GetComponent<Text>();
+            text.text = $"Score: {P1Total}-{P2Total}";
+            text.horizontalOverflow = HorizontalWrapMode.Wrap;
+            text.verticalOverflow = VerticalWrapMode.Overflow;
+            text.alignment = TextAnchor.UpperCenter;
+            text.fontSize = 30;
+            RectTransform rectTransform = text.GetComponent<RectTransform>();
+            rectTransform.sizeDelta = new Vector2(300, 0);
+            rectTransform.anchoredPosition = new Vector2(0, 300);
+        }
+        public static void HideHand()
+        {
+            foreach (PlayableCardDisplay card in DeckCardElements)
+            {
+                card.CardObject?.SetActive(false);
+                card.CardStats?.SetActive(false);
+            }
+        }
+        public static void ShowHand()
+        {
+            foreach (PlayableCardDisplay card in DeckCardElements)
+            {
+                card.CardObject?.SetActive(true);
+                card.CardStats?.SetActive(true);
+            }
+        }
+        public static void HidePlayed()
+        {
+            foreach (SingleRound.PlayableCardDisplay card in SingleRound.PlayedCardElements)
+            {
+                card.CardObject?.SetActive(false);
+                card.CardStats?.SetActive(false);
+            }
+        }
+        public static void ShowPlayed()
+        {
+            foreach (SingleRound.PlayableCardDisplay card in SingleRound.PlayedCardElements)
+            {
+                card.CardObject?.SetActive(true);
+                card.CardStats?.SetActive(true);
             }
         }
         public static void RandomizeDeck()
@@ -195,7 +251,7 @@ namespace CardGame
                     int col = i;
                     int x;
                     int y;
-                    y = 200;
+                    y = 100;
                     x = -350 + (350 * col);
                     DeckCardElements[i].Position = new Vector2(x, y);
                 }
@@ -205,12 +261,12 @@ namespace CardGame
                 if (SingleRound.PlayedCardElements[i] == null)
                 {
                     SingleRound.PlayedCardElements[i] = new();
-                    SingleRound.PlayedCardElements[i].DisplayIndex = -1;
+                    SingleRound.PlayedCardElements[i].DisplayIndex = i;
                     int col = i;
                     int x;
                     int y;
-                    y = -200;
-                    x = -350 + (700 * col);
+                    y = 0;
+                    x = -400 + (800 * col);
                     SingleRound.PlayedCardElements[i].Position = new Vector2(x, y);
 
                 }
@@ -229,7 +285,16 @@ namespace CardGame
                     FillupDeckTextures();
                     PlaceCards();
                     SetupCards();
+                    DisplayStatusText();
+                    for (int i = 0; i < PlayersReady.Length; i++)
+                    {
+                        PlayersReady[i] = false;
+                    }
 
+                    LIPNHOMGGHF.DFLLBNMHHIH();
+                    LIPNHOMGGHF.FKANHDIMMBJ[LIPNHOMGGHF.HOAOLPGEBKJ].ICGNAJFLAHL(1, "Click a Card to Play", 0f, -250f, 1.5f, 1.5f);
+                    ContinueButton = LIPNHOMGGHF.HOAOLPGEBKJ;
+                    LIPNHOMGGHF.FKANHDIMMBJ[LIPNHOMGGHF.HOAOLPGEBKJ].AHBNKMMMGFI = 0;
                 }
             }
         }
@@ -246,6 +311,37 @@ namespace CardGame
                     {
                         DeckCardElements[i].HandleClicks();
                     }
+                }
+            }
+            if (LIPNHOMGGHF.ODOAPLMOJPD == Plugin.GameplayPage)
+            {
+                if (LIPNHOMGGHF.PIEMLEPEDFN == 5 && LIPNHOMGGHF.FKANHDIMMBJ[ContinueButton].CLMDCNDEBGD != 0)
+                {
+                    LIPNHOMGGHF.FKANHDIMMBJ[ContinueButton].NKEDCLBOOMJ = "Waiting For Players";
+                    Plugin.steamNetworking.SEND_READY();
+                  //  SingleRound.ReceiveReady(Plugin.steamLobby.SteamLobbyMemberIndex + 1);
+                    LIPNHOMGGHF.FKANHDIMMBJ[ContinueButton].AHBNKMMMGFI = 0;
+                }
+                if (LIPNHOMGGHF.PIEMLEPEDFN > 5)
+                {
+                    LIPNHOMGGHF.PIEMLEPEDFN = 0;
+                }
+                if (LIPNHOMGGHF.PIEMLEPEDFN <= -5)
+                {
+                    LIPNHOMGGHF.ODOAPLMOJPD = Plugin.MPLobbyPage;
+                    Plugin.steamLobby.LeaveLobby();
+                    FillupDeck();
+                    foreach (PlayableCardDisplay card in DeckCardElements)
+                    {
+                        card.Cleanup();
+                    }
+                    foreach (SingleRound.PlayableCardDisplay card in SingleRound.PlayedCardElements)
+                    {
+                        card.Cleanup();
+                    }
+                    GameObject.Destroy(ScoreText);
+                    ScoreText = null;
+                    LIPNHOMGGHF.ICGNAJFLAHL(0);
                 }
             }
         }
