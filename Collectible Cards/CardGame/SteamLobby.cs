@@ -84,6 +84,7 @@ namespace CardGame
                 currentLobbyID = CSteamID.Nil;  // Clear the lobby ID after leaving
                 SteamLobbyMemberIndex = -1;
                 ConnectedPlayers = 0;
+                Gameplay.CleanupLobby();
             }
         }
         void OnLobbyCreated(LobbyCreated_t result)

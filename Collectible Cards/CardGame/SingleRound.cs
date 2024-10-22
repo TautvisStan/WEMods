@@ -1,6 +1,7 @@
 ﻿using CollectibleCards2;
 using System;
 using System.Collections.Generic;
+using System.Reflection;
 using System.Text;
 using UnityEngine;
 using UnityEngine.UI;
@@ -13,6 +14,7 @@ namespace CardGame
         public static int P1Score { get; set; } = 0;
         public static int P2Score { get; set; } = 0;
         public static PlayableCardDisplay[] PlayedCardElements { get; set; } = new PlayableCardDisplay[2];
+        public static GameObject RoundText { get; set; } = null;
         public class PlayableCardDisplay
         {
             public int DisplayIndex;
@@ -32,14 +34,15 @@ namespace CardGame
                         CardObject = new("card");
                         CardObject.transform.SetParent(LIPNHOMGGHF.JPABICKOAEO.transform, false);
                         rawImage = CardObject.AddComponent<RawImage>();
-                        if (texture2D == null)
-                            texture2D = new Texture2D(1, 1);
+
                     }
                     else
                     {
                         rawImage = CardObject.GetComponent<RawImage>();
                         //  texture2D = (Texture2D)rawImage.texture;
                     }
+                    if (texture2D == null)
+                        texture2D = new Texture2D(1, 1);
                     rawImage.texture = texture2D;
                     RectTransform rectTransform = rawImage.GetComponent<RectTransform>();
                     rectTransform.sizeDelta = new Vector2(texture2D.width / 2, texture2D.height / 2);
@@ -63,7 +66,7 @@ namespace CardGame
 
                 }
                 Text text = CardStats.GetComponent<Text>();
-                text.text = $"{Card.WrestlerName}\nPop: {Card.Popularity}\nStr: {Card.Strength}\nSkl: {Card.Skill}\nAgl: {Card.Agility}\nSta: {Card.Stamina}\nOvr: {Card.CalculateOverall()}";
+                text.text = $"{Card.WrestlerName}\nPop: {Card.Popularity}\nStr: {Card.Strength}\nSkl: {Card.Skill}\nAgl: {Card.Agility}\nSta: {Card.Stamina}\nAtt: {Card.Attitude}\nOvr: {Card.CalculateOverall()}";
                 text.horizontalOverflow = HorizontalWrapMode.Wrap;
                 text.verticalOverflow = VerticalWrapMode.Overflow;
                 text.alignment = TextAnchor.MiddleCenter;
@@ -96,7 +99,36 @@ namespace CardGame
                     UnityEngine.Object.Destroy(rawImage);
                     rawImage = null;
                 }
+                if (texture2D != null)
+                {
+                    Debug.LogWarning("Destroying texture " + texture2D.name);
+                    UnityEngine.Object.Destroy(texture2D);
+                    texture2D = null;
+                }
+                Card = null;
             }
+        }
+        public static void DisplayRoundText()
+        {
+            if (RoundText == null)
+            {
+                RoundText = new GameObject("Round");
+                RoundText.transform.SetParent(LIPNHOMGGHF.JPABICKOAEO.transform, false);
+                RoundText.AddComponent<Text>().font = CardMenu.VanillaFont;
+                RoundText.AddComponent<Outline>().effectColor = new Color(0, 0, 0, 1);
+                RoundText.GetComponent<Outline>().effectDistance = new Vector2(1, 1);
+                RoundText.AddComponent<Shadow>().effectDistance = new Vector2(3, -3);
+
+            }
+            Text text = RoundText.GetComponent<Text>();
+            text.text = $"Round Score: {P1Score}-{P2Score}";
+            text.horizontalOverflow = HorizontalWrapMode.Wrap;
+            text.verticalOverflow = VerticalWrapMode.Overflow;
+            text.alignment = TextAnchor.UpperCenter;
+            text.fontSize = 30;
+            RectTransform rectTransform = text.GetComponent<RectTransform>();
+            rectTransform.sizeDelta = new Vector2(300, 0);
+            rectTransform.anchoredPosition = new Vector2(0, -200);
         }
         public static void ReceiveCard(PlayableCard card, int playerIndex)
         {
@@ -106,6 +138,7 @@ namespace CardGame
             }
             PlayedCards[playerIndex] = card;
             PlayedCardElements[playerIndex].Card = card;
+            PlayedCardElements[playerIndex].DisplayCard();
             if (PlayedCards[0] != null && PlayedCards[1] != null)
             {
                 CompareCards(PlayedCards[0], PlayedCards[1]);
@@ -119,18 +152,41 @@ namespace CardGame
             {
                 Gameplay.HidePlayed();
                 Gameplay.ShowHand();
+                Gameplay.PlayersReady[0] = false;
+                Gameplay.PlayersReady[1] = false;
+                PlayedCardElements[0].Card = new();
+                PlayedCardElements[1].Card = new();
+                if (PlayedCardElements[0].texture2D != null)
+                {
+                    Debug.LogWarning("Destroying texture " + PlayedCardElements[0].texture2D.name);
+                    UnityEngine.Object.Destroy(PlayedCardElements[0].texture2D);
+                    PlayedCardElements[0].texture2D = null;
+                }
+                if (PlayedCardElements[1].texture2D != null)
+                {
+                    Debug.LogWarning("Destroying texture " + PlayedCardElements[1].texture2D.name);
+                    UnityEngine.Object.Destroy(PlayedCardElements[1].texture2D);
+                    PlayedCardElements[1].texture2D = null;
+                }
+                PlayedCardElements[0].DisplayCard();
+                PlayedCardElements[1].DisplayCard();
                 LIPNHOMGGHF.FKANHDIMMBJ[Gameplay.ContinueButton].NKEDCLBOOMJ = "Click a Card to Play";
             }
         }
         public static void ReceiveCardTexture(byte[] bytes, int playerIndex)
         {
-            if (PlayedCardElements[playerIndex].texture2D != null) GameObject.Destroy(PlayedCardElements[playerIndex].texture2D);
+            if (PlayedCardElements[playerIndex].texture2D != null)
+            {
+                GameObject.Destroy(PlayedCardElements[playerIndex].texture2D);
+            }
             PlayedCardElements[playerIndex].texture2D = new Texture2D(1, 1);
             ImageConversion.LoadImage(PlayedCardElements[playerIndex].texture2D, bytes);
             PlayedCardElements[playerIndex].DisplayCard();
         }
         public static void CompareCards(PlayableCard card1, PlayableCard card2)
         {
+            P1Score = 0;
+            P2Score = 0;
             Debug.LogWarning("Comparing cards...");
             Debug.LogWarning($"Card 1: {card1.WrestlerName}");
             Debug.LogWarning($"Card 2: {card2.WrestlerName}");
@@ -145,20 +201,24 @@ namespace CardGame
             if (P1Score == P2Score)
             {
                 Debug.LogWarning("THIS ROUND WAS A DRAW!");
+                Gameplay.P1Streak = 0;
+                Gameplay.P2Streak = 0;
             }
             else if (P1Score > P2Score)
             {
                 Debug.LogWarning("P1 Wins!");
                 Gameplay.P1Total++;
+                Gameplay.P1Streak++;
+                Gameplay.P2Streak = 0;
             }
             else
             {
                 Debug.LogWarning("P2 Wins!");
                 Gameplay.P2Total++;
+                Gameplay.P2Streak++;
+                Gameplay.P1Streak = 0;
             }
-            P1Score = 0;
-            P2Score = 0;
-            Gameplay.ScoreText.GetComponent<Text>().text = $"Score: {Gameplay.P1Total}-{Gameplay.P2Total}";
+            Gameplay.ScoreText.GetComponent<Text>().text = $"Total Score: {Gameplay.P1Total}({Gameplay.P1Streak})-{Gameplay.P2Total}({Gameplay.P2Streak})";
             LIPNHOMGGHF.FKANHDIMMBJ[Gameplay.ContinueButton].AHBNKMMMGFI = 1;
             LIPNHOMGGHF.FKANHDIMMBJ[Gameplay.ContinueButton].NKEDCLBOOMJ = "Click to continue";
         }

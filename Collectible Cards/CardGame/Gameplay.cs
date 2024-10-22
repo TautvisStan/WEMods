@@ -1,14 +1,9 @@
-﻿using System;
-using System.Collections.Generic;
+﻿using System.Collections.Generic;
 using UnityEngine;
-using System.Text;
-using System.Runtime.CompilerServices;
 using CollectibleCards2;
-using System.Reflection;
 using HarmonyLib;
 using UnityEngine.UI;
-using UnityEngine.XR;
-using Steamworks;
+using System;
 
 namespace CardGame
 {
@@ -24,6 +19,8 @@ namespace CardGame
 
         public static int P1Total { get; set; } = 0;
         public static int P2Total { get; set; } = 0;
+        public static int P1Streak { get; set; } = 0;
+        public static int P2Streak { get; set; } = 0;
         public static GameObject ScoreText { get; set;} = null;
         public static PlayableCardDisplay[] DeckCardElements { get; set; } = new PlayableCardDisplay[3];
 
@@ -103,16 +100,18 @@ namespace CardGame
                             Debug.LogWarning("CLICKED ON CARD " + DisplayIndex);
                             Plugin.steamNetworking.SEND_CARD(Card);
                             Plugin.steamNetworking.SendFULLTextureToPlayers(texture2D);
-                    //        SingleRound.ReceiveCard(Card, Plugin.steamLobby.SteamLobbyMemberIndex);
                             SingleRound.ReceiveCardTexture(texture2D.EncodeToPNG(), Plugin.steamLobby.SteamLobbyMemberIndex);
+                            LIPNHOMGGHF.FKANHDIMMBJ[ContinueButton].NKEDCLBOOMJ = "Waiting For Players";
 
-                      //      SingleRound.ReceiveCard(Card, Plugin.steamLobby.SteamLobbyMemberIndex+1);
-                     //       SingleRound.ReceiveCardTexture(texture2D.EncodeToPNG(), Plugin.steamLobby.SteamLobbyMemberIndex+1);
+
+                           // SingleRound.ReceiveCard(Card, Plugin.steamLobby.SteamLobbyMemberIndex+1);
+                          //  SingleRound.ReceiveCardTexture(texture2D.EncodeToPNG(), Plugin.steamLobby.SteamLobbyMemberIndex+1);
 
 
                             RemoveCardFromDeck(DisplayIndex);
                             HideHand();
                             ShowPlayed();
+                           
                         }
                     }
                 }
@@ -135,6 +134,7 @@ namespace CardGame
                     UnityEngine.Object.Destroy(rawImage);
                     rawImage = null;
                 }
+                Card = null;
             }
         }
         public static void SetupCards()
@@ -161,10 +161,9 @@ namespace CardGame
                 ScoreText.GetComponent<Outline>().effectDistance = new Vector2(1, 1);
                 ScoreText.AddComponent<Shadow>().effectDistance = new Vector2(3, -3);
 
-
             }
             Text text = ScoreText.GetComponent<Text>();
-            text.text = $"Score: {P1Total}-{P2Total}";
+            text.text = $"Total Score: {P1Total}({P1Streak})-{P2Total}({P2Streak})";
             text.horizontalOverflow = HorizontalWrapMode.Wrap;
             text.verticalOverflow = VerticalWrapMode.Overflow;
             text.alignment = TextAnchor.UpperCenter;
@@ -177,32 +176,33 @@ namespace CardGame
         {
             foreach (PlayableCardDisplay card in DeckCardElements)
             {
-                card.CardObject?.SetActive(false);
-                card.CardStats?.SetActive(false);
+                card?.CardObject?.SetActive(false);
+                card?.CardStats?.SetActive(false);
             }
         }
         public static void ShowHand()
         {
             foreach (PlayableCardDisplay card in DeckCardElements)
             {
-                card.CardObject?.SetActive(true);
-                card.CardStats?.SetActive(true);
+                card?.CardObject?.SetActive(true);
+                card?.CardStats?.SetActive(true);
             }
         }
         public static void HidePlayed()
         {
             foreach (SingleRound.PlayableCardDisplay card in SingleRound.PlayedCardElements)
             {
-                card.CardObject?.SetActive(false);
-                card.CardStats?.SetActive(false);
+                card?.CardObject?.SetActive(false);
+                card?.CardStats?.SetActive(false);
             }
         }
         public static void ShowPlayed()
         {
             foreach (SingleRound.PlayableCardDisplay card in SingleRound.PlayedCardElements)
             {
-                card.CardObject?.SetActive(true);
-                card.CardStats?.SetActive(true);
+                card?.CardObject?.SetActive(true);
+                card?.CardStats?.SetActive(true);
+                card?.DisplayCard();
             }
         }
         public static void RandomizeDeck()
@@ -225,12 +225,14 @@ namespace CardGame
         public static void RemoveCardFromDeck(int index)
         {
             Deck.RemoveAt(index);
+            Debug.LogWarning("Destroying texture " + DeckCardTexture[index].name);
             GameObject.Destroy(DeckCardTexture[index]);
             DeckCardTexture.RemoveAt(index);
             for (int i = 0; i < 3; i++)
             {
                 if (i < Deck.Count)
                 {
+                    Debug.LogWarning("TEXTURE " + i + DeckCardTexture[i] == null);
                     DeckCardElements[i].Card = Deck[i];
                     DeckCardElements[i].DisplayCard();
                 }
@@ -268,9 +270,12 @@ namespace CardGame
                     y = 0;
                     x = -400 + (800 * col);
                     SingleRound.PlayedCardElements[i].Position = new Vector2(x, y);
-
+                    SingleRound.PlayedCardElements[i].Card = new();
+                    SingleRound.PlayedCardElements[i].DisplayCard();
                 }
+
             }
+            HidePlayed();
         }
         //adding buttons
         [HarmonyPatch(typeof(LIPNHOMGGHF), nameof(LIPNHOMGGHF.ICGNAJFLAHL))]
@@ -319,7 +324,7 @@ namespace CardGame
                 {
                     LIPNHOMGGHF.FKANHDIMMBJ[ContinueButton].NKEDCLBOOMJ = "Waiting For Players";
                     Plugin.steamNetworking.SEND_READY();
-                  //  SingleRound.ReceiveReady(Plugin.steamLobby.SteamLobbyMemberIndex + 1);
+                   // SingleRound.ReceiveReady(Plugin.steamLobby.SteamLobbyMemberIndex + 1);
                     LIPNHOMGGHF.FKANHDIMMBJ[ContinueButton].AHBNKMMMGFI = 0;
                 }
                 if (LIPNHOMGGHF.PIEMLEPEDFN > 5)
@@ -330,20 +335,30 @@ namespace CardGame
                 {
                     LIPNHOMGGHF.ODOAPLMOJPD = Plugin.MPLobbyPage;
                     Plugin.steamLobby.LeaveLobby();
-                    FillupDeck();
-                    foreach (PlayableCardDisplay card in DeckCardElements)
-                    {
-                        card.Cleanup();
-                    }
-                    foreach (SingleRound.PlayableCardDisplay card in SingleRound.PlayedCardElements)
-                    {
-                        card.Cleanup();
-                    }
-                    GameObject.Destroy(ScoreText);
-                    ScoreText = null;
+                    
                     LIPNHOMGGHF.ICGNAJFLAHL(0);
                 }
             }
+        }
+        public static void CleanupLobby()
+        {
+            FillupDeck();
+            for (int i = 0; i < DeckCardElements.Length; i++)
+            {
+                DeckCardElements[i]?.Cleanup();
+                DeckCardElements[i] = null;
+            }
+            for (int i = 0; i < SingleRound.PlayedCardElements.Length; i++)
+            {
+                SingleRound.PlayedCardElements[i]?.Cleanup();
+                SingleRound.PlayedCardElements[i] = null;
+            }
+            GameObject.Destroy(ScoreText);
+            ScoreText = null;
+            P1Streak = 0;
+            P1Total = 0;
+            P2Streak = 0;
+            P2Total = 0;
         }
         //disabling annoying audio
         [HarmonyPatch(typeof(CHLPMKEGJBJ), nameof(CHLPMKEGJBJ.DNNPEAOCDOG))]
@@ -377,6 +392,7 @@ namespace CardGame
             {
                 if (DeckCardTexture[i] != null)
                 {
+                    Debug.LogWarning("Destroying texture " + DeckCardTexture[i].name);
                     GameObject.Destroy(DeckCardTexture[i]);
                     DeckCardTexture[i] = null;
                 }
@@ -394,6 +410,7 @@ namespace CardGame
             Texture2D texture2D = new Texture2D(1, 1);
             ImageConversion.LoadImage(texture2D, array);
             DeckCardTexture.Add(PngUtils.ResizeTexture(texture2D, texture2D.width /2, texture2D.height/2));
+            DeckCardTexture[DeckCardTexture.Count - 1].name = "TEXTURE " + card.Name;
             GameObject.Destroy(texture2D);
             texture2D = null;
         }

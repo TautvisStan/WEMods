@@ -3,25 +3,11 @@ using System;
 using System.Collections;
 using System.Collections.Generic;
 using System.IO;
-using System.Linq.Expressions;
-using System.Reflection;
 using UnityEngine;
 
 namespace CollectibleCards2
 {
-    public static class TypeHelper
-    {
-        public static Func<object> CreateDefaultConstructor(Type type)
-        {
-            NewExpression newExp = Expression.New(type);
 
-            // Create a new lambda expression with the NewExpression as the body.
-            var lambda = Expression.Lambda<Func<object>>(newExp);
-
-            // Compile our new lambda expression.
-            return lambda.Compile();
-        }
-    }
     public static class CollectibleCardGenerator
     {
         public static WaitForEndOfFrame frameEnd = new();
