@@ -22,7 +22,7 @@ namespace CardGame
         public static int P1Streak { get; set; } = 0;
         public static int P2Streak { get; set; } = 0;
         public static GameObject ScoreText { get; set;} = null;
-        public static PlayableCardDisplay[] DeckCardElements { get; set; } = new PlayableCardDisplay[3];
+        public static PlayableCardDisplay[] DeckCardElements { get; set; } = new PlayableCardDisplay[10];
 
         public static int ContinueButton { get; set; }
 
@@ -84,10 +84,10 @@ namespace CardGame
                 text.horizontalOverflow = HorizontalWrapMode.Wrap;
                 text.verticalOverflow = VerticalWrapMode.Overflow;
                 text.alignment = TextAnchor.UpperCenter;
-                text.fontSize = 30;
+                text.fontSize = 15;
                 RectTransform rectTransform = text.GetComponent<RectTransform>();
-                rectTransform.sizeDelta = new Vector2(300, 0);
-                rectTransform.anchoredPosition = new Vector2(Position.x, Position.y - 125);
+                rectTransform.sizeDelta = new Vector2(150, 0);
+                rectTransform.anchoredPosition = new Vector2(Position.x, Position.y);
             }
             public void HandleClicks()
             {
@@ -139,7 +139,7 @@ namespace CardGame
         }
         public static void SetupCards()
         {
-            for (int i = 0; i < 3; i++)
+            for (int i = 0; i < 10; i++)
             {
                 if (Deck[i] != null)
                 {
@@ -169,7 +169,7 @@ namespace CardGame
             text.alignment = TextAnchor.UpperCenter;
             text.fontSize = 30;
             RectTransform rectTransform = text.GetComponent<RectTransform>();
-            rectTransform.sizeDelta = new Vector2(300, 0);
+            rectTransform.sizeDelta = new Vector2(3000, 0);
             rectTransform.anchoredPosition = new Vector2(0, 300);
         }
         public static void HideHand()
@@ -224,27 +224,30 @@ namespace CardGame
         }
         public static void RemoveCardFromDeck(int index)
         {
-            Deck.RemoveAt(index);
+            //  Deck.RemoveAt(index);
+            Deck[index] = null;
             Debug.LogWarning("Destroying texture " + DeckCardTexture[index].name);
             GameObject.Destroy(DeckCardTexture[index]);
-            DeckCardTexture.RemoveAt(index);
-            for (int i = 0; i < 3; i++)
-            {
-                if (i < Deck.Count)
-                {
-                    Debug.LogWarning("TEXTURE " + i + DeckCardTexture[i] == null);
-                    DeckCardElements[i].Card = Deck[i];
-                    DeckCardElements[i].DisplayCard();
-                }
-                else
-                {
-                    DeckCardElements[i].Cleanup();
-                }
-            }
+            //DeckCardTexture.RemoveAt(index);
+            DeckCardTexture[index] = null;
+            DeckCardElements[index].Cleanup();
+            /*  for (int i = 0; i < 3; i++)
+              {
+                  if (i < Deck.Count)
+                  {
+                      Debug.LogWarning("TEXTURE " + i + DeckCardTexture[i] == null);
+                      DeckCardElements[i].Card = Deck[i];
+                      DeckCardElements[i].DisplayCard();
+                  }
+                  else
+                  {
+                      DeckCardElements[i].Cleanup();
+                  }
+              }*/
         }
         public static void PlaceCards()
         {
-            for (int i = 0; i < 3; i++)
+            for (int i = 0; i < 10; i++)
             {
                 if (DeckCardElements[i] == null)
                 {
@@ -253,8 +256,16 @@ namespace CardGame
                     int col = i;
                     int x;
                     int y;
-                    y = 100;
-                    x = -350 + (350 * col);
+                    if (i < 5)
+                    {
+                        y = 125;
+                    }
+                    else
+                    {
+                        y = -125;
+                        col -= 5;
+                    }
+                    x = -350 + (175 * col);
                     DeckCardElements[i].Position = new Vector2(x, y);
                 }
             }
@@ -297,7 +308,7 @@ namespace CardGame
                     }
 
                     LIPNHOMGGHF.DFLLBNMHHIH();
-                    LIPNHOMGGHF.FKANHDIMMBJ[LIPNHOMGGHF.HOAOLPGEBKJ].ICGNAJFLAHL(1, "Click a Card to Play", 0f, -250f, 1.5f, 1.5f);
+                    LIPNHOMGGHF.FKANHDIMMBJ[LIPNHOMGGHF.HOAOLPGEBKJ].ICGNAJFLAHL(1, "Click a Card to Play", 0f, -300f, 1.5f, 1.5f);
                     ContinueButton = LIPNHOMGGHF.HOAOLPGEBKJ;
                     LIPNHOMGGHF.FKANHDIMMBJ[LIPNHOMGGHF.HOAOLPGEBKJ].AHBNKMMMGFI = 0;
                 }
@@ -310,7 +321,7 @@ namespace CardGame
         {
             if (LIPNHOMGGHF.ODOAPLMOJPD == Plugin.GameplayPage)
             {
-                for (int i = 0; i < 3; i++)
+                for (int i = 0; i < 10; i++)
                 {
                     if (DeckCardElements[i].Card != null && DeckCardElements[i].CardObject != null)
                     {
