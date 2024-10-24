@@ -7,7 +7,6 @@ using UnityEngine;
 
 namespace CollectibleCards2
 {
-
     public static class CollectibleCardGenerator
     {
         public static WaitForEndOfFrame frameEnd = new();
@@ -123,18 +122,15 @@ namespace CollectibleCards2
                 
                 Plugin.Log.LogInfo($"Saved card image to {filePath}");
                 action(filePath);
-                CameraController.Cleanup();
-                LightController.Cleanup();
-                Background.Cleanup();
-                CharacterController.Cleanup();
-                CanvasController.Cleanup();
-                GC.Collect();
             }
             catch (Exception e)
             {
                 Plugin.Log.LogError("There was an error generating custom card!");
                 Plugin.Log.LogError(e);
 
+            }
+            finally
+            {
                 CameraController.Cleanup();
                 LightController.Cleanup();
                 Background.Cleanup();
@@ -171,28 +167,22 @@ namespace CollectibleCards2
     }
     public class ProportionalRandomSelector<T>
     {
-
         private readonly Dictionary<T, int> percentageItemsDict;
         public ProportionalRandomSelector()
         {
             percentageItemsDict = new();
         }
-
         public void AddPercentageItem(T item, int percentage) => percentageItemsDict.Add(item, percentage);
-
         public T SelectItem()
         {
-
             // Calculate the summa of all portions.
             int poolSize = 0;
             foreach (int i in percentageItemsDict.Values)
             {
                 poolSize += i;
             }
-
             // Get a random integer from 1 to PoolSize.
             int randomNumber = UnityEngine.Random.Range(1, poolSize);
-
             // Detect the item, which corresponds to current random number.
             int accumulatedProbability = 0;
             foreach (KeyValuePair<T, int> pair in percentageItemsDict)
@@ -201,10 +191,7 @@ namespace CollectibleCards2
                 if (randomNumber <= accumulatedProbability)
                     return pair.Key;
             }
-
             return default;  // this code will never come while you use this programm right :)
-
         }
-
     }
 }

@@ -10,22 +10,22 @@ namespace CardGame
     [HarmonyPatch]
     public static class Gameplay
     {
-        
+
         public static int Players { get; set; } = 2;
         public static bool[] PlayersReady = new bool[Players];
-        
+
         public static List<PlayableCard> Deck { get; set; } = new();
         public static List<Texture2D> DeckCardTexture { get; set; } = new();
-
+        public static int DeckSize { get; set; } = 10;
         public static int P1Total { get; set; } = 0;
         public static int P2Total { get; set; } = 0;
         public static int P1Streak { get; set; } = 0;
         public static int P2Streak { get; set; } = 0;
-        public static GameObject ScoreText { get; set;} = null;
-        public static PlayableCardDisplay[] DeckCardElements { get; set; } = new PlayableCardDisplay[10];
+        public static GameObject ScoreText = null;
+        public static PlayableCardDisplay[] DeckCardElements { get; set; } = new PlayableCardDisplay[DeckSize];
 
         public static int ContinueButton { get; set; }
-
+        public static int CardsPlayed { get; set; } = 0; 
         public class PlayableCardDisplay
         {
             public int DisplayIndex;
@@ -34,7 +34,7 @@ namespace CardGame
             public GameObject CardObject { get; set; } = null;
             public PlayableCard Card { get; set; } = null;
             public Vector2 Position { get; set; } = new();
-            public GameObject CardStats { get; set; } = null;
+            public GameObject CardStats = null;
 
             public void DisplayCard()
             {
@@ -68,21 +68,8 @@ namespace CardGame
             }
             public void DisplayCardInfo()
             {
-                if (CardStats == null)
-                {
-                    CardStats = new GameObject("Description");
-                    CardStats.transform.SetParent(LIPNHOMGGHF.JPABICKOAEO.transform, false);
-                    CardStats.AddComponent<Text>().font = CardMenu.VanillaFont;
-                    CardStats.AddComponent<Outline>().effectColor = new Color(0, 0, 0, 1);
-                    CardStats.GetComponent<Outline>().effectDistance = new Vector2(1, 1);
-                    CardStats.AddComponent<Shadow>().effectDistance = new Vector2(3, -3);
-
-
-                }
-                Text text = CardStats.GetComponent<Text>();
+                Text text = Utils.SetupUIText(ref CardStats, "Description");
                 text.text = $"{Card.WrestlerName}\n{Card.GetStatsString()}";
-                text.horizontalOverflow = HorizontalWrapMode.Wrap;
-                text.verticalOverflow = VerticalWrapMode.Overflow;
                 text.alignment = TextAnchor.UpperCenter;
                 text.fontSize = 15;
                 RectTransform rectTransform = text.GetComponent<RectTransform>();
@@ -98,8 +85,9 @@ namespace CardGame
                         if (DisplayIndex != -1)
                         {
                             Debug.LogWarning("CLICKED ON CARD " + DisplayIndex);
-                            Plugin.steamNetworking.SEND_CARD(Card);
                             Plugin.steamNetworking.SendFULLTextureToPlayers(texture2D);
+                            Plugin.steamNetworking.SEND_CARD(Card);
+                            CardsPlayed++;
                             SingleRound.ReceiveCardTexture(texture2D.EncodeToPNG(), Plugin.steamLobby.SteamLobbyMemberIndex);
                             LIPNHOMGGHF.FKANHDIMMBJ[ContinueButton].NKEDCLBOOMJ = "Waiting For Players";
 
@@ -139,7 +127,7 @@ namespace CardGame
         }
         public static void SetupCards()
         {
-            for (int i = 0; i < 10; i++)
+            for (int i = 0; i < DeckSize; i++)
             {
                 if (Deck[i] != null)
                 {
@@ -152,24 +140,12 @@ namespace CardGame
         }
         public static void DisplayStatusText()
         {
-            if (ScoreText == null)
-            {
-                ScoreText = new GameObject("Status");
-                ScoreText.transform.SetParent(LIPNHOMGGHF.JPABICKOAEO.transform, false);
-                ScoreText.AddComponent<Text>().font = CardMenu.VanillaFont;
-                ScoreText.AddComponent<Outline>().effectColor = new Color(0, 0, 0, 1);
-                ScoreText.GetComponent<Outline>().effectDistance = new Vector2(1, 1);
-                ScoreText.AddComponent<Shadow>().effectDistance = new Vector2(3, -3);
-
-            }
-            Text text = ScoreText.GetComponent<Text>();
+            Text text = Utils.SetupUIText(ref ScoreText, "Description");
             text.text = $"Total Score: {P1Total}({P1Streak})-{P2Total}({P2Streak})";
-            text.horizontalOverflow = HorizontalWrapMode.Wrap;
+            text.horizontalOverflow = HorizontalWrapMode.Overflow;
             text.verticalOverflow = VerticalWrapMode.Overflow;
             text.alignment = TextAnchor.UpperCenter;
-            text.fontSize = 30;
             RectTransform rectTransform = text.GetComponent<RectTransform>();
-            rectTransform.sizeDelta = new Vector2(3000, 0);
             rectTransform.anchoredPosition = new Vector2(0, 300);
         }
         public static void HideHand()
@@ -215,7 +191,7 @@ namespace CardGame
                 (Deck[n], Deck[k]) = (Deck[k], Deck[n]);
             }
             List<PlayableCard> ProperDeck = new();
-            for (int i = 0; i < 10; i++)
+            for (int i = 0; i < DeckSize; i++)
             {
                 Debug.LogWarning(i);
                 ProperDeck.Add(Deck[i]);
@@ -247,7 +223,7 @@ namespace CardGame
         }
         public static void PlaceCards()
         {
-            for (int i = 0; i < 10; i++)
+            for (int i = 0; i < DeckSize; i++)
             {
                 if (DeckCardElements[i] == null)
                 {
@@ -258,14 +234,14 @@ namespace CardGame
                     int y;
                     if (i < 5)
                     {
-                        y = 125;
+                        y = 126;
                     }
                     else
                     {
-                        y = -125;
+                        y = -126;
                         col -= 5;
                     }
-                    x = -350 + (175 * col);
+                    x = -360 + (180 * col);
                     DeckCardElements[i].Position = new Vector2(x, y);
                 }
             }
@@ -302,11 +278,12 @@ namespace CardGame
                     PlaceCards();
                     SetupCards();
                     DisplayStatusText();
+                    SingleRound.DisplayRoundText();
                     for (int i = 0; i < PlayersReady.Length; i++)
                     {
                         PlayersReady[i] = false;
                     }
-
+                    CardsPlayed = 0;
                     LIPNHOMGGHF.DFLLBNMHHIH();
                     LIPNHOMGGHF.FKANHDIMMBJ[LIPNHOMGGHF.HOAOLPGEBKJ].ICGNAJFLAHL(1, "Click a Card to Play", 0f, -300f, 1.5f, 1.5f);
                     ContinueButton = LIPNHOMGGHF.HOAOLPGEBKJ;
@@ -321,7 +298,7 @@ namespace CardGame
         {
             if (LIPNHOMGGHF.ODOAPLMOJPD == Plugin.GameplayPage)
             {
-                for (int i = 0; i < 10; i++)
+                for (int i = 0; i < DeckSize; i++)
                 {
                     if (DeckCardElements[i].Card != null && DeckCardElements[i].CardObject != null)
                     {
@@ -366,6 +343,8 @@ namespace CardGame
             }
             GameObject.Destroy(ScoreText);
             ScoreText = null;
+            GameObject.Destroy(SingleRound.RoundText);
+            SingleRound.RoundText = null;
             P1Streak = 0;
             P1Total = 0;
             P2Streak = 0;
@@ -409,7 +388,7 @@ namespace CardGame
                 }
             }
             DeckCardTexture = new();
-            for (int i = 0; i < 10; i++)
+            for (int i = 0; i < DeckSize; i++)
             {
                 Debug.LogWarning(i + " " + Deck[i].LocalIndex);
                 AddResizedTexture(CardMenu.Cards[Deck[i].LocalIndex]);

@@ -14,7 +14,7 @@ namespace CardGame
         public static int P1Score { get; set; } = 0;
         public static int P2Score { get; set; } = 0;
         public static PlayableCardDisplay[] PlayedCardElements { get; set; } = new PlayableCardDisplay[2];
-        public static GameObject RoundText { get; set; } = null;
+        public static GameObject RoundText = null;
         public class PlayableCardDisplay
         {
             public int DisplayIndex;
@@ -23,7 +23,7 @@ namespace CardGame
             public GameObject CardObject { get; set; } = null;
             public PlayableCard Card { get; set; } = null;
             public Vector2 Position { get; set; } = new();
-            public GameObject CardStats { get; set; } = null;
+            public GameObject CardStats = null;
 
             public void DisplayCard()
             {
@@ -54,29 +54,14 @@ namespace CardGame
             }
             public void DisplayCardInfo()
             {
-                if (CardStats == null)
-                {
-                    CardStats = new GameObject("Description");
-                    CardStats.transform.SetParent(LIPNHOMGGHF.JPABICKOAEO.transform, false);
-                    CardStats.AddComponent<Text>().font = CardMenu.VanillaFont;
-                    CardStats.AddComponent<Outline>().effectColor = new Color(0, 0, 0, 1);
-                    CardStats.GetComponent<Outline>().effectDistance = new Vector2(1, 1);
-                    CardStats.AddComponent<Shadow>().effectDistance = new Vector2(3, -3);
-
-
-                }
-                Text text = CardStats.GetComponent<Text>();
+                Text text = Utils.SetupUIText(ref CardStats, "Description");
                 text.text = $"{Card.WrestlerName}\nPop: {Card.Popularity}\nStr: {Card.Strength}\nSkl: {Card.Skill}\nAgl: {Card.Agility}\nSta: {Card.Stamina}\nAtt: {Card.Attitude}\nOvr: {Card.CalculateOverall()}";
-                text.horizontalOverflow = HorizontalWrapMode.Wrap;
-                text.verticalOverflow = VerticalWrapMode.Overflow;
-                text.alignment = TextAnchor.MiddleCenter;
-                text.fontSize = 30;
                 RectTransform rectTransform = text.GetComponent<RectTransform>();
                 rectTransform.sizeDelta = new Vector2(250, 0);
                 if (DisplayIndex == 0)
                 {
                     rectTransform.anchoredPosition = new Vector2(Position.x + 200, Position.y);
-                } 
+                }
                 else
                 {
                     rectTransform.anchoredPosition = new Vector2(Position.x - 200, Position.y);
@@ -110,25 +95,12 @@ namespace CardGame
         }
         public static void DisplayRoundText()
         {
-            if (RoundText == null)
-            {
-                RoundText = new GameObject("Round");
-                RoundText.transform.SetParent(LIPNHOMGGHF.JPABICKOAEO.transform, false);
-                RoundText.AddComponent<Text>().font = CardMenu.VanillaFont;
-                RoundText.AddComponent<Outline>().effectColor = new Color(0, 0, 0, 1);
-                RoundText.GetComponent<Outline>().effectDistance = new Vector2(1, 1);
-                RoundText.AddComponent<Shadow>().effectDistance = new Vector2(3, -3);
-
-            }
-            Text text = RoundText.GetComponent<Text>();
-            text.text = $"Round Score: {P1Score}-{P2Score}";
-            text.horizontalOverflow = HorizontalWrapMode.Wrap;
-            text.verticalOverflow = VerticalWrapMode.Overflow;
-            text.alignment = TextAnchor.UpperCenter;
-            text.fontSize = 30;
+            Text text = Utils.SetupUIText(ref RoundText, "Round");
+            text.text = $"";
+            text.horizontalOverflow = HorizontalWrapMode.Overflow;
+            text.alignment = TextAnchor.MiddleCenter;
             RectTransform rectTransform = text.GetComponent<RectTransform>();
-            rectTransform.sizeDelta = new Vector2(300, 0);
-            rectTransform.anchoredPosition = new Vector2(0, -200);
+            rectTransform.anchoredPosition = new Vector2(0, -225);
         }
         public static void ReceiveCard(PlayableCard card, int playerIndex)
         {
@@ -150,6 +122,34 @@ namespace CardGame
             Gameplay.PlayersReady[playerIndex] = true;
             if (Gameplay.PlayersReady[0] && Gameplay.PlayersReady[1])
             {
+                if(Gameplay.P1Streak == 3)
+                {
+                    RoundText.GetComponent<Text>().text = $"1-2-3! P1 pins their opponent and wins the match!";
+                    return;
+                }
+                if (Gameplay.P2Streak == 3)
+                {
+                    RoundText.GetComponent<Text>().text = $"1-2-3! P2 pins their opponent and wins the match!";
+                    return;
+                }
+                if (Gameplay.CardsPlayed == Gameplay.DeckSize)
+                {
+                    if(Gameplay.P1Total > Gameplay.P2Total)
+                    {
+                        RoundText.GetComponent<Text>().text = $"Out of cards! P1 wins with the total score of {Gameplay.P1Total}-{Gameplay.P2Total}";
+                        return;
+                    }
+                    else if (Gameplay.P1Total < Gameplay.P2Total)
+                    {
+                        RoundText.GetComponent<Text>().text = $"Out of cards! P2 wins with the total score of {Gameplay.P1Total}-{Gameplay.P2Total}";
+                        return;
+                    }
+                    else
+                    {
+                        RoundText.GetComponent<Text>().text = $"Out of cards! Match was a draw with the total score of {Gameplay.P1Total}-{Gameplay.P2Total}";
+                        return;
+                    }
+                }
                 Gameplay.HidePlayed();
                 Gameplay.ShowHand();
                 Gameplay.PlayersReady[0] = false;
@@ -171,6 +171,7 @@ namespace CardGame
                 PlayedCardElements[0].DisplayCard();
                 PlayedCardElements[1].DisplayCard();
                 LIPNHOMGGHF.FKANHDIMMBJ[Gameplay.ContinueButton].NKEDCLBOOMJ = "Click a Card to Play";
+                RoundText.GetComponent<Text>().text = $"";
             }
         }
         public static void ReceiveCardTexture(byte[] bytes, int playerIndex)
@@ -198,11 +199,13 @@ namespace CardGame
             CompareStat("Stamina", card1.Stamina, card2.Stamina);
             CompareStat("Attitude", card1.Attitude, card2.Attitude);
             CompareStat("Overall", card1.CalculateOverall(), card2.CalculateOverall());
+            RoundText.GetComponent<Text>().text = $"Round Score: {P1Score}-{P2Score}";
             if (P1Score == P2Score)
             {
                 Debug.LogWarning("THIS ROUND WAS A DRAW!");
                 Gameplay.P1Streak = 0;
                 Gameplay.P2Streak = 0;
+                RoundText.GetComponent<Text>().text += $"\nDraw!";
             }
             else if (P1Score > P2Score)
             {
@@ -210,6 +213,7 @@ namespace CardGame
                 Gameplay.P1Total++;
                 Gameplay.P1Streak++;
                 Gameplay.P2Streak = 0;
+                RoundText.GetComponent<Text>().text += $"\nP1 Card Wins! (Streak: {Gameplay.P1Streak})";
             }
             else
             {
@@ -217,8 +221,10 @@ namespace CardGame
                 Gameplay.P2Total++;
                 Gameplay.P2Streak++;
                 Gameplay.P1Streak = 0;
+                RoundText.GetComponent<Text>().text += $"\nP2 Card Wins! (Streak: {Gameplay.P2Streak})";
             }
             Gameplay.ScoreText.GetComponent<Text>().text = $"Total Score: {Gameplay.P1Total}({Gameplay.P1Streak})-{Gameplay.P2Total}({Gameplay.P2Streak})";
+
             LIPNHOMGGHF.FKANHDIMMBJ[Gameplay.ContinueButton].AHBNKMMMGFI = 1;
             LIPNHOMGGHF.FKANHDIMMBJ[Gameplay.ContinueButton].NKEDCLBOOMJ = "Click to continue";
         }

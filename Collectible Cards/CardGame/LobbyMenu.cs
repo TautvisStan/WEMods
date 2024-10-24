@@ -28,29 +28,17 @@ namespace CardGame
         public static string LobbyID { get; set; } = "";
         public static string IDToJoin { get; set; }
 
-        public static GameObject MPLobbyText { get; set; } = null;
-        public static GameObject HostText { get; set; } = null;
-        public static GameObject JoinText { get; set; } = null;
-        public static GameObject LobbyStatusText { get; set; } = null;
+        public static GameObject MPLobbyText = null;
+        public static GameObject HostText  = null;
+        public static GameObject JoinText  = null;
+        public static GameObject LobbyStatusText = null;
         private static bool CardsChecked = false;
 
         public static void DisplayLobbyTextTop()
         {
-            if (MPLobbyText == null)
-            {
-                MPLobbyText = new GameObject("Multiplayer Lobby");
-                MPLobbyText.transform.SetParent(LIPNHOMGGHF.JPABICKOAEO.transform, false);
-                MPLobbyText.AddComponent<Text>().font = MCDCDEBALPI.IMPJPDIEKDF[1].GetComponentInChildren<Text>().font;
-                MPLobbyText.AddComponent<Outline>().effectColor = new Color(0, 0, 0, 1);
-                MPLobbyText.GetComponent<Outline>().effectDistance = new Vector2(1, 1);
-                MPLobbyText.AddComponent<Shadow>().effectDistance = new Vector2(3, -3);
-            }
-            Text text = MPLobbyText.GetComponent<Text>();
+            Text text = Utils.SetupUIText(ref MPLobbyText, "Multiplayer Lobby");
             text.text = "Multiplayer Card Game Lobby Menu";
             text.horizontalOverflow = HorizontalWrapMode.Overflow;
-            text.verticalOverflow = VerticalWrapMode.Overflow;
-            text.alignment = TextAnchor.MiddleCenter;
-            text.fontSize = 30;
             RectTransform rectTransform = text.GetComponent<RectTransform>();
             rectTransform.sizeDelta = new Vector2(300, 0);
             rectTransform.anchoredPosition = new Vector2(0, 300);
@@ -58,63 +46,26 @@ namespace CardGame
 
         public static void DisplayHostText()
         {
-            if (HostText == null)
-            {
-                HostText = new GameObject("Host Lobby");
-                HostText.transform.SetParent(LIPNHOMGGHF.JPABICKOAEO.transform, false);
-                HostText.AddComponent<Text>().font = MCDCDEBALPI.IMPJPDIEKDF[1].GetComponentInChildren<Text>().font;
-                HostText.AddComponent<Outline>().effectColor = new Color(0, 0, 0, 1);
-                HostText.GetComponent<Outline>().effectDistance = new Vector2(1, 1);
-                HostText.AddComponent<Shadow>().effectDistance = new Vector2(3, -3);
-            }
-            Text text = HostText.GetComponent<Text>();
+            Text text = Utils.SetupUIText(ref HostText, "Host Lobby");
             text.text = "Host Lobby";
             text.horizontalOverflow = HorizontalWrapMode.Overflow;
-            text.verticalOverflow = VerticalWrapMode.Overflow;
-            text.alignment = TextAnchor.MiddleCenter;
-            text.fontSize = 30;
             RectTransform rectTransform = text.GetComponent<RectTransform>();
             rectTransform.sizeDelta = new Vector2(300, 0);
             rectTransform.anchoredPosition = new Vector2(-300, 150);
         }
         public static void DisplayJoinText()
         {
-            if (JoinText == null)
-            {
-                JoinText = new GameObject("Join Lobby");
-                JoinText.transform.SetParent(LIPNHOMGGHF.JPABICKOAEO.transform, false);
-                JoinText.AddComponent<Text>().font = MCDCDEBALPI.IMPJPDIEKDF[1].GetComponentInChildren<Text>().font;
-                JoinText.AddComponent<Outline>().effectColor = new Color(0, 0, 0, 1);
-                JoinText.GetComponent<Outline>().effectDistance = new Vector2(1, 1);
-                JoinText.AddComponent<Shadow>().effectDistance = new Vector2(3, -3);
-            }
-            Text text = JoinText.GetComponent<Text>();
+            Text text = Utils.SetupUIText(ref JoinText, "Join Lobby");
             text.text = "Join Lobby";
             text.horizontalOverflow = HorizontalWrapMode.Overflow;
-            text.verticalOverflow = VerticalWrapMode.Overflow;
-            text.alignment = TextAnchor.MiddleCenter;
-            text.fontSize = 30;
             RectTransform rectTransform = text.GetComponent<RectTransform>();
             rectTransform.sizeDelta = new Vector2(300, 0);
             rectTransform.anchoredPosition = new Vector2(300, 150);
         }
         public static void DisplayStatusText()
         {
-            if (LobbyStatusText == null)
-            {
-                LobbyStatusText = new GameObject("Lobby Status");
-                LobbyStatusText.transform.SetParent(LIPNHOMGGHF.JPABICKOAEO.transform, false);
-                LobbyStatusText.AddComponent<Text>().font = MCDCDEBALPI.IMPJPDIEKDF[1].GetComponentInChildren<Text>().font;
-                LobbyStatusText.AddComponent<Outline>().effectColor = new Color(0, 0, 0, 1);
-                LobbyStatusText.GetComponent<Outline>().effectDistance = new Vector2(1, 1);
-                LobbyStatusText.AddComponent<Shadow>().effectDistance = new Vector2(3, -3);
-            }
-            Text text = LobbyStatusText.GetComponent<Text>();
-            text.text = "";
+            Text text = Utils.SetupUIText(ref LobbyStatusText, "Lobby Status");
             text.horizontalOverflow = HorizontalWrapMode.Overflow;
-            text.verticalOverflow = VerticalWrapMode.Overflow;
-            text.alignment = TextAnchor.MiddleCenter;
-            text.fontSize = 30;
             RectTransform rectTransform = text.GetComponent<RectTransform>();
             rectTransform.sizeDelta = new Vector2(300, 0);
             rectTransform.anchoredPosition = new Vector2(0, -300);
