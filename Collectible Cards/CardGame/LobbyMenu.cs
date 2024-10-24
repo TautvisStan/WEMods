@@ -1,6 +1,7 @@
 ﻿using System;
 using System.Collections;
 using System.Collections.Generic;
+using System.IO;
 using System.Text;
 using CollectibleCards2;
 using HarmonyLib;
@@ -22,6 +23,8 @@ namespace CardGame
         public static int InviteFriendsButton { get; set; }
         public static int IDToJoinButton { get; set; }
         public static int JoinButton { get; set; }
+
+        public static int MatchmakingButton { get; set; }
 
 
         public static int HostType { get; set; } = 0;
@@ -134,8 +137,12 @@ namespace CardGame
                     IDToJoinButton = LIPNHOMGGHF.HOAOLPGEBKJ;
 
                     LIPNHOMGGHF.DFLLBNMHHIH();
-                    LIPNHOMGGHF.FKANHDIMMBJ[LIPNHOMGGHF.HOAOLPGEBKJ].ICGNAJFLAHL(1, "Join Lobby", 436f, 100f, 1f, 1f);
+                    LIPNHOMGGHF.FKANHDIMMBJ[LIPNHOMGGHF.HOAOLPGEBKJ].ICGNAJFLAHL(1, "Join Lobby", 425f, 100f, 1f, 1f);
                     JoinButton = LIPNHOMGGHF.HOAOLPGEBKJ;
+
+                    LIPNHOMGGHF.DFLLBNMHHIH();
+                    LIPNHOMGGHF.FKANHDIMMBJ[LIPNHOMGGHF.HOAOLPGEBKJ].ICGNAJFLAHL(1, "Matchmaking", 0f, 0f, 1f, 1f);
+                    MatchmakingButton = LIPNHOMGGHF.HOAOLPGEBKJ;
 
                     Plugin.InitCardGameNetworking();
                 }
@@ -225,7 +232,7 @@ namespace CardGame
                         LIPNHOMGGHF.FKANHDIMMBJ[HostTypeButton].FFCNPGPALPD = "Friends Only";
                         break;
                     case 2:
-                        LIPNHOMGGHF.FKANHDIMMBJ[HostTypeButton].FFCNPGPALPD = "Invite Only";
+                        LIPNHOMGGHF.FKANHDIMMBJ[HostTypeButton].FFCNPGPALPD = "Private";
                         break;
                 }
                 if (LIPNHOMGGHF.PIEMLEPEDFN == 5 && LIPNHOMGGHF.FKANHDIMMBJ[HostLobbyButton].CLMDCNDEBGD != 0)
@@ -262,9 +269,16 @@ namespace CardGame
                 {
                     Plugin.steamLobby.JoinLobby(IDToJoin);
                 }
-                if(Plugin.steamLobby.ConnectedPlayers == Gameplay.Players)
+                if (LIPNHOMGGHF.PIEMLEPEDFN == 5 && LIPNHOMGGHF.FKANHDIMMBJ[MatchmakingButton].CLMDCNDEBGD != 0)
+                {
+                    Plugin.steamLobby.StartMatchmaking();
+                }
+
+
+                if (Plugin.steamLobby.ConnectedPlayers == Gameplay.Players)
                 {
                     LIPNHOMGGHF.ODOAPLMOJPD = Plugin.GameplayPage;
+                    Plugin.steamLobby.MarkAsStarted();
                     LIPNHOMGGHF.ICGNAJFLAHL(0);
                 }
 

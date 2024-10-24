@@ -13,7 +13,7 @@ namespace CardGame
 
         public static int Players { get; set; } = 2;
         public static bool[] PlayersReady = new bool[Players];
-
+        public static bool Connected { get; set; } = false;
         public static List<PlayableCard> Deck { get; set; } = new();
         public static List<Texture2D> DeckCardTexture { get; set; } = new();
         public static int DeckSize { get; set; } = 10;
@@ -53,10 +53,7 @@ namespace CardGame
                         rawImage = CardObject.GetComponent<RawImage>();
                       //  texture2D = (Texture2D)rawImage.texture;
                     }
-                    if (DisplayIndex != -1)
-                    {
-                        texture2D = DeckCardTexture[DisplayIndex];
-                    }
+                    texture2D = DeckCardTexture[DisplayIndex];
                     rawImage.texture = texture2D;
                     RectTransform rectTransform = rawImage.GetComponent<RectTransform>();
                     rectTransform.sizeDelta = new Vector2(texture2D.width/2, texture2D.height/2);
@@ -82,7 +79,7 @@ namespace CardGame
                 {
                     if (Mathf.Abs(HKJOAJOKOIJ.GMCCPOAIBHC - CardObject.transform.position.x) < 70f * NAEEIFNFBBO.IADPBBEPJKF && Mathf.Abs(HKJOAJOKOIJ.MINFPCEENFN - CardObject.transform.position.y) < 100f * NAEEIFNFBBO.PNHIGOBEEBB && CardObject.activeSelf)
                     {
-                        if (DisplayIndex != -1)
+                        if (Connected)
                         {
                             Debug.LogWarning("CLICKED ON CARD " + DisplayIndex);
                             Plugin.steamNetworking.SendFULLTextureToPlayers(texture2D);
@@ -279,6 +276,7 @@ namespace CardGame
                     SetupCards();
                     DisplayStatusText();
                     SingleRound.DisplayRoundText();
+                    Connected = true;
                     for (int i = 0; i < PlayersReady.Length; i++)
                     {
                         PlayersReady[i] = false;
@@ -349,6 +347,7 @@ namespace CardGame
             P1Total = 0;
             P2Streak = 0;
             P2Total = 0;
+            Connected = false;
         }
         //disabling annoying audio
         [HarmonyPatch(typeof(CHLPMKEGJBJ), nameof(CHLPMKEGJBJ.DNNPEAOCDOG))]
@@ -403,6 +402,12 @@ namespace CardGame
             DeckCardTexture[DeckCardTexture.Count - 1].name = "TEXTURE " + card.Name;
             GameObject.Destroy(texture2D);
             texture2D = null;
+        }
+        public static void AnotherPlayerDisconnected()
+        {
+            Gameplay.Connected = false;
+            ScoreText.GetComponent<Text>().text = $"Another player disconnected. {ScoreText.GetComponent<Text>().text}";
+            LIPNHOMGGHF.FKANHDIMMBJ[ContinueButton].AHBNKMMMGFI = 0;
         }
 
     }
