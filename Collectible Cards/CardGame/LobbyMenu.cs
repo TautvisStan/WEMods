@@ -141,7 +141,7 @@ namespace CardGame
                     JoinButton = LIPNHOMGGHF.HOAOLPGEBKJ;
 
                     LIPNHOMGGHF.DFLLBNMHHIH();
-                    LIPNHOMGGHF.FKANHDIMMBJ[LIPNHOMGGHF.HOAOLPGEBKJ].ICGNAJFLAHL(1, "Matchmaking", 0f, 0f, 1f, 1f);
+                    LIPNHOMGGHF.FKANHDIMMBJ[LIPNHOMGGHF.HOAOLPGEBKJ].ICGNAJFLAHL(1, "Matchmaking", 0f, -100f, 1.25f, 1.25f);
                     MatchmakingButton = LIPNHOMGGHF.HOAOLPGEBKJ;
 
                     Plugin.InitCardGameNetworking();
@@ -189,9 +189,8 @@ namespace CardGame
                 }
                 if(!CardsChecked)
                 {
-                    Debug.LogWarning("CHECKING MP CARDS");
                     Gameplay.FillupDeck();
-                    Debug.LogWarning("FOUND CARDS " + Gameplay.Deck.Count);
+                    Plugin.Log.LogInfo("Found playable cards: " + Gameplay.Deck.Count);
                     if (Gameplay.Deck.Count < 10)
                     {
                         LIPNHOMGGHF.FKANHDIMMBJ[LobbyButton].AHBNKMMMGFI = 0;
@@ -210,6 +209,7 @@ namespace CardGame
                     LIPNHOMGGHF.FKANHDIMMBJ[InviteFriendsButton].AHBNKMMMGFI = 0;
                     LIPNHOMGGHF.FKANHDIMMBJ[IDToJoinButton].AHBNKMMMGFI = 1;
                     LIPNHOMGGHF.FKANHDIMMBJ[JoinButton].AHBNKMMMGFI = 1;
+                    LIPNHOMGGHF.FKANHDIMMBJ[MatchmakingButton].AHBNKMMMGFI = 1;
 
                 }
                 else
@@ -220,6 +220,7 @@ namespace CardGame
                     LIPNHOMGGHF.FKANHDIMMBJ[InviteFriendsButton].AHBNKMMMGFI = 1;
                     LIPNHOMGGHF.FKANHDIMMBJ[IDToJoinButton].AHBNKMMMGFI = 0;
                     LIPNHOMGGHF.FKANHDIMMBJ[JoinButton].AHBNKMMMGFI = 0;
+                    LIPNHOMGGHF.FKANHDIMMBJ[MatchmakingButton].AHBNKMMMGFI = 0;
                 }
                 HostType = Mathf.RoundToInt(LIPNHOMGGHF.FKANHDIMMBJ[HostTypeButton].ODONMLDCHHF(HostType, 1f, 10f, 0f, 2f, 0));
 

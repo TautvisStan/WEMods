@@ -14,7 +14,7 @@ namespace CardGame
     {
         public const string PluginGuid = "GeeEm.WrestlingEmpire.CardGame";
         public const string PluginName = "CardGame";
-        public const string PluginVer = "0.9.0";
+        public const string PluginVer = "1.1.0";
 
         internal static ManualLogSource Log;
         internal readonly static Harmony Harmony = new(PluginGuid);

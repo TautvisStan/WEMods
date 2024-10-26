@@ -19,6 +19,11 @@ namespace CardGame
         public int SteamLobbyMemberIndex { get; set; } = -1;
 
         private const string HostAddressKey = "HostAddress";
+        private const string LobbyStatusKey = "LobbyStatus";
+        private const string LobbyStatusOpen = "Open";
+        private const string LobbyStatusMatchmaking = "Matchmaking";
+        private const string LobbyStatusStarted = "Started";
+        private const string LobbyStatusClosed = "Closed";
         private string HostAddress = "";
         private bool Matchmaking { get; set; } = false;
 
@@ -36,7 +41,7 @@ namespace CardGame
         // Function to start matchmaking
         public void StartMatchmaking()
         {
-            Debug.LogWarning("Searching for public lobbies...");
+            Plugin.Log.LogInfo("Searching for public lobbies...");
             Matchmaking = true;
             // Search for public lobbies (with filters if needed)
             SteamAPICall_t handle = SteamMatchmaking.RequestLobbyList();
@@ -47,13 +52,11 @@ namespace CardGame
         // Callback when lobby list is received
         private void OnLobbyMatchListReceived(LobbyMatchList_t result, bool bIOFailure)
         {
-            Debug.LogWarning("LOBBY SEARCH RESULTS");
-            Debug.LogWarning(bIOFailure);
-            Debug.LogWarning(result.m_nLobbiesMatching);
+            Plugin.Log.LogInfo("Lobby search results:");
             if (bIOFailure || result.m_nLobbiesMatching == 0)
             {
                 // No suitable lobbies found, create a new one
-                Debug.LogWarning("No public lobbies found. Creating a new lobby...");
+                Plugin.Log.LogInfo("No public lobbies found. Creating a new lobby...");
                 LobbyMenu.HostType = 0;
                 StartLobby(0);
                 return;
@@ -63,18 +66,17 @@ namespace CardGame
             for (int i = 0; i < result.m_nLobbiesMatching; i++)
             {
                 CSteamID lobbyID = SteamMatchmaking.GetLobbyByIndex(i);
-                if (SteamMatchmaking.GetLobbyData(lobbyID, "Started") != "true" && SteamMatchmaking.GetLobbyData(lobbyID, "Matchmaking") == "true")
+                Plugin.Log.LogInfo($"Checking lobby {lobbyID}");
+                Plugin.Log.LogInfo($"Lobby status: {SteamMatchmaking.GetLobbyData(lobbyID, LobbyStatusKey)}");
+                Plugin.Log.LogInfo($"Connected players: {SteamMatchmaking.GetNumLobbyMembers(lobbyID)}");
+                if (SteamMatchmaking.GetLobbyData(lobbyID, LobbyStatusKey) == LobbyStatusMatchmaking && SteamMatchmaking.GetNumLobbyMembers(lobbyID) == 1)
                 {
-                    Debug.LogWarning("Joining existing public lobby: " + lobbyID);
+                    Plugin.Log.LogInfo("Joining existing public lobby: " + lobbyID);
                     SteamMatchmaking.JoinLobby(lobbyID);
                     return;
                 }
-                else
-                {
-                    Debug.LogWarning($"Lobby was ineligible: {lobbyID}|{SteamMatchmaking.GetLobbyData(lobbyID, "Started")}|{SteamMatchmaking.GetLobbyData(lobbyID, "Matchmaking")}|");
-                }
             }
-            Debug.LogWarning("Found lobbies but not eligible. Creating a new lobby...");
+            Plugin.Log.LogInfo("Found lobbies but not suitable. Creating a new lobby...");
             LobbyMenu.HostType = 0;
             StartLobby(0);
             return;
@@ -82,42 +84,43 @@ namespace CardGame
         void OnGameLobbyJoinRequested(GameLobbyJoinRequested_t callback)
         {
 
-            Debug.LogWarning("Received a join request. Joining lobby: " + callback.m_steamIDLobby);
+            Plugin.Log.LogInfo("Received a join request. Joining lobby: " + callback.m_steamIDLobby);
+            string status = SteamMatchmaking.GetLobbyData(callback.m_steamIDLobby, LobbyStatusKey);
             if (LIPNHOMGGHF.ODOAPLMOJPD == Plugin.MPLobbyPage)
             {
-                if (SteamMatchmaking.GetLobbyData(callback.m_steamIDLobby, "Started") != "true")
+                if(status != LobbyStatusClosed && status != LobbyStatusStarted)
                 {
                     // Attempt to join the lobby via the Steam ID received in the callback
                     SteamMatchmaking.JoinLobby(callback.m_steamIDLobby);
                 }
                 else
                 {
-                    Debug.LogWarning("TRIED JOINING MATCH IN PROGRESSS!!!");
+                    Plugin.Log.LogError($"Failed to join, bad lobby status: {status}");
                 }
             }
             else
             {
-                Debug.LogWarning("WARNING! NOT IN THE LOBBY MENU!!!!");
+                Plugin.Log.LogError("WARNING! NOT IN THE LOBBY MENU!!!!");
             }
         }
         public void JoinLobby(string lobbyID)
         {
             CSteamID steamID = new CSteamID(ulong.Parse(lobbyID));
-            if (SteamMatchmaking.GetLobbyData(steamID, "Started") != "true")
+            string status = SteamMatchmaking.GetLobbyData(steamID, LobbyStatusKey);
+            if (status != LobbyStatusClosed && status != LobbyStatusStarted)
             {
                 // Attempt to join the lobby via the Steam ID received in the callback
                 SteamMatchmaking.JoinLobby(steamID);
             }
             else
             {
-                Debug.LogWarning("TRIED JOINING MATCH IN PROGRESSS!!!");
+                Plugin.Log.LogError($"Failed to join, bad lobby status: {status}");
             }
-            SteamMatchmaking.JoinLobby(steamID);
         }
         public void StartLobby(int type)
         {
-            
-            Debug.LogWarning("STARTING STEAM LOBBY");
+
+            Plugin.Log.LogInfo("Starting Steam lobby...");
             if (!SteamManager.LHAIOCMDOLP) return;
             switch (type)
             {
@@ -148,8 +151,9 @@ namespace CardGame
         {
             if (currentLobbyID != CSteamID.Nil)
             {
+                SteamMatchmaking.SetLobbyData(currentLobbyID, LobbyStatusKey, LobbyStatusClosed);
                 SteamMatchmaking.LeaveLobby(currentLobbyID);
-                Debug.LogWarning("Left the lobby: " + currentLobbyID);
+                Plugin.Log.LogInfo("Left the lobby: " + currentLobbyID);
                 currentLobbyID = CSteamID.Nil;  // Clear the lobby ID after leaving
                 SteamLobbyMemberIndex = -1;
                 ConnectedPlayers = 0;
@@ -162,17 +166,19 @@ namespace CardGame
         {
             if (result.m_eResult != EResult.k_EResultOK)
             {
-                Debug.LogWarning("Failed to create lobby.");
+                Plugin.Log.LogError("Failed to create lobby.");
+                Plugin.Log.LogError(result.m_eResult);
                 return;
             }
-
+            currentLobbyID = new CSteamID(result.m_ulSteamIDLobby);
             // Set the host's Steam ID for other players to find them
             HostAddress = SteamUser.GetSteamID().ToString();
-            SteamMatchmaking.SetLobbyData(new CSteamID(result.m_ulSteamIDLobby), HostAddressKey, HostAddress);
+            SteamMatchmaking.SetLobbyData(currentLobbyID, HostAddressKey, HostAddress);
             
-            Debug.LogWarning("Lobby created! Lobby ID: " + result.m_ulSteamIDLobby);
-            if (LobbyMenu.HostType == 0) LobbyMenu.LobbyID = result.m_ulSteamIDLobby.ToString();
+            Plugin.Log.LogInfo("Lobby created! Lobby ID: " + currentLobbyID);
+            if (LobbyMenu.HostType == 0) LobbyMenu.LobbyID = currentLobbyID.ToString();
             if (Matchmaking) MarkAsMatchmaking();
+            else SteamMatchmaking.SetLobbyData(currentLobbyID, LobbyStatusKey, LobbyStatusOpen);
         }
         public int GetCurrentIndexInLobby()
         {
@@ -186,30 +192,30 @@ namespace CardGame
         {
             if (HostAddress == SteamUser.GetSteamID().ToString())
             {
-                SteamMatchmaking.SetLobbyData(currentLobbyID, "Started", "true");
-                Debug.LogWarning("Marking lobby as started");
+                SteamMatchmaking.SetLobbyData(currentLobbyID, LobbyStatusKey, LobbyStatusStarted);
+                Plugin.Log.LogInfo("Marking lobby as started");
             }
         }
         public void MarkAsMatchmaking()
         {
             if (HostAddress == SteamUser.GetSteamID().ToString())
             {
-                SteamMatchmaking.SetLobbyData(currentLobbyID, "Matchmaking", "true");
-                Debug.LogWarning("Marking lobby as matchmaking");
+                SteamMatchmaking.SetLobbyData(currentLobbyID, LobbyStatusKey, LobbyStatusMatchmaking);
+                Plugin.Log.LogInfo("Marking lobby as matchmaking");
                 
             }
         }
         void OnLobbyEntered(LobbyEnter_t result)
         {
             currentLobbyID = new CSteamID(result.m_ulSteamIDLobby);
-            Debug.LogWarning("Entered Lobby: " + currentLobbyID);
+            Plugin.Log.LogInfo("Entered Lobby: " + currentLobbyID);
             SteamLobbyMemberIndex = GetCurrentIndexInLobby();
             // Log all current members in the lobby
             int memberCount = SteamMatchmaking.GetNumLobbyMembers(currentLobbyID);
             for (int i = 0; i < memberCount; i++)
             {
                 CSteamID memberID = SteamMatchmaking.GetLobbyMemberByIndex(currentLobbyID, i);
-                Debug.LogWarning("Lobby Member: " + SteamFriends.GetFriendPersonaName(memberID));
+                Plugin.Log.LogInfo("Lobby Member: " + SteamFriends.GetFriendPersonaName(memberID));
             }
             ConnectedPlayers = memberCount;
 
@@ -217,7 +223,7 @@ namespace CardGame
             if (!SteamUser.GetSteamID().Equals(SteamMatchmaking.GetLobbyOwner(new CSteamID(result.m_ulSteamIDLobby))))
             {
                 HostAddress = SteamMatchmaking.GetLobbyData(new CSteamID(result.m_ulSteamIDLobby), HostAddressKey);
-                Debug.LogWarning("Host Steam ID: " + HostAddress);
+                Plugin.Log.LogInfo("Host Steam ID: " + HostAddress);
 
                 // You can now connect to the host via P2P
             }
@@ -233,23 +239,23 @@ namespace CardGame
             // Check if someone joined
             if (stateChange == EChatMemberStateChange.k_EChatMemberStateChangeEntered)
             {
-                Debug.LogWarning("User joined: " + SteamFriends.GetFriendPersonaName(userChanged));
+                Plugin.Log.LogInfo("User joined: " + SteamFriends.GetFriendPersonaName(userChanged));
                 ConnectedPlayers++;
             }
             // Check if the user left or was disconnected
             if (stateChange == EChatMemberStateChange.k_EChatMemberStateChangeLeft ||
                 stateChange == EChatMemberStateChange.k_EChatMemberStateChangeDisconnected)
             {
-                Debug.LogWarning("Player left or disconnected: " + SteamFriends.GetFriendPersonaName(userChanged));
+                Plugin.Log.LogInfo("Player left or disconnected: " + SteamFriends.GetFriendPersonaName(userChanged));
                 ConnectedPlayers--;
                 if (Gameplay.Connected) Gameplay.AnotherPlayerDisconnected();
                 // Check if this is the host (lobby will be destroyed if the host leaves)
                 if (userChanged.ToString() == HostAddress)
                 {
-                    Debug.LogWarning("Host left. Lobby will be closed.");
+                    Plugin.Log.LogInfo("Host left. Lobby will be closed.");
                     // Clear lobby data and update UI
-                    currentLobbyID = CSteamID.Nil;
-                    SteamLobbyMemberIndex = -1;
+                  //  currentLobbyID = CSteamID.Nil;
+                   // SteamLobbyMemberIndex = -1;
                 }
             }
         }

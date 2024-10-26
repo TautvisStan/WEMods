@@ -14,7 +14,7 @@ namespace CollectibleCards2
     {
         public const string PluginGuid = "GeeEm.WrestlingEmpire.CollectibleCards";
         public const string PluginName = "CollectibleCards";
-        public const string PluginVer = "1.0.2";
+        public const string PluginVer = "1.1.0";
 
         internal static ManualLogSource Log;
         internal readonly static Harmony Harmony = new(PluginGuid);

@@ -50,6 +50,7 @@ namespace CardGame
             if (card.Agility == "") return false;
             if (card.Stamina == "") return false;
             if (card.Attitude == "") return false;
+            if (card.IsCustom()) return false;
             return true;
         }
     }

@@ -51,7 +51,6 @@ namespace CardGame
                     else
                     {
                         rawImage = CardObject.GetComponent<RawImage>();
-                      //  texture2D = (Texture2D)rawImage.texture;
                     }
                     texture2D = DeckCardTexture[DisplayIndex];
                     rawImage.texture = texture2D;
@@ -81,18 +80,11 @@ namespace CardGame
                     {
                         if (Connected)
                         {
-                            Debug.LogWarning("CLICKED ON CARD " + DisplayIndex);
-                            Plugin.steamNetworking.SendFULLTextureToPlayers(texture2D);
+                            Plugin.steamNetworking.SEND_TEXTURE_NOTSELF(texture2D);
                             Plugin.steamNetworking.SEND_CARD(Card);
                             CardsPlayed++;
                             SingleRound.ReceiveCardTexture(texture2D.EncodeToPNG(), Plugin.steamLobby.SteamLobbyMemberIndex);
                             LIPNHOMGGHF.FKANHDIMMBJ[ContinueButton].NKEDCLBOOMJ = "Waiting For Players";
-
-
-                           // SingleRound.ReceiveCard(Card, Plugin.steamLobby.SteamLobbyMemberIndex+1);
-                          //  SingleRound.ReceiveCardTexture(texture2D.EncodeToPNG(), Plugin.steamLobby.SteamLobbyMemberIndex+1);
-
-
                             RemoveCardFromDeck(DisplayIndex);
                             HideHand();
                             ShowPlayed();
@@ -184,39 +176,21 @@ namespace CardGame
             while (n > 1)
             {
                 int k = UnityEngine.Random.Range(0, n--);
-                Debug.LogWarning(n + " " + k);
                 (Deck[n], Deck[k]) = (Deck[k], Deck[n]);
             }
             List<PlayableCard> ProperDeck = new();
             for (int i = 0; i < DeckSize; i++)
             {
-                Debug.LogWarning(i);
                 ProperDeck.Add(Deck[i]);
             }
             Deck = ProperDeck;
         }
         public static void RemoveCardFromDeck(int index)
         {
-            //  Deck.RemoveAt(index);
             Deck[index] = null;
-            Debug.LogWarning("Destroying texture " + DeckCardTexture[index].name);
             GameObject.Destroy(DeckCardTexture[index]);
-            //DeckCardTexture.RemoveAt(index);
             DeckCardTexture[index] = null;
             DeckCardElements[index].Cleanup();
-            /*  for (int i = 0; i < 3; i++)
-              {
-                  if (i < Deck.Count)
-                  {
-                      Debug.LogWarning("TEXTURE " + i + DeckCardTexture[i] == null);
-                      DeckCardElements[i].Card = Deck[i];
-                      DeckCardElements[i].DisplayCard();
-                  }
-                  else
-                  {
-                      DeckCardElements[i].Cleanup();
-                  }
-              }*/
         }
         public static void PlaceCards()
         {
@@ -306,8 +280,16 @@ namespace CardGame
             }
             if (LIPNHOMGGHF.ODOAPLMOJPD == Plugin.GameplayPage)
             {
+                
                 if (LIPNHOMGGHF.PIEMLEPEDFN == 5 && LIPNHOMGGHF.FKANHDIMMBJ[ContinueButton].CLMDCNDEBGD != 0)
                 {
+                    if (LIPNHOMGGHF.FKANHDIMMBJ[Gameplay.ContinueButton].NKEDCLBOOMJ == "Click to leave the lobby")
+                    {
+                        LIPNHOMGGHF.ODOAPLMOJPD = Plugin.MPLobbyPage;
+                        Plugin.steamLobby.LeaveLobby();
+                        LIPNHOMGGHF.ICGNAJFLAHL(0);
+                        return;
+                    }
                     LIPNHOMGGHF.FKANHDIMMBJ[ContinueButton].NKEDCLBOOMJ = "Waiting For Players";
                     Plugin.steamNetworking.SEND_READY();
                    // SingleRound.ReceiveReady(Plugin.steamLobby.SteamLobbyMemberIndex + 1);
@@ -347,6 +329,9 @@ namespace CardGame
             P1Total = 0;
             P2Streak = 0;
             P2Total = 0;
+            P2Total = 0;
+            PlayersReady[0] = false;
+            PlayersReady[1] = false;
             Connected = false;
         }
         //disabling annoying audio
@@ -376,12 +361,10 @@ namespace CardGame
         }
         public static void FillupDeckTextures()
         {
-            Debug.LogWarning("TRYING TO FILL DECK TEXTURES, DECK SIZE " + Deck.Count);
             for (int i = 0; i < DeckCardTexture.Count; i++)  
             {
                 if (DeckCardTexture[i] != null)
                 {
-                    Debug.LogWarning("Destroying texture " + DeckCardTexture[i].name);
                     GameObject.Destroy(DeckCardTexture[i]);
                     DeckCardTexture[i] = null;
                 }
@@ -389,7 +372,6 @@ namespace CardGame
             DeckCardTexture = new();
             for (int i = 0; i < DeckSize; i++)
             {
-                Debug.LogWarning(i + " " + Deck[i].LocalIndex);
                 AddResizedTexture(CardMenu.Cards[Deck[i].LocalIndex]);
             }
         }
@@ -407,7 +389,8 @@ namespace CardGame
         {
             Gameplay.Connected = false;
             ScoreText.GetComponent<Text>().text = $"Another player disconnected. {ScoreText.GetComponent<Text>().text}";
-            LIPNHOMGGHF.FKANHDIMMBJ[ContinueButton].AHBNKMMMGFI = 0;
+            LIPNHOMGGHF.FKANHDIMMBJ[ContinueButton].AHBNKMMMGFI = 1;
+            LIPNHOMGGHF.FKANHDIMMBJ[ContinueButton].NKEDCLBOOMJ = "Click to leave the lobby";
         }
 
     }

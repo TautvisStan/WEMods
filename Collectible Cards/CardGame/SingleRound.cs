@@ -34,12 +34,10 @@ namespace CardGame
                         CardObject = new("card");
                         CardObject.transform.SetParent(LIPNHOMGGHF.JPABICKOAEO.transform, false);
                         rawImage = CardObject.AddComponent<RawImage>();
-
                     }
                     else
                     {
                         rawImage = CardObject.GetComponent<RawImage>();
-                        //  texture2D = (Texture2D)rawImage.texture;
                     }
                     if (texture2D == null)
                         texture2D = new Texture2D(1, 1);
@@ -86,7 +84,6 @@ namespace CardGame
                 }
                 if (texture2D != null)
                 {
-                    Debug.LogWarning("Destroying texture " + texture2D.name);
                     UnityEngine.Object.Destroy(texture2D);
                     texture2D = null;
                 }
@@ -125,11 +122,15 @@ namespace CardGame
                 if(Gameplay.P1Streak == 3)
                 {
                     RoundText.GetComponent<Text>().text = $"1-2-3! P1 pins their opponent and wins the match!";
+                    LIPNHOMGGHF.FKANHDIMMBJ[Gameplay.ContinueButton].NKEDCLBOOMJ = "Click to leave the lobby";
+                    LIPNHOMGGHF.FKANHDIMMBJ[Gameplay.ContinueButton].AHBNKMMMGFI = 1;
                     return;
                 }
                 if (Gameplay.P2Streak == 3)
                 {
                     RoundText.GetComponent<Text>().text = $"1-2-3! P2 pins their opponent and wins the match!";
+                    LIPNHOMGGHF.FKANHDIMMBJ[Gameplay.ContinueButton].NKEDCLBOOMJ = "Click to leave the lobby";
+                    LIPNHOMGGHF.FKANHDIMMBJ[Gameplay.ContinueButton].AHBNKMMMGFI = 1;
                     return;
                 }
                 if (Gameplay.CardsPlayed == Gameplay.DeckSize)
@@ -137,16 +138,22 @@ namespace CardGame
                     if(Gameplay.P1Total > Gameplay.P2Total)
                     {
                         RoundText.GetComponent<Text>().text = $"Out of cards! P1 wins with the total score of {Gameplay.P1Total}-{Gameplay.P2Total}";
+                        LIPNHOMGGHF.FKANHDIMMBJ[Gameplay.ContinueButton].NKEDCLBOOMJ = "Click to leave the lobby";
+                        LIPNHOMGGHF.FKANHDIMMBJ[Gameplay.ContinueButton].AHBNKMMMGFI = 1;
                         return;
                     }
                     else if (Gameplay.P1Total < Gameplay.P2Total)
                     {
                         RoundText.GetComponent<Text>().text = $"Out of cards! P2 wins with the total score of {Gameplay.P1Total}-{Gameplay.P2Total}";
+                        LIPNHOMGGHF.FKANHDIMMBJ[Gameplay.ContinueButton].NKEDCLBOOMJ = "Click to leave the lobby";
+                        LIPNHOMGGHF.FKANHDIMMBJ[Gameplay.ContinueButton].AHBNKMMMGFI = 1;
                         return;
                     }
                     else
                     {
                         RoundText.GetComponent<Text>().text = $"Out of cards! Match was a draw with the total score of {Gameplay.P1Total}-{Gameplay.P2Total}";
+                        LIPNHOMGGHF.FKANHDIMMBJ[Gameplay.ContinueButton].NKEDCLBOOMJ = "Click to leave the lobby";
+                        LIPNHOMGGHF.FKANHDIMMBJ[Gameplay.ContinueButton].AHBNKMMMGFI = 1;
                         return;
                     }
                 }
@@ -158,13 +165,11 @@ namespace CardGame
                 PlayedCardElements[1].Card = new();
                 if (PlayedCardElements[0].texture2D != null)
                 {
-                    Debug.LogWarning("Destroying texture " + PlayedCardElements[0].texture2D.name);
                     UnityEngine.Object.Destroy(PlayedCardElements[0].texture2D);
                     PlayedCardElements[0].texture2D = null;
                 }
                 if (PlayedCardElements[1].texture2D != null)
                 {
-                    Debug.LogWarning("Destroying texture " + PlayedCardElements[1].texture2D.name);
                     UnityEngine.Object.Destroy(PlayedCardElements[1].texture2D);
                     PlayedCardElements[1].texture2D = null;
                 }
@@ -188,9 +193,9 @@ namespace CardGame
         {
             P1Score = 0;
             P2Score = 0;
-            Debug.LogWarning("Comparing cards...");
-            Debug.LogWarning($"Card 1: {card1.WrestlerName}");
-            Debug.LogWarning($"Card 2: {card2.WrestlerName}");
+            Plugin.Log.LogInfo("Comparing cards...");
+            Plugin.Log.LogInfo($"Card 1: {card1.WrestlerName}");
+            Plugin.Log.LogInfo($"Card 2: {card2.WrestlerName}");
 
             CompareStat("Popularity", card1.Popularity, card2.Popularity);
             CompareStat("Strength", card1.Strength, card2.Strength);
@@ -202,25 +207,27 @@ namespace CardGame
             RoundText.GetComponent<Text>().text = $"Round Score: {P1Score}-{P2Score}";
             if (P1Score == P2Score)
             {
-                Debug.LogWarning("THIS ROUND WAS A DRAW!");
+                Plugin.Log.LogInfo("THIS ROUND WAS A DRAW!");
                 Gameplay.P1Streak = 0;
                 Gameplay.P2Streak = 0;
                 RoundText.GetComponent<Text>().text += $"\nDraw!";
             }
             else if (P1Score > P2Score)
             {
-                Debug.LogWarning("P1 Wins!");
+                Plugin.Log.LogInfo("P1 Wins!");
                 Gameplay.P1Total++;
                 Gameplay.P1Streak++;
                 Gameplay.P2Streak = 0;
+                CHLPMKEGJBJ.DNNPEAOCDOG(CHLPMKEGJBJ.OFMKICAKMJO[1, Gameplay.P1Streak], 1f, 2 * CHLPMKEGJBJ.LPEEMOBBPDE);
                 RoundText.GetComponent<Text>().text += $"\nP1 Card Wins! (Streak: {Gameplay.P1Streak})";
             }
             else
             {
-                Debug.LogWarning("P2 Wins!");
+                Plugin.Log.LogInfo("P2 Wins!");
                 Gameplay.P2Total++;
                 Gameplay.P2Streak++;
                 Gameplay.P1Streak = 0;
+                CHLPMKEGJBJ.DNNPEAOCDOG(CHLPMKEGJBJ.OFMKICAKMJO[1, Gameplay.P2Streak], 1f, 2 * CHLPMKEGJBJ.LPEEMOBBPDE);
                 RoundText.GetComponent<Text>().text += $"\nP2 Card Wins! (Streak: {Gameplay.P2Streak})";
             }
             Gameplay.ScoreText.GetComponent<Text>().text = $"Total Score: {Gameplay.P1Total}({Gameplay.P1Streak})-{Gameplay.P2Total}({Gameplay.P2Streak})";
@@ -230,23 +237,23 @@ namespace CardGame
         }
         public static void CompareStat(string stat, float card1stat, float card2stat)
         {
-            Debug.LogWarning($"Comparing {stat}: {card1stat} vs {card2stat}");
+            Plugin.Log.LogInfo($"Comparing {stat}: {card1stat} vs {card2stat}");
             int result = CompareSingleNumbers(card1stat, card2stat);
             if (result < 0)
             {
-                Debug.LogWarning("Card 1 wins.");
+                Plugin.Log.LogInfo("Card 1 wins.");
                 P1Score++;
             }
             else if (result > 0)
             {
-                Debug.LogWarning("Card 2 wins.");
+                Plugin.Log.LogInfo("Card 2 wins.");
                 P2Score++;
             }
             else
             {
-                Debug.LogWarning("Draw!");
+                Plugin.Log.LogInfo("Draw!");
             }
-            Debug.LogWarning($"Score: {P1Score}-{P2Score}");
+            Plugin.Log.LogInfo($"Score: {P1Score}-{P2Score}");
         }
         public static int CompareSingleNumbers(float a, float b)
         {

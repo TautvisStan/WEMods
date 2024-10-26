@@ -20,7 +20,6 @@ namespace CardGame
 
         public string Type { get; set; }
         public string Content { get; set; }
-       // public byte[] ContentBytes { get; set; }
         public CSteamID SenderID { get; set; }
         public int LobbyIndex { get; set; }
         public NetworkMessage()
@@ -64,29 +63,7 @@ namespace CardGame
             m_P2PSessionRequest = Callback<P2PSessionRequest_t>.Create(OnP2PSessionRequest);
             m_P2PConnectFail = Callback<P2PSessionConnectFail_t>.Create(OnP2PConnectFail);
         }
-
-        public void SendTextureToPlayer(CSteamID recipient, byte[] textureBytes)
-        {
-            // Let's say Steam P2P has a packet size limit (like 1200 bytes per packet)
-            const int chunkSize = 1200;
-
-            int totalSize = textureBytes.Length;
-            int numChunks = Mathf.CeilToInt((float)totalSize / chunkSize);
-
-            // Send each chunk of the texture data
-            for (int i = 0; i < numChunks; i++)
-            {
-                int currentChunkSize = Mathf.Min(chunkSize, totalSize - i * chunkSize);
-                byte[] chunk = new byte[currentChunkSize];
-                System.Array.Copy(textureBytes, i * chunkSize, chunk, 0, currentChunkSize);
-
-                // Send the chunk
-                SteamNetworking.SendP2PPacket(recipient, chunk, (uint)currentChunkSize, EP2PSend.k_EP2PSendReliable);
-            }
-
-            Debug.Log("Texture sent in " + numChunks + " chunks.");
-        }
-        public void SendFULLTextureToPlayers(Texture2D texture2D)
+        public void SEND_TEXTURE_NOTSELF(Texture2D texture2D)
         {
         //    byte[] array2 = card.GetCardBytes();
         //    Texture2D texture2D = new Texture2D(1, 1);
@@ -101,7 +78,7 @@ namespace CardGame
                 CSteamID playerID = SteamMatchmaking.GetLobbyMemberByIndex(lobby.currentLobbyID, i);
                 if (playerID != SteamUser.GetSteamID())
                 {
-                    Debug.LogWarning("SENT THE CARD TEXTURE TO " + playerID);
+                    Plugin.Log.LogInfo("SENT THE CARD TEXTURE TO " + playerID);
                     SteamNetworking.SendP2PPacket(playerID, data, (uint)data.Length, EP2PSend.k_EP2PSendReliable);
                 }
             }
@@ -120,8 +97,7 @@ namespace CardGame
                 if (SteamNetworking.ReadP2PPacket(data, messageSize, out messageSize, out remoteID))
                 {
                     string message = Encoding.UTF8.GetString(data);
-                    //   Debug.LogWarning("Received message from " + remoteID + ": " + message);
-                    Debug.LogWarning("Received message from " + remoteID);
+                    Plugin.Log.LogInfo("Received message from " + remoteID);
                     NetworkMessage networkMessage = null;
                     try
                     {
@@ -129,9 +105,9 @@ namespace CardGame
                     }
                     catch (Exception e)
                     {
-                        Debug.LogWarning("Failed to convert, message was most likely not the custom NetworkMessage type");
-                        Debug.LogWarning("Contents: " + message);
-                        Debug.LogError("ERROR: " + e);
+                        Plugin.Log.LogWarning("Failed to convert, message was most likely not the custom NetworkMessage type");
+                        Plugin.Log.LogWarning("Contents: " + message);
+                        Plugin.Log.LogError("ERROR: " + e);
                     }
                     if(networkMessage != null)
                     {
@@ -140,21 +116,21 @@ namespace CardGame
                             string content = networkMessage.Content;
                             PlayableCard receivedCard = null;
                             receivedCard = JsonConvert.DeserializeObject<PlayableCard>(content);
-                            Debug.LogWarning($"CARD RECEIVED: {receivedCard.WrestlerName} from {remoteID} (lobby index {networkMessage.LobbyIndex})");
+                            Plugin.Log.LogInfo($"CARD RECEIVED: {receivedCard.WrestlerName} from {remoteID} (lobby index {networkMessage.LobbyIndex})");
                             SingleRound.ReceiveCard(receivedCard, networkMessage.LobbyIndex);
                         }
                         if (networkMessage.Type == NetworkMessage.TYPE_TEXT_MESSAGE)
-                        { 
-                            Debug.LogWarning($"MESSAGE RECEIVED: '{networkMessage.Content}' from {remoteID} (lobby index {networkMessage.LobbyIndex})");
+                        {
+                            Plugin.Log.LogInfo($"MESSAGE RECEIVED: '{networkMessage.Content}' from {remoteID} (lobby index {networkMessage.LobbyIndex})");
                         }
                         if (networkMessage.Type == NetworkMessage.TYPE_READY)
                         {
-                            Debug.LogWarning($"Player is ready: {remoteID} (lobby index {networkMessage.LobbyIndex})");
+                            Plugin.Log.LogInfo($"Player is ready: {remoteID} (lobby index {networkMessage.LobbyIndex})");
                             SingleRound.ReceiveReady(networkMessage.LobbyIndex);
                         }
                         if (networkMessage.Type == NetworkMessage.TYPE_TEXTURE)
                         {
-                            Debug.LogWarning($"IMAGE DATA RECEIVED! TRYING TO SAVE TEXTURE");
+                            Plugin.Log.LogInfo($"IMAGE DATA RECEIVED! TRYING TO SAVE TEXTURE");
                             PngUtils.SaveWithMetadata(Path.Combine(Plugin.PluginPath, "downloaded.png"), networkMessage.GetImageBytes(), new Dictionary<string, string>());
                             SingleRound.ReceiveCardTexture(networkMessage.GetImageBytes(), networkMessage.LobbyIndex);
                         }
@@ -168,25 +144,25 @@ namespace CardGame
             card.WrestlerName = card.WrestlerName.Trim();
             string encodedCard = JsonConvert.SerializeObject(card);
             NetworkMessage message = new(NetworkMessage.TYPE_CARD, SteamUser.GetSteamID(), lobby.SteamLobbyMemberIndex, encodedCard);
-            Debug.LogWarning($"Sending card: {card.WrestlerName}");
+            Plugin.Log.LogInfo($"Sending card: {card.WrestlerName}");
             SendMessageToAll(JsonConvert.SerializeObject(message));
         }
         public void SEND_TEXT(string text)
         {
             NetworkMessage message = new(NetworkMessage.TYPE_TEXT_MESSAGE, SteamUser.GetSteamID(), lobby.SteamLobbyMemberIndex, text);
-            Debug.LogWarning($"Sending text message: {message}");
+            Plugin.Log.LogInfo($"Sending text message: {message}");
             SendMessageToAll(JsonConvert.SerializeObject(message));
         }
         public void SEND_READY()
         {
             NetworkMessage message = new(NetworkMessage.TYPE_READY, SteamUser.GetSteamID(), lobby.SteamLobbyMemberIndex, "");
-            Debug.LogWarning($"Sending ready message");
+            Plugin.Log.LogInfo($"Sending ready message");
             SendMessageToAll(JsonConvert.SerializeObject(message));
         }
         public void SendMessageToAll(string message)
         {
             if (lobby.currentLobbyID == null) return;
-            Debug.LogWarning($"Sending message to all: {message}");
+            Plugin.Log.LogInfo($"Sending message to all: {message}");
             // Get the number of players in the lobby
             int numPlayers = SteamMatchmaking.GetNumLobbyMembers(lobby.currentLobbyID);
             byte[] data = Encoding.UTF8.GetBytes(message);
@@ -212,7 +188,7 @@ namespace CardGame
 
             // Automatically accept the session request
             SteamNetworking.AcceptP2PSessionWithUser(remoteID);
-            Debug.LogWarning("Accepted P2P session request from: " + SteamFriends.GetFriendPersonaName(remoteID));
+            Plugin.Log.LogInfo("Accepted P2P session request from: " + SteamFriends.GetFriendPersonaName(remoteID));
         }
 
         // Handle P2P connection failures
@@ -221,7 +197,7 @@ namespace CardGame
             CSteamID remoteID = p2pConnectFail.m_steamIDRemote;
             EP2PSessionError error = (EP2PSessionError)p2pConnectFail.m_eP2PSessionError;
 
-            Debug.LogError("P2P connection failed with user: " + SteamFriends.GetFriendPersonaName(remoteID) + ". Error: " + error);
+            Plugin.Log.LogError("P2P connection failed with user: " + SteamFriends.GetFriendPersonaName(remoteID) + ". Error: " + error);
 
         }
     }
