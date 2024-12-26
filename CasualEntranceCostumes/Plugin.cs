@@ -1,10 +1,11 @@
 using BepInEx;
 using BepInEx.Logging;
 using HarmonyLib;
-using System;
 using System.IO;
 using UnityEngine;
 using BepInEx.Configuration;
+using System.Collections;
+using UnityEngine.TextCore;
 
 namespace CasualEntranceCostumes
 {
@@ -14,7 +15,7 @@ namespace CasualEntranceCostumes
     {
         public const string PluginGuid = "GeeEm.WrestlingEmpire.CasualEntranceCostumes";
         public const string PluginName = "CasualEntranceCostumes";
-        public const string PluginVer = "1.0.1";
+        public const string PluginVer = "1.0.2";
 
         internal static ManualLogSource Log;
         internal readonly static Harmony Harmony = new(PluginGuid);
@@ -22,6 +23,10 @@ namespace CasualEntranceCostumes
         internal static string PluginPath;
 
         public static ConfigEntry<KeyCode> ChangeClothesButton;
+        WaitForEndOfFrame frameEnd = new WaitForEndOfFrame();
+
+        public static System.Func<DFOGOCNBECG, IEnumerator> ChangeClothesFunc;
+        public static Plugin plugin;
 
         private void Awake()
         {
@@ -30,6 +35,9 @@ namespace CasualEntranceCostumes
             PluginPath = Path.GetDirectoryName(Info.Location);
 
             ChangeClothesButton = Config.Bind("General", "Costume change keybind", KeyCode.None, "Changes the current entrants' costume from casual to wrestling");
+
+            ChangeClothesFunc = ChangeClothesOnKeybind;
+            plugin = this;
         }
 
         private void OnEnable()
@@ -52,13 +60,25 @@ namespace CasualEntranceCostumes
                 for (int i = 1; i <= NJBJIIIACEP.NBBBLJDBLNM; i++)
                 {
                     DFOGOCNBECG dfogocnbecg = NJBJIIIACEP.OAAMGFLINOB[i];
+                    Character character = dfogocnbecg.EMDMDLNJFKP;
                     if (dfogocnbecg.FIEMGOLBHIO == 1 && dfogocnbecg.PCNHIIPBNEK[0] != null)
                     {
-                        dfogocnbecg.OEGJEBDBGJA = dfogocnbecg.EMDMDLNJFKP.costume[2];
-                        dfogocnbecg.ABHDOPBDDPB();
+                        dfogocnbecg.IIAHHOIOBMF(character.id, 2);
+                    }
+                    if (dfogocnbecg.AHBNKMMMGFI == 0)
+                    {
+                        dfogocnbecg.PCNHIIPBNEK[0].SetActive(false);
                     }
                 }
             }
+        }
+        public IEnumerator ChangeClothesOnKeybind(DFOGOCNBECG dfogocnbecg)
+        {
+            yield return frameEnd;
+            Character character = dfogocnbecg.EMDMDLNJFKP;
+            dfogocnbecg.IIAHHOIOBMF(character.id, 1);
+            yield break;
+
         }
         [HarmonyPatch(typeof(Scene_Game), nameof(Scene_Game.Update))]
         [HarmonyPostfix]
@@ -71,26 +91,15 @@ namespace CasualEntranceCostumes
                     for (int i = 1; i <= NJBJIIIACEP.NBBBLJDBLNM; i++)
                     {
                         DFOGOCNBECG dfogocnbecg = NJBJIIIACEP.OAAMGFLINOB[i];
-                        if (dfogocnbecg.FIEMGOLBHIO == 1 && FFCEGMEAIBP.LPBCEGPJNMF == dfogocnbecg.PLFGKLGCOMD)
+                        Character character = dfogocnbecg.EMDMDLNJFKP;
+                        if (dfogocnbecg.FIEMGOLBHIO == 1 && dfogocnbecg.NEMJMNEGAAH(FFCEGMEAIBP.LPBCEGPJNMF) > 0 && dfogocnbecg.PCNHIIPBNEK[0] != null)
                         {
-                            dfogocnbecg.OEGJEBDBGJA = dfogocnbecg.EMDMDLNJFKP.costume[1];
-                            dfogocnbecg.ABHDOPBDDPB();
+                            plugin.StartCoroutine(ChangeClothesFunc(dfogocnbecg));
                         }
                     }
                 }
             }
         }
-
-        /*    //change costumes to casual on character spawn
-            //todo only wrestlers on entrance
-            [HarmonyPatch(typeof(DFOGOCNBECG), nameof(DFOGOCNBECG.ICGNAJFLAHL))]
-            [HarmonyPostfix]
-            public static void DFOGOCNBECG_ICGNAJFLAHL_Postfix(DFOGOCNBECG __instance, int APCLJHNGGFM, int IMDNPIKCPMD, int LGKGPDCGGCG = 0)
-            {
-                Debug.LogWarning(FFCEGMEAIBP.LOBDMDPMFLK);
-                __instance.OEGJEBDBGJA = __instance.EMDMDLNJFKP.costume[2];
-                __instance.ABHDOPBDDPB();
-            }*/
         //change it back to wrestling on match start
         [HarmonyPatch(typeof(FFCEGMEAIBP), nameof(FFCEGMEAIBP.DMJFCHKLEFH))]
         [HarmonyPostfix]
@@ -101,12 +110,22 @@ namespace CasualEntranceCostumes
                 for (int i = 1; i <= NJBJIIIACEP.NBBBLJDBLNM; i++)
                 {
                     DFOGOCNBECG dfogocnbecg = NJBJIIIACEP.OAAMGFLINOB[i];
+                    Character character = dfogocnbecg.EMDMDLNJFKP;
                     if (dfogocnbecg.FIEMGOLBHIO == 1 && dfogocnbecg.PCNHIIPBNEK[0] != null)
                     {
-                        dfogocnbecg.OEGJEBDBGJA = dfogocnbecg.EMDMDLNJFKP.costume[1];
-                        dfogocnbecg.ABHDOPBDDPB();
+                        dfogocnbecg.IIAHHOIOBMF(character.id, 1);
                     }
                 }
+            }
+        }
+        //rename the wrestling costume button
+        [HarmonyPatch(typeof(AKFIIKOMPLL), nameof(AKFIIKOMPLL.ICGNAJFLAHL))]
+        [HarmonyPrefix]
+        public static void AKFIIKOMPLL_ICGNAJFLAHL_Prefix(AKFIIKOMPLL __instance, int CHMHJJNEMKB, ref string NMKKHDOGOGA, float DPBNKMPJJOJ, float NKEMECHAEEJ, float BGPLCHIKEAK, float JOIPMMGOLFI)
+        {
+            if (LIPNHOMGGHF.FAKHAFKOBPB == 60 && LIPNHOMGGHF.CHLJMEPFJOK == 2 && LIPNHOMGGHF.ODOAPLMOJPD == 0 && NMKKHDOGOGA == "Casual")
+            {
+                NMKKHDOGOGA = "Casual/Entrance";
             }
         }
     }
