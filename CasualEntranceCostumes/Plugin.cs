@@ -25,7 +25,7 @@ namespace CasualEntranceCostumes
         public static ConfigEntry<KeyCode> ChangeClothesButton;
         WaitForEndOfFrame frameEnd = new WaitForEndOfFrame();
 
-        public static System.Func<DFOGOCNBECG, IEnumerator> ChangeClothesFunc;
+        public static System.Func<DFOGOCNBECG, IEnumerator> ChangeClothesFuncKeybind;
         public static Plugin plugin;
 
         private void Awake()
@@ -36,7 +36,7 @@ namespace CasualEntranceCostumes
 
             ChangeClothesButton = Config.Bind("General", "Costume change keybind", KeyCode.None, "Changes the current entrants' costume from casual to wrestling");
 
-            ChangeClothesFunc = ChangeClothesOnKeybind;
+            ChangeClothesFuncKeybind = ChangeClothesOnKeybind;
             plugin = this;
         }
 
@@ -63,7 +63,7 @@ namespace CasualEntranceCostumes
                     Character character = dfogocnbecg.EMDMDLNJFKP;
                     if (dfogocnbecg.FIEMGOLBHIO == 1 && dfogocnbecg.PCNHIIPBNEK[0] != null)
                     {
-                        dfogocnbecg.IIAHHOIOBMF(character.id, 2);
+                        ChangeCostume(dfogocnbecg, 2);
                     }
                     if (dfogocnbecg.AHBNKMMMGFI == 0)
                     {
@@ -72,11 +72,24 @@ namespace CasualEntranceCostumes
                 }
             }
         }
+        public static void ChangeCostume(DFOGOCNBECG dfogocnbecg, int costume)
+        {
+            Character character = dfogocnbecg.EMDMDLNJFKP;
+            var a = dfogocnbecg.OHBOIDGNIOE[0];
+            var b = dfogocnbecg.EJPKJOFMIAI[0];
+            dfogocnbecg.IIAHHOIOBMF(character.id, costume);
+            dfogocnbecg.FKICFLEIGEA(a, b, 0);
+
+            for (int i = 0; i <= 3; i++)
+            {
+                dfogocnbecg.MPMGGCCFCOP.Play(MBLIOKEDHHB.NNEMALOMALN(a), i, b / MBLIOKEDHHB.NIMHPNKOPAE[a]);
+            }
+            dfogocnbecg.FEACEIIIAHK();
+        }
         public IEnumerator ChangeClothesOnKeybind(DFOGOCNBECG dfogocnbecg)
         {
             yield return frameEnd;
-            Character character = dfogocnbecg.EMDMDLNJFKP;
-            dfogocnbecg.IIAHHOIOBMF(character.id, 1);
+            ChangeCostume(dfogocnbecg, 1);
             yield break;
 
         }
@@ -94,7 +107,7 @@ namespace CasualEntranceCostumes
                         Character character = dfogocnbecg.EMDMDLNJFKP;
                         if (dfogocnbecg.FIEMGOLBHIO == 1 && dfogocnbecg.NEMJMNEGAAH(FFCEGMEAIBP.LPBCEGPJNMF) > 0 && dfogocnbecg.PCNHIIPBNEK[0] != null)
                         {
-                            plugin.StartCoroutine(ChangeClothesFunc(dfogocnbecg));
+                            plugin.StartCoroutine(ChangeClothesFuncKeybind(dfogocnbecg));
                         }
                     }
                 }
@@ -113,7 +126,7 @@ namespace CasualEntranceCostumes
                     Character character = dfogocnbecg.EMDMDLNJFKP;
                     if (dfogocnbecg.FIEMGOLBHIO == 1 && dfogocnbecg.PCNHIIPBNEK[0] != null)
                     {
-                        dfogocnbecg.IIAHHOIOBMF(character.id, 1);
+                        ChangeCostume(dfogocnbecg, 1);
                     }
                 }
             }
