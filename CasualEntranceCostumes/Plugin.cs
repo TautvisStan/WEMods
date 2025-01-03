@@ -15,7 +15,7 @@ namespace CasualEntranceCostumes
     {
         public const string PluginGuid = "GeeEm.WrestlingEmpire.CasualEntranceCostumes";
         public const string PluginName = "CasualEntranceCostumes";
-        public const string PluginVer = "1.0.2";
+        public const string PluginVer = "1.0.3";
 
         internal static ManualLogSource Log;
         internal readonly static Harmony Harmony = new(PluginGuid);
@@ -65,10 +65,7 @@ namespace CasualEntranceCostumes
                     {
                         ChangeCostume(dfogocnbecg, 2);
                     }
-                    if (dfogocnbecg.AHBNKMMMGFI == 0)
-                    {
-                        dfogocnbecg.PCNHIIPBNEK[0].SetActive(false);
-                    }
+
                 }
             }
         }
@@ -85,6 +82,11 @@ namespace CasualEntranceCostumes
                 dfogocnbecg.MPMGGCCFCOP.Play(MBLIOKEDHHB.NNEMALOMALN(a), i, b / MBLIOKEDHHB.NIMHPNKOPAE[a]);
             }
             dfogocnbecg.FEACEIIIAHK();
+
+            if (dfogocnbecg.AHBNKMMMGFI == 0)
+            {
+                dfogocnbecg.PCNHIIPBNEK[0].SetActive(false);
+            }
         }
         public IEnumerator ChangeClothesOnKeybind(DFOGOCNBECG dfogocnbecg)
         {
