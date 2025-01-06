@@ -358,5 +358,52 @@ namespace IncreasedSliderLimits
                 return false;
             }
         }
+[HarmonyPatch(typeof(DFOGOCNBECG), nameof( DFOGOCNBECG.DNOMKDPFLGA))]
+
+public static class MyTranspilerPatch
+
+{
+
+    static IEnumerable<CodeInstruction> Transpiler(IEnumerable<CodeInstruction> instructions)
+
+    {
+
+        var codes = new List<CodeInstruction>(instructions);
+
+
+        for (int i = 1; i < codes.Count; i++)
+        {
+
+            if (codes[i].opcode == OpCodes.Ldc_R4)
+            {
+
+                if ((float)codes[i].operand == 50f && (codes[i-1].opcode == OpCodes.ldloc.s && codes[i].operand == V_11) || (codes[i-1].opcode == ldelem.r4)))
+                {
+
+                    // Replace 50f with minValue
+
+                    codes[i] = new CodeInstruction(OpCodes.Ldsfld, AccessTools.Field(typeof(TranspilerMod), "minStat.Value"));
+
+                }
+
+                else if ((float)codes[i].operand && (codes[i-1].opcode == OpCodes.ldloc.s && codes[i].operand == V_11) || (codes[i-1].opcode == ldelem.r4)))
+                {
+
+                    // Replace 99f with maxValue
+
+                    codes[i] = new CodeInstruction(OpCodes.Ldsfld, AccessTools.Field(typeof(TranspilerMod), "maxStat.Value"));
+
+                }
+
+            }
+
+        }
+
+
+        return codes.AsEnumerable();
+
+    }
+
+}
     }
 }
