@@ -2,8 +2,11 @@ using BepInEx;
 using BepInEx.Configuration;
 using BepInEx.Logging;
 using HarmonyLib;
+using System.Collections.Generic;
 using System.IO;
 using UnityEngine;
+using System.Reflection.Emit;
+using System.Linq;
 
 namespace IncreasedSliderLimits
 {
@@ -13,7 +16,7 @@ namespace IncreasedSliderLimits
     {
         public const string PluginGuid = "GeeEm.WrestlingEmpire.IncreasedSliderLimits";
         public const string PluginName = "IncreasedSliderLimits";
-        public const string PluginVer = "1.1.0";
+        public const string PluginVer = "1.2.0";
 
         internal static ManualLogSource Log;
         internal readonly static Harmony Harmony = new(PluginGuid);
@@ -37,13 +40,13 @@ namespace IncreasedSliderLimits
 
         private void Awake()
         {
-           
+
             Plugin.Log = base.Logger;
             PluginPath = Path.GetDirectoryName(Info.Location);
             minStat = Config.Bind("General",
              "Min Stat",
              50f,
-             "The min stat limit");
+             "The min stat limit (should also impact the match fatigue)");
             maxStat = Config.Bind("General",
              "Max Stat",
              99f,
@@ -101,7 +104,7 @@ namespace IncreasedSliderLimits
         {
             Harmony.PatchAll();
             Logger.LogInfo($"Loaded {PluginName}!");
-            
+
         }
 
         private void OnDisable()
@@ -150,7 +153,7 @@ namespace IncreasedSliderLimits
                 __4 = Plugin.maxarmMass.Value;
             }
         }
-        [HarmonyPatch(typeof(Character), nameof(Character.IMMIIDECGCF))] //!!!!
+        [HarmonyPatch(typeof(Character), nameof(Character.IMMIIDECGCF))] //limits when training
         [HarmonyPrefix]
         static bool Character_IMMIIDECGCF(Character __instance, int LGLHGGDPNPD, ref float OEGLNPMNEOE)
         {
@@ -201,7 +204,7 @@ namespace IncreasedSliderLimits
             }
             return false;
         }
-        [HarmonyPatch(typeof(Character), nameof(Character.LLJKACBKKJM))]  //!!!!
+        [HarmonyPatch(typeof(Character), nameof(Character.LLJKACBKKJM))]  //preventing stats from resetting to the original limits
         [HarmonyPrefix]
         static bool CharacterLLJKACBKKJM(Character __instance)
         {
@@ -296,7 +299,7 @@ namespace IncreasedSliderLimits
             }
             return false;
         }
-        [HarmonyPatch(typeof(Character), nameof(Character.CGCGAAFNCED))]  //!!!!
+        [HarmonyPatch(typeof(Character), nameof(Character.CGCGAAFNCED))]  //Weight gain/loss limits
         [HarmonyPrefix]
         static bool CharacterLLJKACBKKJM(Character __instance, float JIJABCGMCAG, float FHMHIGJBMHO)
         {
@@ -358,52 +361,50 @@ namespace IncreasedSliderLimits
                 return false;
             }
         }
-[HarmonyPatch(typeof(DFOGOCNBECG), nameof( DFOGOCNBECG.DNOMKDPFLGA))]
-
-public static class MyTranspilerPatch
-
-{
-
-    static IEnumerable<CodeInstruction> Transpiler(IEnumerable<CodeInstruction> instructions)
-
-    {
-
-        var codes = new List<CodeInstruction>(instructions);
-
-
-        for (int i = 1; i < codes.Count; i++)
+        [HarmonyPatch(typeof(DFOGOCNBECG), nameof(DFOGOCNBECG.DNOMKDPFLGA))]
+        [HarmonyTranspiler]  //Transpiler to actually make increased limits work in the mattch
+        public static IEnumerable<CodeInstruction> Transpiler(IEnumerable<CodeInstruction> instructions)
         {
-
-            if (codes[i].opcode == OpCodes.Ldc_R4)
+            var codes = new List<CodeInstruction>(instructions);
+            var ConfigValueGetter = AccessTools.PropertyGetter(typeof(ConfigEntry<float>), "Value");
+            CodeInstruction prev = null;
+            
+            foreach (var instruction in instructions)
             {
-
-                if ((float)codes[i].operand == 50f && (codes[i-1].opcode == OpCodes.ldloc.s && codes[i].operand == V_11) || (codes[i-1].opcode == ldelem.r4)))
+                bool changed = false;
+                if (instruction.opcode == OpCodes.Ldc_R4)
                 {
+                    if ((float)instruction.operand == 50f && prev != null && prev.opcode != OpCodes.Ldfld)
+                    {
+                        CodeInstruction ins1 = new CodeInstruction(OpCodes.Ldsfld, AccessTools.Field(typeof(Plugin), "minStat"));
+                        CodeInstruction ins2 = new CodeInstruction(OpCodes.Call, ConfigValueGetter);
+                        yield return ins1;
+                        yield return ins2;
+                        changed = true;
+                        prev = ins2;
+                        //codes[i] = new CodeInstruction(OpCodes.Ldsfld, AccessTools.Field(typeof(Plugin), "minStat"));
+                        //codes.Insert(i + 1, new CodeInstruction(OpCodes.Call, ConfigValueGetter));
+                    }
 
-                    // Replace 50f with minValue
-
-                    codes[i] = new CodeInstruction(OpCodes.Ldsfld, AccessTools.Field(typeof(TranspilerMod), "minStat.Value"));
-
+                    else if ((float)instruction.operand == 99f)
+                    {
+                        CodeInstruction ins1 = new CodeInstruction(OpCodes.Ldsfld, AccessTools.Field(typeof(Plugin), "maxStat"));
+                        CodeInstruction ins2 = new CodeInstruction(OpCodes.Call, ConfigValueGetter);
+                        yield return ins1;
+                        yield return ins2;
+                        changed = true;
+                        prev = ins2;
+                        //codes[i] = new CodeInstruction(OpCodes.Ldsfld, AccessTools.Field(typeof(Plugin), "maxStat"));
+                        //codes.Insert(i + 1, new CodeInstruction(OpCodes.Call, ConfigValueGetter));
+                    }
                 }
-
-                else if ((float)codes[i].operand && (codes[i-1].opcode == OpCodes.ldloc.s && codes[i].operand == V_11) || (codes[i-1].opcode == ldelem.r4)))
+                if (!changed)
                 {
-
-                    // Replace 99f with maxValue
-
-                    codes[i] = new CodeInstruction(OpCodes.Ldsfld, AccessTools.Field(typeof(TranspilerMod), "maxStat.Value"));
-
+                    yield return instruction;
+                    prev = instruction;
                 }
-
             }
 
         }
-
-
-        return codes.AsEnumerable();
-
-    }
-
-}
     }
 }
