@@ -1,8 +1,11 @@
 using BepInEx;
+using BepInEx.Configuration;
 using BepInEx.Logging;
 using HarmonyLib;
 using System;
+using System.Collections.Generic;
 using System.IO;
+using System.Reflection.Emit;
 using UnityEngine;
 
 namespace ViolentEntrances
@@ -13,7 +16,7 @@ namespace ViolentEntrances
     {
         public const string PluginGuid = "GeeEm.WrestlingEmpire.ViolentEntrances";
         public const string PluginName = "ViolentEntrances";
-        public const string PluginVer = "1.0.3";
+        public const string PluginVer = "2.0.0";
 
         internal static ManualLogSource Log;
         internal readonly static Harmony Harmony = new(PluginGuid);
@@ -40,77 +43,60 @@ namespace ViolentEntrances
             Logger.LogInfo($"Unloaded {PluginName}!");
         }
 
-        static int matchstate1 = 0;
-        static int matchstate2 = 0;
-        private static bool entrance = false;
-        private static float oldvalue;
-        [HarmonyPatch(typeof(DFOGOCNBECG))]
-        public static class DFOGOCNBECGPatch
+        [HarmonyPatch(typeof(DFOGOCNBECG), nameof(DFOGOCNBECG.JCAKMBCFLCK))]
+        [HarmonyTranspiler]  //Enable attacks during entrance
+        public static IEnumerable<CodeInstruction> DFOGOCNBECG_JCAKMBCFLCK_Transpiler(IEnumerable<CodeInstruction> instructions)
         {
-            //Enable attacks during entrance
-            [HarmonyPrefix]
-            [HarmonyPatch(nameof(DFOGOCNBECG.JCAKMBCFLCK))]   
-            static void Prefix_JCAKMBCFLCK(DFOGOCNBECG __instance)
-            {
-                if (FFCEGMEAIBP.LOBDMDPMFLK == 1)
-                {
-                    Plugin.entrance = true;
-                }
-                if (FFCEGMEAIBP.LOBDMDPMFLK == 1 || FFCEGMEAIBP.LOBDMDPMFLK == 2)
-                {
-                    if (Plugin.entrance)
-                    {
-                        Plugin.oldvalue = __instance.OOFFPCOALKB;
-                        __instance.OOFFPCOALKB = 1f;
-                    }
-                    Plugin.matchstate1 = FFCEGMEAIBP.LOBDMDPMFLK;
-                    FFCEGMEAIBP.LOBDMDPMFLK = 2;
-                }
-            }
-            [HarmonyPostfix]
-            [HarmonyPatch(nameof(DFOGOCNBECG.JCAKMBCFLCK))]
-            static void Postfix_JCAKMBCFLCK(DFOGOCNBECG __instance)
-            {
-                if (FFCEGMEAIBP.LOBDMDPMFLK == 1 || FFCEGMEAIBP.LOBDMDPMFLK == 2)
-                {
-                    FFCEGMEAIBP.LOBDMDPMFLK = matchstate1;
-                }
-                if (Plugin.entrance)
-                {
-                    __instance.OOFFPCOALKB = Plugin.oldvalue;
-                }
-                Plugin.entrance = false;
-            }
-            //Make AI fight back during entrance (except for current entrant)
-            [HarmonyPrefix]
-            [HarmonyPatch(nameof(DFOGOCNBECG.POCGHMGBHFD))]
-            static void Prefix_POCGHMGBHFD()
-            {
-                if (FFCEGMEAIBP.LOBDMDPMFLK == 1 || FFCEGMEAIBP.LOBDMDPMFLK == 2)
-                {
-                    Plugin.matchstate2 = FFCEGMEAIBP.LOBDMDPMFLK;
-                    FFCEGMEAIBP.LOBDMDPMFLK = 2;
-                }
-            }
-            [HarmonyPostfix]
-            [HarmonyPatch(nameof(DFOGOCNBECG.POCGHMGBHFD))]
-            static void Postfix_POCGHMGBHFD(DFOGOCNBECG __instance,ref int __result, int GKNIAFAOLJK)
-            {
-                if (FFCEGMEAIBP.LOBDMDPMFLK == 1 || FFCEGMEAIBP.LOBDMDPMFLK == 2)
-                {
-                    FFCEGMEAIBP.LOBDMDPMFLK = matchstate2;
-                }
-            }
+            var codes = new List<CodeInstruction>(instructions);
 
-            //Changing entrant AI state
-            [HarmonyPrefix]
-            [HarmonyPatch(nameof(DFOGOCNBECG.LCAJNIOJAPG))]
-            static void Prefix_LCAJNIOJAPG(DFOGOCNBECG __instance)
+            for (int i = 0; i < codes.Count; i++)
             {
-                if (FFCEGMEAIBP.LOBDMDPMFLK == 1 && __instance.AHBNKMMMGFI == 2) __instance.AHBNKMMMGFI = 3;
-            }
 
+                if (i + 2 < codes.Count &&
+                    codes[i].opcode == OpCodes.Ldsfld && codes[i].operand.ToString() == "System.Int32 LOBDMDPMFLK" &&
+                    codes[i + 1].opcode == OpCodes.Ldc_I4_1 &&
+                    codes[i + 2].opcode == OpCodes.Bne_Un)
+                {
+                    CodeInstruction instruction = new CodeInstruction(OpCodes.Ldc_I4_0);
+                    instruction.labels.AddRange(codes[i].labels);
+                    codes[i] = instruction;  
+                }
+                yield return codes[i];
+
+            }
         }
+        [HarmonyPatch(typeof(DFOGOCNBECG), nameof(DFOGOCNBECG.POCGHMGBHFD))]
+        [HarmonyTranspiler]  //Make AI fight back during entrance (except for current entrant)
+        public static IEnumerable<CodeInstruction> DFOGOCNBECG_POCGHMGBHFD_Transpiler(IEnumerable<CodeInstruction> instructions)
+        {
+            var codes = new List<CodeInstruction>(instructions);
+
+            for (int i = 0; i < codes.Count; i++)
+            {
+
+                if (i + 2 < codes.Count &&
+                    codes[i].opcode == OpCodes.Ldsfld && codes[i].operand.ToString() == "System.Int32 LOBDMDPMFLK" &&
+                    codes[i + 1].opcode == OpCodes.Ldc_I4_1 &&
+                    codes[i + 2].opcode == OpCodes.Bne_Un)
+                {
+                    CodeInstruction instruction = new CodeInstruction(OpCodes.Ldc_I4_0);
+                    instruction.labels.AddRange(codes[i].labels);
+                    codes[i] = instruction; 
+                }
+                yield return codes[i];
+
+            }
+        }
+
+        //Changing entrant AI state
+        [HarmonyPrefix]
+        [HarmonyPatch(typeof(DFOGOCNBECG), nameof(DFOGOCNBECG.LCAJNIOJAPG))]
+        static void Prefix_LCAJNIOJAPG(DFOGOCNBECG __instance)
+        {
+            if (FFCEGMEAIBP.LOBDMDPMFLK == 1 && __instance.AHBNKMMMGFI == 2) __instance.AHBNKMMMGFI = 3;
+        }
+
+
         //Entrance run in when pressing Taunt
         [HarmonyPatch(typeof(BJMGCKGNCHO), nameof(BJMGCKGNCHO.NCOEPCFFBJA))]
         [HarmonyPostfix]
