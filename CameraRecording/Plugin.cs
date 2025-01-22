@@ -1,4 +1,5 @@
 using BepInEx;
+using BepInEx.Configuration;
 using BepInEx.Logging;
 using HarmonyLib;
 using System;
@@ -13,21 +14,58 @@ namespace CameraRecording
     {
         public const string PluginGuid = "GeeEm.WrestlingEmpire.CameraRecording";
         public const string PluginName = "CameraRecording";
-        public const string PluginVer = "0.0.1";
+        public const string PluginVer = "0.1.0";
 
         internal static ManualLogSource Log;
         internal readonly static Harmony Harmony = new(PluginGuid);
 
         internal static string PluginPath;
 
+        public static ConfigEntry<int> width;
+        public static ConfigEntry<int> height;
+        public static ConfigEntry<int> frameRate;
+        public static ConfigEntry<int> crf;
+
+        public static ConfigEntry<KeyCode> RecordingToggle;
 
         private void Awake()
         {
             Plugin.Log = base.Logger;
 
             PluginPath = Path.GetDirectoryName(Info.Location);
-        }
 
+            width = Config.Bind("General",
+             "Width",
+             1920,
+             "Screen width");
+
+            height = Config.Bind("General",
+             "Height",
+             1080,
+             "Screen height");
+
+            frameRate = Config.Bind("General",
+             "Frame rate",
+             30,
+             "Video frame rate");
+
+            crf = Config.Bind("General",
+             "Constant Rate Factor",
+             28,
+             "Constant Rate Factor (18-28 is good range, lower = better quality)");
+
+            RecordingToggle = Config.Bind("Constant Rate Factor",
+             "Recording toggle keybind",
+             KeyCode.None,
+             "Keycode to start/stop recording");
+        }
+        private void Update()
+        { 
+            if(Input.GetKeyDown(RecordingToggle.Value))
+            {
+                GameplayRecorder.ToggleRecording();
+            }
+        }
         private void OnEnable()
         {
             Harmony.PatchAll();

@@ -3,28 +3,59 @@ using System.Diagnostics;
 using System.IO;
 using System;
 using System.Collections;
-using static System.Net.Mime.MediaTypeNames;
 
 namespace CameraRecording
 {
     public class GameplayRecorder : MonoBehaviour
     {
-        private Camera recordingCamera;
-        private RenderTexture renderTexture;
-        private bool isRecording = false;
-        private Process ffmpegProcess;
-        private string saveFolder;
+        private static Camera recordingCamera;
+        private static RenderTexture renderTexture;
+        private static bool isRecording = false;
+        private static Process ffmpegProcess;
+        private static string saveFolder;
 
-        // Adjust these settings as needed
-        private readonly int width = 1920/4;
-        private readonly int height = 1080/4;
-        private readonly int frameRate = 30;
+        static GameplayRecorder test = null;
+        public static void ToggleRecording()
+        {
+            if (!isRecording)
+            {
+                GameObject testobj = GameObject.Instantiate(Camera.main.gameObject);
 
-        void Awake()
+                GameObject.Destroy(testobj.GetComponent<UnityEngine.Rendering.PostProcessing.PostProcessLayer>());
+                GameObject.Destroy(testobj.GetComponent<UnityEngine.Rendering.PostProcessing.PostProcessVolume>());
+                GameObject.Destroy(testobj.GetComponent<AudioListener>());
+             /*   Camera testcam;
+                UnityEngine.Debug.LogWarning(testobj.TryGetComponent<Camera>(out testcam));
+                GameObject.Destroy(testcam);
+                UnityEngine.Debug.LogWarning(testobj.TryGetComponent<Camera>(out testcam));*/
+                test = testobj.AddComponent<CameraRecording.GameplayRecorder>();
+                test.Setup();
+                test.StartRecording();
+            }
+            else
+            {
+                test.StopRecording();
+                Destroy(test.gameObject);
+            }
+        }
+        public void Setup()
         {
             // Create and setup the recording camera
              GameObject cameraObject = this.gameObject;
-             recordingCamera = (!cameraObject.TryGetComponent<Camera>(out recordingCamera)) ? cameraObject.AddComponent<Camera>() : recordingCamera;
+            cameraObject.tag = "Untagged";
+            UnityEngine.Debug.LogWarning("TESTING CAM");
+            if (!cameraObject.TryGetComponent<Camera>(out recordingCamera))
+            {
+                UnityEngine.Debug.LogWarning("ADDING CAMERA");
+                recordingCamera = cameraObject.AddComponent<Camera>();
+            }
+            else
+            {
+                UnityEngine.Debug.LogWarning("CAM IS EXISTING");
+            }
+        //    recordingCamera.pixelRect = new Rect(0, 0, Plugin.width.Value, Plugin.height.Value);
+                
+             //recordingCamera = (!cameraObject.TryGetComponent<Camera>(out recordingCamera)) ? cameraObject.AddComponent<Camera>() : recordingCamera;
 
 
 
@@ -38,8 +69,8 @@ test.StartRecording();
 
 
             //
-            //GameObject testobj = GameObject.Instantiate(Camera.main.gameObject);
-            // Destroy(test.GetComponent<Camera>());
+            //GameObject test = GameObject.Instantiate(Camera.main.gameObject);
+            // GameObject.Destroy(test.GetComponent<Camera>());
             //CameraRecording.GameplayRecorder test = testobj.AddComponent<CameraRecording.GameplayRecorder>();
             //
             //  test.StartRecording();
@@ -48,17 +79,16 @@ test.StartRecording();
 
             // Setup camera properties
             recordingCamera.targetDisplay = 0;
-            recordingCamera.depth = 0;
+            recordingCamera.depth = -1;
 
             // Create render texture
-            renderTexture = new RenderTexture(width, height, 24);
+            renderTexture = new RenderTexture(Plugin.width.Value, Plugin.height.Value, 24);
+
             recordingCamera.targetTexture = renderTexture;
 
             // Set save folder
-            saveFolder = Path.Combine(Plugin.PluginPath, "Recordings");
+            saveFolder = Path.Combine(Plugin.PluginPath, "recordings");
             UnityEngine.Debug.LogWarning(Plugin.PluginPath);
-            UnityEngine.Debug.LogWarning(Plugin.PluginPath);
-            UnityEngine.Debug.LogWarning(saveFolder);
             Directory.CreateDirectory(saveFolder);
             UnityEngine.Debug.LogWarning(saveFolder);
         }
@@ -67,12 +97,25 @@ test.StartRecording();
         {
             if (isRecording) return;
 
+            
             string outputPath = Path.Combine(saveFolder, $"GameplayRecording_{DateTime.Now:yyyyMMdd_HHmmss}.mp4");
             string ffmpegPath = Path.Combine(Plugin.PluginPath, "ffmpeg.exe");
 
             // FFmpeg command to receive raw frames and encode them
-            string args = $"-y -f rawvideo -vcodec rawvideo -pixel_format rgb24 -video_size {width}x{height} " +
-                         $"-framerate {frameRate} -i pipe:0 -c:v libx264 -preset ultrafast -vf \"vflip\" -pix_fmt yuv420p \"{outputPath}\"";
+           //     string args = $"-y -f rawvideo -vcodec rawvideo -pixel_format rgb24 -video_size {width}x{height} " +
+           //                  $"-framerate {frameRate} -i pipe:0 -c:v libx264 -preset ultrafast -vf \"vflip\" -pix_fmt yuv420p \"{outputPath}\"";
+            
+            string args = $"-y -f rawvideo -vcodec rawvideo -pixel_format rgb24 " +
+                 $"-video_size {Plugin.width.Value}x{Plugin.height.Value} -framerate {Plugin.frameRate.Value} -i pipe:0 " +
+                 $"-c:v libx264 -preset veryfast " +  // Faster encoding
+                 $"-crf {Plugin.crf.Value} " +                        // Constant Rate Factor (18-28 is good range, lower = better quality)
+                 $"-tune zerolatency " +              // Reduces encoding latency
+                 $"-profile:v high " +                // High profile for better compression
+                 $"-level:v 4.2 " +                   // Compatibility level
+                 $"-pix_fmt yuv420p " +
+                 $"-vf \"vflip\" " +
+                 $"-threads 0 " +                     // Use optimal number of threads
+                 $"\"{outputPath}\"";
 
             ffmpegProcess = new Process();
             ffmpegProcess.StartInfo.FileName = ffmpegPath;
@@ -89,8 +132,8 @@ test.StartRecording();
 
         private IEnumerator CaptureFrames()
         {
-            Texture2D frameTexture = new Texture2D(width, height, TextureFormat.RGB24, false);
-            byte[] frameData = new byte[width * height * 3];
+            Texture2D frameTexture = new Texture2D(Plugin.width.Value, Plugin.height.Value, TextureFormat.RGB24, false);
+            byte[] frameData = new byte[Plugin.width.Value * Plugin.height.Value * 3];
 
             while (isRecording)
             {
@@ -98,7 +141,7 @@ test.StartRecording();
 
                 // Read the render texture
                 RenderTexture.active = renderTexture;
-                frameTexture.ReadPixels(new Rect(0, 0, width, height), 0, 0);
+                frameTexture.ReadPixels(new Rect(0, 0, Plugin.width.Value, Plugin.height.Value), 0, 0);
                 frameTexture.Apply();
 
                 // Get raw pixel data
