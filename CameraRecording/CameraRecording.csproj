@@ -31,6 +31,9 @@
       <Reference Include="Unity.Postprocessing.Runtime">
         <HintPath>Unity.Postprocessing.Runtime.dll</HintPath>
       </Reference>
+      <Reference Include="WEFreeCamera">
+        <HintPath>WEFreeCamera.dll</HintPath>
+      </Reference>
     </ItemGroup>
 
 </Project>

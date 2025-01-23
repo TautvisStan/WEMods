@@ -8,14 +8,14 @@ namespace CameraRecording
 {
     public class GameplayRecorder : MonoBehaviour
     {
-        private static Camera recordingCamera;
-        private static RenderTexture renderTexture;
-        private static bool isRecording = false;
-        private static Process ffmpegProcess;
-        private static string saveFolder;
+        public Camera recordingCamera;
+        private RenderTexture renderTexture;
+        private bool isRecording = false;
+        private Process ffmpegProcess;
+        private string saveFolder;
 
-        static GameplayRecorder test = null;
-        public static void ToggleRecording()
+        public GameplayRecorder test = null;
+        public void ToggleRecording()
         {
             if (!isRecording)
             {
@@ -31,11 +31,13 @@ namespace CameraRecording
                 test = testobj.AddComponent<CameraRecording.GameplayRecorder>();
                 test.Setup();
                 test.StartRecording();
+                isRecording = true;
             }
             else
             {
                 test.StopRecording();
                 Destroy(test.gameObject);
+                Destroy(this);
             }
         }
         public void Setup()
@@ -91,6 +93,7 @@ test.StartRecording();
             UnityEngine.Debug.LogWarning(Plugin.PluginPath);
             Directory.CreateDirectory(saveFolder);
             UnityEngine.Debug.LogWarning(saveFolder);
+
         }
 
         public void StartRecording()
@@ -98,7 +101,7 @@ test.StartRecording();
             if (isRecording) return;
 
             
-            string outputPath = Path.Combine(saveFolder, $"GameplayRecording_{DateTime.Now:yyyyMMdd_HHmmss}.mp4");
+            string outputPath = Path.Combine(saveFolder, $"GameplayRecording_{DateTime.Now:yyyyMMdd_HHmmss}_{UnityEngine.Random.Range(0, 99)}.mp4");
             string ffmpegPath = Path.Combine(Plugin.PluginPath, "ffmpeg.exe");
 
             // FFmpeg command to receive raw frames and encode them
@@ -107,8 +110,10 @@ test.StartRecording();
             
             string args = $"-y -f rawvideo -vcodec rawvideo -pixel_format rgb24 " +
                  $"-video_size {Plugin.width.Value}x{Plugin.height.Value} -framerate {Plugin.frameRate.Value} -i pipe:0 " +
-                 $"-c:v libx264 -preset veryfast " +  // Faster encoding
+                 $"-c:v libx264 -preset ultrafast " +  // Faster encoding
                  $"-crf {Plugin.crf.Value} " +                        // Constant Rate Factor (18-28 is good range, lower = better quality)
+                 //   $"-b:v 5M " +
+
                  $"-tune zerolatency " +              // Reduces encoding latency
                  $"-profile:v high " +                // High profile for better compression
                  $"-level:v 4.2 " +                   // Compatibility level
@@ -135,20 +140,35 @@ test.StartRecording();
             Texture2D frameTexture = new Texture2D(Plugin.width.Value, Plugin.height.Value, TextureFormat.RGB24, false);
             byte[] frameData = new byte[Plugin.width.Value * Plugin.height.Value * 3];
 
+            float frameInterval = 1f / Plugin.frameRate.Value; // Time between frames
+            float nextFrameTime = Time.time;
+
             while (isRecording)
             {
                 yield return new WaitForEndOfFrame();
 
-                // Read the render texture
-                RenderTexture.active = renderTexture;
-                frameTexture.ReadPixels(new Rect(0, 0, Plugin.width.Value, Plugin.height.Value), 0, 0);
-                frameTexture.Apply();
+                if (Time.time >= nextFrameTime)
+                {
+                    // Read the render texture
+                    RenderTexture.active = renderTexture;
+                    frameTexture.ReadPixels(new Rect(0, 0, Plugin.width.Value, Plugin.height.Value), 0, 0);
+                    frameTexture.Apply();
 
-                // Get raw pixel data
-                frameData = frameTexture.GetRawTextureData();
+                    // Get raw pixel data
+                    frameData = frameTexture.GetRawTextureData();
 
-                // Write frame data to FFmpeg
-                ffmpegProcess.StandardInput.BaseStream.Write(frameData, 0, frameData.Length);
+                    // Write frame data to FFmpeg
+                    ffmpegProcess.StandardInput.BaseStream.Write(frameData, 0, frameData.Length);
+
+                    // Calculate next frame time
+                    nextFrameTime += frameInterval;
+
+                    // If we're falling behind, catch up to prevent slow-motion
+                    if (nextFrameTime < Time.time)
+                    {
+                        nextFrameTime = Time.time + frameInterval;
+                    }
+                }
             }
 
             Destroy(frameTexture);
