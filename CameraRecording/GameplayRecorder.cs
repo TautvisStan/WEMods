@@ -11,40 +11,18 @@ namespace CameraRecording
     {
         public Camera recordingCamera;
         private RenderTexture renderTexture;
-        private bool isRecording = false;
+        public bool isRecording = false;
         private Process ffmpegProcess;
         private string saveFolder;
 
-        public GameplayRecorder test = null;
-        public void ToggleRecording()
-        {
-            if (!isRecording)
-            {
-                GameObject testobj = GameObject.Instantiate(Camera.main.gameObject);
+       // public GameplayRecorder test = null;
 
-                GameObject.Destroy(testobj.GetComponent<UnityEngine.Rendering.PostProcessing.PostProcessLayer>());
-                GameObject.Destroy(testobj.GetComponent<UnityEngine.Rendering.PostProcessing.PostProcessVolume>());
-                GameObject.Destroy(testobj.GetComponent<AudioListener>());
-                /*   Camera testcam;
-                   UnityEngine.Debug.LogWarning(testobj.TryGetComponent<Camera>(out testcam));
-                   GameObject.Destroy(testcam);
-                   UnityEngine.Debug.LogWarning(testobj.TryGetComponent<Camera>(out testcam));*/
-                test = testobj.AddComponent<CameraRecording.GameplayRecorder>();
-                test.Setup();
-                test.StartRecording();
-                isRecording = true;
-            }
-            else
-            {
-                test.StopRecording();
-                Destroy(test.gameObject);
-                Destroy(this);
-            }
-        }
         public void Setup()
         {
             // Create and setup the recording camera
+            UnityEngine.Debug.LogWarning("0");
             GameObject cameraObject = this.gameObject;
+            UnityEngine.Debug.LogWarning("1");
             cameraObject.tag = "Untagged";
             UnityEngine.Debug.LogWarning("TESTING CAM");
             if (!cameraObject.TryGetComponent<Camera>(out recordingCamera))
@@ -56,29 +34,6 @@ namespace CameraRecording
             {
                 UnityEngine.Debug.LogWarning("CAM IS EXISTING");
             }
-            //    recordingCamera.pixelRect = new Rect(0, 0, Plugin.width.Value, Plugin.height.Value);
-
-            //recordingCamera = (!cameraObject.TryGetComponent<Camera>(out recordingCamera)) ? cameraObject.AddComponent<Camera>() : recordingCamera;
-
-
-
-
-            /*
-             //Log(CameraRecording.GameplayRecorder);
-//CameraRecording.GameplayRecorder test = Camera.main.gameObject.AddComponent<CameraRecording.GameplayRecorder>();
-            
-test.StartRecording();
-             */
-
-
-            //
-            //GameObject test = GameObject.Instantiate(Camera.main.gameObject);
-            // GameObject.Destroy(test.GetComponent<Camera>());
-            //CameraRecording.GameplayRecorder test = testobj.AddComponent<CameraRecording.GameplayRecorder>();
-            //
-            //  test.StartRecording();
-
-
 
             // Setup camera properties
             recordingCamera.targetDisplay = 0;
@@ -114,6 +69,8 @@ test.StartRecording();
                  $"-pix_fmt yuv420p " +
                  $"-vf \"vflip\" " +
                  $"-threads 0 " +                     // Use optimal number of threads
+                 $"-vsync cfr " +
+                 $"-r {Plugin.frameRate.Value} " +          // Add this line
                  $"\"{outputPath}\"";
 
             ffmpegProcess = new Process();
@@ -132,25 +89,25 @@ test.StartRecording();
         private IEnumerator CaptureFrames()
         {
             float frameInterval = 1f / Plugin.frameRate.Value; // Time between frames
-            float nextFrameTime = Time.time;
+            float recordingStartTime = Time.realtimeSinceStartup;
+            int frameCount = 0;
 
             while (isRecording)
             {
                 yield return new WaitForEndOfFrame();
 
-                if (Time.time >= nextFrameTime)
+                float currentTime = Time.realtimeSinceStartup;
+
+                // Calculate the expected time for the current frame
+                float expectedTime = recordingStartTime + frameCount * frameInterval;
+
+                if (currentTime >= expectedTime)
                 {
                     // Request an asynchronous readback
                     AsyncGPUReadback.Request(renderTexture, 0, TextureFormat.RGB24, OnCompleteReadback);
 
-                    // Calculate next frame time
-                    nextFrameTime += frameInterval;
-
-                    // If we're falling behind, catch up to prevent slow-motion
-                    if (nextFrameTime < Time.time)
-                    {
-                        nextFrameTime = Time.time + frameInterval;
-                    }
+                    // Increment frame count
+                    frameCount++;
                 }
             }
         }

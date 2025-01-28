@@ -15,7 +15,7 @@ namespace CameraRecording
     {
         public const string PluginGuid = "GeeEm.WrestlingEmpire.CameraRecording";
         public const string PluginName = "CameraRecording";
-        public const string PluginVer = "0.2.0";
+        public const string PluginVer = "0.5.0";
 
         internal static ManualLogSource Log;
         internal readonly static Harmony Harmony = new(PluginGuid);
@@ -66,23 +66,55 @@ namespace CameraRecording
         { 
             if(Input.GetKeyDown(RecordingToggle.Value))
             {
-                for (int i = 0; i < 1; i++)
+                for (int i = 0; i < 4; i++)
                 {
                     Debug.LogWarning("I " + i);
                     if(recorders.Count <= i)
                     {
-                        recorders.Add(new GameplayRecorder());
+                        GameObject testobj = GameObject.Instantiate(Camera.main.gameObject);
+
+                        GameObject.Destroy(testobj.GetComponent<UnityEngine.Rendering.PostProcessing.PostProcessLayer>());
+                        GameObject.Destroy(testobj.GetComponent<UnityEngine.Rendering.PostProcessing.PostProcessVolume>());
+                        GameplayRecorder test = testobj.AddComponent<CameraRecording.GameplayRecorder>();
+                        recorders.Add(test);
                         Debug.LogWarning("ADDED");
                     }
-                    recorders[i].ToggleRecording();
-                    Debug.LogWarning("A");
-                    recorders[i].test.recordingCamera.gameObject.transform.position = WEFreeCamera.FreeCameraPlugin.savedPositions[i+1].Value;
-                    Debug.LogWarning("B");
-                    recorders[i].test.recordingCamera.gameObject.transform.rotation = WEFreeCamera.FreeCameraPlugin.savedRotations[i+1].Value;
-                    Debug.LogWarning("C");
+                    if (recorders[i] == null)
+                    {
+                        Debug.LogWarning("ADDING IN NULL");
+                        GameObject testobj = GameObject.Instantiate(Camera.main.gameObject);
+
+                        GameObject.Destroy(testobj.GetComponent<UnityEngine.Rendering.PostProcessing.PostProcessLayer>());
+                        GameObject.Destroy(testobj.GetComponent<UnityEngine.Rendering.PostProcessing.PostProcessVolume>());
+                        GameplayRecorder test = testobj.AddComponent<CameraRecording.GameplayRecorder>();
+                        recorders[i] = test;
+                        Debug.LogWarning("ADDED");
+                    }
+                    ToggleRecording(recorders[i]);
+                    recorders[i].gameObject.transform.position = WEFreeCamera.FreeCameraPlugin.savedPositions[i+1].Value;
+                    recorders[i].gameObject.transform.rotation = WEFreeCamera.FreeCameraPlugin.savedRotations[i+1].Value;
                 }
             }
         }
+        public void ToggleRecording(GameplayRecorder recorder)
+        {
+            UnityEngine.Debug.LogWarning("-2");
+            if (!recorder.isRecording)
+            {
+                UnityEngine.Debug.LogWarning("-1");
+                recorder.Setup();
+                recorder.StartRecording();
+                recorder.isRecording = true;
+            }
+            else
+            {
+                Debug.LogWarning("STOPPING");
+                recorder.StopRecording();
+                Destroy(recorder.gameObject);
+                recorder = null;
+            }
+        }
+
         private void OnEnable()
         {
             Harmony.PatchAll();
