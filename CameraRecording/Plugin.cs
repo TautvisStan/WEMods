@@ -6,7 +6,6 @@ using System;
 using System.Collections.Generic;
 using System.IO;
 using UnityEngine;
-using static System.Net.Mime.MediaTypeNames;
 
 namespace CameraRecording
 {
@@ -16,7 +15,7 @@ namespace CameraRecording
     {
         public const string PluginGuid = "GeeEm.WrestlingEmpire.CameraRecording";
         public const string PluginName = "CameraRecording";
-        public const string PluginVer = "0.1.1";
+        public const string PluginVer = "0.2.0";
 
         internal static ManualLogSource Log;
         internal readonly static Harmony Harmony = new(PluginGuid);
@@ -67,7 +66,7 @@ namespace CameraRecording
         { 
             if(Input.GetKeyDown(RecordingToggle.Value))
             {
-                for (int i = 0; i < 4; i++)
+                for (int i = 0; i < 1; i++)
                 {
                     Debug.LogWarning("I " + i);
                     if(recorders.Count <= i)
