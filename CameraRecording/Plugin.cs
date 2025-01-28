@@ -26,7 +26,7 @@ namespace CameraRecording
         public static ConfigEntry<int> height;
         public static ConfigEntry<int> frameRate;
         public static ConfigEntry<int> crf;
-
+        public static ConfigEntry<int> CameraCount;
         public static ConfigEntry<KeyCode> RecordingToggle;
 
         public static List<GameplayRecorder> recorders = new();
@@ -52,10 +52,15 @@ namespace CameraRecording
              30,
              "Video frame rate");
 
+            CameraCount = Config.Bind("General",
+             "Recording cameras count",
+             1,
+             new ConfigDescription("Number of cameras recording gameplay at once", new AcceptableValueRange<int>(1, 10)));
+
             crf = Config.Bind("General",
              "Constant Rate Factor",
              28,
-             "Constant Rate Factor (18-28 is good range, lower = better quality)");
+             "Constant Rate Factor (18-28 is good range, lower = better quality but bigger file size)");
 
             RecordingToggle = Config.Bind("Constant Rate Factor",
              "Recording toggle keybind",
@@ -66,7 +71,7 @@ namespace CameraRecording
         { 
             if(Input.GetKeyDown(RecordingToggle.Value))
             {
-                for (int i = 0; i < 4; i++)
+                for (int i = 0; i < CameraCount.Value; i++)
                 {
                     Debug.LogWarning("I " + i);
                     if(recorders.Count <= i)
@@ -93,6 +98,7 @@ namespace CameraRecording
                     ToggleRecording(recorders[i]);
                     recorders[i].gameObject.transform.position = WEFreeCamera.FreeCameraPlugin.savedPositions[i+1].Value;
                     recorders[i].gameObject.transform.rotation = WEFreeCamera.FreeCameraPlugin.savedRotations[i+1].Value;
+                    recorders[i].GetComponent<Camera>().fieldOfView = WEFreeCamera.FreeCameraPlugin.savedFoVs[i + 1].Value;
                 }
             }
         }
