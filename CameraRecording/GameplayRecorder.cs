@@ -4,7 +4,7 @@ using System.IO;
 using System;
 using System.Collections;
 using UnityEngine.Rendering;
-
+using UnityEngine.Rendering.Universal; //Unity.RenderPipelines.Universal.Runtime.dll
 namespace CameraRecording
 {
     public class GameplayRecorder : MonoBehaviour
@@ -23,26 +23,45 @@ namespace CameraRecording
             UnityEngine.Debug.LogWarning("0");
             GameObject cameraObject = this.gameObject;
             UnityEngine.Debug.LogWarning("1");
-            cameraObject.tag = "Untagged";
+            
             UnityEngine.Debug.LogWarning("TESTING CAM");
-            if (!cameraObject.TryGetComponent<Camera>(out recordingCamera))
+            recordingCamera = GetComponent<Camera>();
+
+            if (Plugin.Mode.Value == "FreeCam")
             {
-                UnityEngine.Debug.LogWarning("ADDING CAMERA");
-                recordingCamera = cameraObject.AddComponent<Camera>();
+                UnityEngine.Debug.LogWarning("USING FREE CAMERA");
+
+                UniversalAdditionalCameraData mainCamData = Camera.main.GetUniversalAdditionalCameraData();
+
+                mainCamData.cameraStack.Add(recordingCamera);
+                recordingCamera.targetDisplay = 0;
+                recordingCamera.depth = -3;
+
+                renderTexture = new RenderTexture(Plugin.width.Value, Plugin.height.Value, 24);
+
+                recordingCamera.targetTexture = renderTexture;
+                cameraObject.tag = "Untagged";
+                UnityEngine.Debug.LogWarning("CAMERA ADDED");
             }
             else
             {
                 UnityEngine.Debug.LogWarning("CAM IS EXISTING");
+                // UnityEngine.Debug.LogWarning(recordingCamera.targetTexture == null);
+                // renderTexture = recordingCamera.targetTexture;
+                UnityEngine.Debug.LogWarning(recordingCamera.pixelWidth);
+                UnityEngine.Debug.LogWarning(recordingCamera.pixelHeight);
+                renderTexture = new RenderTexture(Plugin.width.Value, Plugin.height.Value, 24);
+
+                UnityEngine.Debug.LogWarning($"{renderTexture.width} x {renderTexture.height}");
+                Plugin.width.Value = renderTexture.width;
+                Plugin.height.Value = renderTexture.height;
             }
 
             // Setup camera properties
-            recordingCamera.targetDisplay = 0;
-            recordingCamera.depth = -1;
+
 
             // Create render texture
-            renderTexture = new RenderTexture(Plugin.width.Value, Plugin.height.Value, 24);
 
-            recordingCamera.targetTexture = renderTexture;
 
             // Set save folder
             saveFolder = Path.Combine(Plugin.PluginPath, "recordings");
@@ -104,6 +123,10 @@ namespace CameraRecording
                 if (currentTime >= expectedTime)
                 {
                     // Request an asynchronous readback
+                    if (Plugin.Mode.Value == "MainCam")
+                    {
+                        Graphics.Blit(null, renderTexture); // Copy to your texture
+                    }
                     AsyncGPUReadback.Request(renderTexture, 0, TextureFormat.RGB24, OnCompleteReadback);
 
                     // Increment frame count
