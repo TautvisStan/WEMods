@@ -4,16 +4,17 @@ using System.IO;
 using System;
 using System.Collections;
 using UnityEngine.Rendering;
-using UnityEngine.Rendering.Universal; //Unity.RenderPipelines.Universal.Runtime.dll
 namespace CameraRecording
 {
     public class GameplayRecorder : MonoBehaviour
     {
+        
         public Camera recordingCamera;
         private RenderTexture renderTexture;
         public bool isRecording = false;
         private Process ffmpegProcess;
         private string saveFolder;
+        public int camNumber;
 
        // public GameplayRecorder test = null;
 
@@ -29,11 +30,6 @@ namespace CameraRecording
 
             if (Plugin.Mode.Value == "FreeCam")
             {
-                UnityEngine.Debug.LogWarning("USING FREE CAMERA");
-
-                UniversalAdditionalCameraData mainCamData = Camera.main.GetUniversalAdditionalCameraData();
-
-                mainCamData.cameraStack.Add(recordingCamera);
                 recordingCamera.targetDisplay = 0;
                 recordingCamera.depth = -3;
 
@@ -50,7 +46,7 @@ namespace CameraRecording
                 // renderTexture = recordingCamera.targetTexture;
                 UnityEngine.Debug.LogWarning(recordingCamera.pixelWidth);
                 UnityEngine.Debug.LogWarning(recordingCamera.pixelHeight);
-                renderTexture = new RenderTexture(Plugin.width.Value, Plugin.height.Value, 24);
+                renderTexture = new RenderTexture(recordingCamera.pixelWidth, recordingCamera.pixelHeight, 24);
 
                 UnityEngine.Debug.LogWarning($"{renderTexture.width} x {renderTexture.height}");
                 Plugin.width.Value = renderTexture.width;
@@ -75,18 +71,21 @@ namespace CameraRecording
         {
             if (isRecording) return;
 
-            string outputPath = Path.Combine(saveFolder, $"GameplayRecording_{DateTime.Now:yyyyMMdd_HHmmss}_{UnityEngine.Random.Range(0,100)}.mp4");
+            string outputPath = Path.Combine(saveFolder, $"GameplayRecording_{DateTime.Now:yyyyMMdd_HHmmss}_{camNumber}.mp4");
+            UnityEngine.Debug.LogWarning(outputPath);
             string ffmpegPath = Path.Combine(Plugin.PluginPath, "ffmpeg.exe");
-
+            string V = (Plugin.Mode.Value == "FreeCam") ? $"-vf \"vflip\" " : "";
+            string W = (Plugin.Mode.Value == "FreeCam") ? $"{Plugin.width.Value}" : $"{recordingCamera.pixelWidth}";
+            string H = (Plugin.Mode.Value == "FreeCam") ? $"{Plugin.height.Value}" : $"{recordingCamera.pixelHeight}";
             string args = $"-y -f rawvideo -vcodec rawvideo -pixel_format rgb24 " +
-                 $"-video_size {Plugin.width.Value}x{Plugin.height.Value} -framerate {Plugin.frameRate.Value} -i pipe:0 " +
+                 $"-video_size {W}x{H} -framerate {Plugin.frameRate.Value} -i pipe:0 " +
                  $"-c:v libx264 -preset ultrafast " +  // Faster encoding
                  $"-crf {Plugin.crf.Value} " +                        // Constant Rate Factor (18-28 is good range, lower = better quality)
                  $"-tune zerolatency " +              // Reduces encoding latency
                  $"-profile:v high " +                // High profile for better compression
                  $"-level:v 4.2 " +                   // Compatibility level
                  $"-pix_fmt yuv420p " +
-                 $"-vf \"vflip\" " +
+                 $"{V}" +
                  $"-threads 0 " +                     // Use optimal number of threads
                  $"-vsync cfr " +
                  $"-r {Plugin.frameRate.Value} " +          // Add this line
@@ -98,9 +97,10 @@ namespace CameraRecording
             ffmpegProcess.StartInfo.UseShellExecute = false;
             ffmpegProcess.StartInfo.RedirectStandardInput = true;
             ffmpegProcess.StartInfo.CreateNoWindow = true;
+            UnityEngine.Debug.LogWarning("Starting??");
 
-            ffmpegProcess.Start();
-
+            
+            UnityEngine.Debug.LogWarning(ffmpegProcess.Start());
             isRecording = true;
             StartCoroutine(CaptureFrames());
         }
@@ -152,6 +152,8 @@ namespace CameraRecording
             // Check if ffmpegProcess is still valid
             if (ffmpegProcess == null || ffmpegProcess.HasExited)
             {
+                UnityEngine.Debug.LogWarning(ffmpegProcess == null);
+                UnityEngine.Debug.LogWarning(ffmpegProcess.HasExited);
                 UnityEngine.Debug.LogWarning("FFmpeg process is not available or has exited.");
                 return;
             }
@@ -172,14 +174,16 @@ namespace CameraRecording
         }
         public void StopRecording()
         {
+            UnityEngine.Debug.LogWarning("Trying to stop when: " + isRecording);
             if (!isRecording) return;
 
             isRecording = false;
-
+            UnityEngine.Debug.LogWarning("CLOSING?????");
             // Close FFmpeg process
             ffmpegProcess.StandardInput.Close();
             ffmpegProcess.WaitForExit();
             ffmpegProcess.Close();
+            renderTexture.Release();
         }
 
         void OnDestroy()
