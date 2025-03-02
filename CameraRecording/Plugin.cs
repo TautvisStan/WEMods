@@ -6,17 +6,20 @@ using System;
 using System.Collections.Generic;
 using System.IO;
 using UnityEngine;
+using UnityEngine.SceneManagement;
 using WEFreeCamera;
+using static WEFreeCamera.FreeCameraPlugin;
 
 namespace CameraRecording
 {
+    [BepInDependency("GeeEm.WrestlingEmpire.WEFreeCamera", BepInDependency.DependencyFlags.SoftDependency)]
     [BepInPlugin(PluginGuid, PluginName, PluginVer)]
     [HarmonyPatch]
     public class Plugin : BaseUnityPlugin
     {
         public const string PluginGuid = "GeeEm.WrestlingEmpire.CameraRecording";
         public const string PluginName = "CameraRecording";
-        public const string PluginVer = "0.8.0";  //#TODO maincam mode without hud; action targeting?; realtime getting freecam pos; cleanup;
+        public const string PluginVer = "1.0.0";  //#TODO maincam mode without hud; action targeting?;
         internal static ManualLogSource Log;
         internal readonly static Harmony Harmony = new(PluginGuid);
 
@@ -31,12 +34,10 @@ namespace CameraRecording
         public static ConfigEntry<KeyCode> RecordingToggle;
 
         public static List<GameplayRecorder> recorders = new();
-        Vector3[] savedPositions = new Vector3[10];
-        Quaternion[] savedRotations = new Quaternion[10];
-        float[] savedFoVs = new float[10];
         public static bool isRecording = false;
         private void Awake()
         {
+            FreeCameraPlugin.savedPositions.ToString(); //test to see if freecam is enabled
 
             Plugin.Log = base.Logger;
 
@@ -89,89 +90,60 @@ namespace CameraRecording
             Harmony.UnpatchSelf();
             Logger.LogInfo($"Unloaded {PluginName}!");
         }
-        private void Start()
-        {
-            for (int i = 0; i < 10; i++)
-            {
-                savedPositions[i] = FreeCameraPlugin.savedPositions[i].Value;
-                savedRotations[i] = FreeCameraPlugin.savedRotations[i].Value;
-                savedFoVs[i] = FreeCameraPlugin.savedFoVs[i].Value;
-            }
-        }
-
         private void Update()
-        { 
-            if(Input.GetKeyDown(RecordingToggle.Value))
+        {
+            if (SceneManager.GetActiveScene().name == "Game")
             {
-                if (!isRecording)
+                if (Input.GetKeyDown(RecordingToggle.Value))
                 {
-                    if (Mode.Value == "FreeCam")
+                    if (!isRecording)
                     {
-                        for (int i = 0; i < CameraCount.Value; i++)
+                        Log.LogInfo("Starting recording");
+                        if (Mode.Value == "FreeCam")
                         {
-                            Debug.LogWarning("I " + i);
-                            if (recorders.Count <= i)
+                            Log.LogInfo($"Recording {CameraCount.Value} freecams");
+                            for (int i = 0; i < CameraCount.Value; i++)
                             {
-                                GameObject testobj = GameObject.Instantiate(Camera.main.gameObject);
-
-                                GameObject.Destroy(testobj.GetComponent<AudioListener>());
-                                GameplayRecorder test = testobj.AddComponent<CameraRecording.GameplayRecorder>();
-                                test.camNumber = (i + 1) % 10;
-                                recorders.Add(test);
-                                Debug.LogWarning("ADDED");
+                                GameObject recordingCamera = GameObject.Instantiate(Camera.main.gameObject);
+                                GameObject.Destroy(recordingCamera.GetComponent<AudioListener>());
+                                GameplayRecorder gameplayRecorder = recordingCamera.AddComponent<CameraRecording.GameplayRecorder>();
+                                gameplayRecorder.camNumber = (i + 1) % 10;
+                                if (recorders.Count <= i)
+                                {
+                                    recorders.Add(gameplayRecorder);
+                                }
+                                else
+                                {
+                                    recorders[i] = gameplayRecorder;
+                                }
+                                StartRecording(ref gameplayRecorder);
+                                gameplayRecorder.gameObject.transform.position = WEFreeCamera.FreeCameraPlugin.savedPositions[(i + 1) % 10].Value;
+                                gameplayRecorder.gameObject.transform.rotation = WEFreeCamera.FreeCameraPlugin.savedRotations[(i + 1) % 10].Value;
+                                gameplayRecorder.GetComponent<Camera>().fieldOfView = WEFreeCamera.FreeCameraPlugin.savedFoVs[(i + 1) % 10].Value;
                             }
-                            Debug.LogWarning(recorders.Count);
-                            Debug.LogWarning(i);
-                            GameplayRecorder recorder = recorders[i];
-                            Debug.LogWarning(recorders[i] == null);
-                            if (recorder == null)
-                            {
-                                Debug.LogWarning("ADDING IN NULL");
-                                GameObject testobj = GameObject.Instantiate(Camera.main.gameObject);
-
-                                GameObject.Destroy(testobj.GetComponent<AudioListener>());
-
-                                GameplayRecorder test = testobj.AddComponent<CameraRecording.GameplayRecorder>();
-                                test.camNumber = (i + 1) % 10;
-                                recorder = test;
-                                Debug.LogWarning("ADDED");
-                                recorders[i] = recorder;
-                            }
-                            Debug.LogWarning(recorders[i] == null);
-                            StartRecording(ref recorder);
-                            recorder.gameObject.transform.position = savedPositions[(i + 1) % 10];
-                            recorder.gameObject.transform.rotation = savedRotations[(i + 1) % 10];
-                            recorder.GetComponent<Camera>().fieldOfView = savedFoVs[(i + 1) % 10];
                         }
-                    }
-                    else
-                    {
-                        Debug.LogWarning("ADDING MAIN CAM");
-                        if (recorders.Count == 0 || recorders[0] == null)
+                        else  //MainCam
                         {
-                            GameplayRecorder test = Camera.main.gameObject.AddComponent<CameraRecording.GameplayRecorder>();
-                            test.camNumber = 1;
+                            Log.LogInfo("Recording main camera");
+                            GameplayRecorder gameplayRecorder = Camera.main.gameObject.AddComponent<CameraRecording.GameplayRecorder>();
+                            gameplayRecorder.camNumber = 1;
                             if (recorders.Count == 0)
                             {
-                                recorders.Add(test);
-                                Debug.LogWarning("FIRST TIME");
-
+                                recorders.Add(gameplayRecorder);
                             }
                             else
                             {
-                                recorders[0] = test;
-                                Debug.LogWarning("Already existed before");
+                                recorders[0] = gameplayRecorder;
                             }
-
+                            StartRecording(ref gameplayRecorder);
                         }
-                        GameplayRecorder recorder = recorders[0];
-                        StartRecording(ref recorder);
+                        isRecording = true;
                     }
-                    isRecording = true;
-                }
-                else
-                {
-                    StopRecordingAll();
+                    else
+                    {
+                        Log.LogInfo("Stopping recording");
+                        StopRecordingAll();
+                    }
                 }
             }
         }
@@ -186,7 +158,6 @@ namespace CameraRecording
         }
         public static void StopRecording(ref GameplayRecorder recorder)
         {
-            Debug.LogWarning("STOPPING");
             recorder.StopRecording();
             if (Mode.Value == "FreeCam")
             {
@@ -203,9 +174,6 @@ namespace CameraRecording
         {
             for (int i = 0; i < recorders.Count; i++)
             {
-                Debug.LogWarning("stopping I " + i);
-                Debug.LogWarning(recorders[i] == null);
-                Debug.LogWarning(recorders[i].isRecording);
                 if (recorders[i] != null && recorders[i].isRecording)
                 {
                     GameplayRecorder recorder = recorders[i];
@@ -219,7 +187,8 @@ namespace CameraRecording
         [HarmonyPatch(typeof(LIPNHOMGGHF), nameof(LIPNHOMGGHF.PMIIOCMHEAE))]
         public static void LIPNHOMGGHF_PMIIOCMHEAE_Prefix()
         {
-            StopRecordingAll();
+            if (isRecording)
+                StopRecordingAll();
         }
 
     }

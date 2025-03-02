@@ -16,55 +16,26 @@ namespace CameraRecording
         private string saveFolder;
         public int camNumber;
 
-       // public GameplayRecorder test = null;
-
         public void Setup()
         {
             // Create and setup the recording camera
-            UnityEngine.Debug.LogWarning("0");
             GameObject cameraObject = this.gameObject;
-            UnityEngine.Debug.LogWarning("1");
-            
-            UnityEngine.Debug.LogWarning("TESTING CAM");
             recordingCamera = GetComponent<Camera>();
-
             if (Plugin.Mode.Value == "FreeCam")
             {
                 recordingCamera.targetDisplay = 0;
                 recordingCamera.depth = -3;
-
                 renderTexture = new RenderTexture(Plugin.width.Value, Plugin.height.Value, 24);
-
                 recordingCamera.targetTexture = renderTexture;
                 cameraObject.tag = "Untagged";
-                UnityEngine.Debug.LogWarning("CAMERA ADDED");
             }
             else
             {
-                UnityEngine.Debug.LogWarning("CAM IS EXISTING");
-                // UnityEngine.Debug.LogWarning(recordingCamera.targetTexture == null);
-                // renderTexture = recordingCamera.targetTexture;
-                UnityEngine.Debug.LogWarning(recordingCamera.pixelWidth);
-                UnityEngine.Debug.LogWarning(recordingCamera.pixelHeight);
                 renderTexture = new RenderTexture(recordingCamera.pixelWidth, recordingCamera.pixelHeight, 24);
-
-                UnityEngine.Debug.LogWarning($"{renderTexture.width} x {renderTexture.height}");
-                Plugin.width.Value = renderTexture.width;
-                Plugin.height.Value = renderTexture.height;
             }
-
-            // Setup camera properties
-
-
-            // Create render texture
-
-
             // Set save folder
             saveFolder = Path.Combine(Plugin.PluginPath, "recordings");
-            UnityEngine.Debug.LogWarning(Plugin.PluginPath);
             Directory.CreateDirectory(saveFolder);
-            UnityEngine.Debug.LogWarning(saveFolder);
-
         }
 
         public void StartRecording()
@@ -72,7 +43,6 @@ namespace CameraRecording
             if (isRecording) return;
 
             string outputPath = Path.Combine(saveFolder, $"GameplayRecording_{DateTime.Now:yyyyMMdd_HHmmss}_{camNumber}.mp4");
-            UnityEngine.Debug.LogWarning(outputPath);
             string ffmpegPath = Path.Combine(Plugin.PluginPath, "ffmpeg.exe");
             string V = (Plugin.Mode.Value == "FreeCam") ? $"-vf \"vflip\" " : "";
             string W = (Plugin.Mode.Value == "FreeCam") ? $"{Plugin.width.Value}" : $"{recordingCamera.pixelWidth}";
@@ -97,10 +67,8 @@ namespace CameraRecording
             ffmpegProcess.StartInfo.UseShellExecute = false;
             ffmpegProcess.StartInfo.RedirectStandardInput = true;
             ffmpegProcess.StartInfo.CreateNoWindow = true;
-            UnityEngine.Debug.LogWarning("Starting??");
 
-            
-            UnityEngine.Debug.LogWarning(ffmpegProcess.Start());
+            ffmpegProcess.Start();
             isRecording = true;
             StartCoroutine(CaptureFrames());
         }
@@ -145,16 +113,14 @@ namespace CameraRecording
 
             if (request.hasError)
             {
-                UnityEngine.Debug.LogError("GPU readback error detected.");
+                Plugin.Log.LogError("GPU readback error detected.");
                 return;
             }
 
             // Check if ffmpegProcess is still valid
             if (ffmpegProcess == null || ffmpegProcess.HasExited)
             {
-                UnityEngine.Debug.LogWarning(ffmpegProcess == null);
-                UnityEngine.Debug.LogWarning(ffmpegProcess.HasExited);
-                UnityEngine.Debug.LogWarning("FFmpeg process is not available or has exited.");
+                Plugin.Log.LogWarning("FFmpeg process is not available or has exited.");
                 return;
             }
 
@@ -169,16 +135,14 @@ namespace CameraRecording
             }
             catch (Exception e)
             {
-                UnityEngine.Debug.LogError($"Exception writing to FFmpeg process: {e.Message}");
+                Plugin.Log.LogError($"Exception writing to FFmpeg process: {e.Message}");
             }
         }
         public void StopRecording()
         {
-            UnityEngine.Debug.LogWarning("Trying to stop when: " + isRecording);
             if (!isRecording) return;
 
             isRecording = false;
-            UnityEngine.Debug.LogWarning("CLOSING?????");
             // Close FFmpeg process
             ffmpegProcess.StandardInput.Close();
             ffmpegProcess.WaitForExit();
