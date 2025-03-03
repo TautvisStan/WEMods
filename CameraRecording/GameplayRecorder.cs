@@ -15,6 +15,7 @@ namespace CameraRecording
         private Process ffmpegProcess;
         private string saveFolder;
         public int camNumber;
+        public int frameDelay;
 
         public void Setup()
         {
@@ -78,7 +79,11 @@ namespace CameraRecording
             float frameInterval = 1f / Plugin.frameRate.Value; // Time between frames
             float recordingStartTime = Time.realtimeSinceStartup;
             int frameCount = 0;
-
+            if (Plugin.Mode.Value == "FreeCam" && Plugin.freecamSmoothering.Value == true)
+            {
+                int delayMult = camNumber == 0 ? 9 : camNumber - 1;
+                recordingStartTime += frameInterval / frameDelay * delayMult;
+            }
             while (isRecording)
             {
                 yield return new WaitForEndOfFrame();
@@ -93,7 +98,28 @@ namespace CameraRecording
                     // Request an asynchronous readback
                     if (Plugin.Mode.Value == "MainCam")
                     {
-                        Graphics.Blit(null, renderTexture); // Copy to your texture
+                        if(Plugin.maincamVisibleUI.Value == false) //TODO fix
+                        {
+                            UnityEngine.Debug.LogWarning("TeST");
+                            int originalMask = recordingCamera.cullingMask;
+                            recordingCamera.cullingMask &= ~(1 << LayerMask.NameToLayer("UI")); // Exclude UI
+                            Canvas canvas = LIPNHOMGGHF.JPABICKOAEO.GetComponent<Canvas>();
+                            canvas.worldCamera = recordingCamera;
+                            canvas.renderMode = RenderMode.ScreenSpaceCamera;
+                            recordingCamera.RenderDontRestore();
+                            Graphics.Blit(null, renderTexture); // Capture UI-less scene
+                            recordingCamera.cullingMask = originalMask; // Restore original mask
+                            canvas.renderMode = RenderMode.ScreenSpaceOverlay;
+                        }    
+                        else
+                        {
+                            Graphics.Blit(null, renderTexture); // Copy to your texture
+                        }
+
+                    }
+                    else
+                    {
+                        recordingCamera.Render();
                     }
                     AsyncGPUReadback.Request(renderTexture, 0, TextureFormat.RGB24, OnCompleteReadback);
 

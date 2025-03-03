@@ -19,7 +19,7 @@ namespace CameraRecording
     {
         public const string PluginGuid = "GeeEm.WrestlingEmpire.CameraRecording";
         public const string PluginName = "CameraRecording";
-        public const string PluginVer = "1.0.0";  //#TODO maincam mode without hud; action targeting?;
+        public const string PluginVer = "1.0.2";  //#TODO maincam mode without hud; action targeting?; fix MainCam rec + freecam mode
         internal static ManualLogSource Log;
         internal readonly static Harmony Harmony = new(PluginGuid);
 
@@ -32,6 +32,8 @@ namespace CameraRecording
         public static ConfigEntry<int> crf;
         public static ConfigEntry<int> CameraCount;
         public static ConfigEntry<KeyCode> RecordingToggle;
+        public static ConfigEntry<bool> freecamSmoothering;
+        public static ConfigEntry<bool> maincamVisibleUI;
 
         public static List<GameplayRecorder> recorders = new();
         public static bool isRecording = false;
@@ -73,10 +75,21 @@ namespace CameraRecording
              28,
              "Constant Rate Factor (18-28 is good range, lower = better quality but bigger file size)");
 
-            RecordingToggle = Config.Bind("Constant Rate Factor",
+            freecamSmoothering = Config.Bind("General",
+             "(FreeCam) lag smoothering",
+             false,
+             "In theory, should make the lag smoother by adding a small delay to each cam (I'm not sure if it actually has an impact)");
+
+            maincamVisibleUI = Config.Bind("General",
+             "(MainCam) visible UI",   
+             true,
+             "Should the UI be visible in main camera recordings");
+
+            RecordingToggle = Config.Bind("Constant Rate Factor",  //messed up the name & if I fix it users' setting will be reset
              "Recording toggle keybind",
              KeyCode.None,
              "Keycode to start/stop recording");
+
         }
         private void OnEnable()
         {
@@ -106,8 +119,13 @@ namespace CameraRecording
                             {
                                 GameObject recordingCamera = GameObject.Instantiate(Camera.main.gameObject);
                                 GameObject.Destroy(recordingCamera.GetComponent<AudioListener>());
+                                WEFreeCamera.CustomCamera customCamera = null;
+                                recordingCamera.TryGetComponent<WEFreeCamera.CustomCamera>(out customCamera);
+                                if (customCamera != null)
+                                    GameObject.Destroy(customCamera);
                                 GameplayRecorder gameplayRecorder = recordingCamera.AddComponent<CameraRecording.GameplayRecorder>();
                                 gameplayRecorder.camNumber = (i + 1) % 10;
+                                gameplayRecorder.frameDelay = CameraCount.Value;
                                 if (recorders.Count <= i)
                                 {
                                     recorders.Add(gameplayRecorder);
@@ -120,13 +138,16 @@ namespace CameraRecording
                                 gameplayRecorder.gameObject.transform.position = WEFreeCamera.FreeCameraPlugin.savedPositions[(i + 1) % 10].Value;
                                 gameplayRecorder.gameObject.transform.rotation = WEFreeCamera.FreeCameraPlugin.savedRotations[(i + 1) % 10].Value;
                                 gameplayRecorder.GetComponent<Camera>().fieldOfView = WEFreeCamera.FreeCameraPlugin.savedFoVs[(i + 1) % 10].Value;
+                                gameplayRecorder.recordingCamera.enabled = false;
                             }
                         }
                         else  //MainCam
                         {
                             Log.LogInfo("Recording main camera");
                             GameplayRecorder gameplayRecorder = Camera.main.gameObject.AddComponent<CameraRecording.GameplayRecorder>();
+
                             gameplayRecorder.camNumber = 1;
+                            gameplayRecorder.frameDelay = 1;
                             if (recorders.Count == 0)
                             {
                                 recorders.Add(gameplayRecorder);
@@ -188,7 +209,10 @@ namespace CameraRecording
         public static void LIPNHOMGGHF_PMIIOCMHEAE_Prefix()
         {
             if (isRecording)
+            {
+                Log.LogInfo("Stopping recording");
                 StopRecordingAll();
+            }
         }
 
     }
