@@ -16,7 +16,7 @@ namespace IncreasedSliderLimits
     {
         public const string PluginGuid = "GeeEm.WrestlingEmpire.IncreasedSliderLimits";
         public const string PluginName = "IncreasedSliderLimits";
-        public const string PluginVer = "1.2.0";
+        public const string PluginVer = "1.2.1";
 
         internal static ManualLogSource Log;
         internal readonly static Harmony Harmony = new(PluginGuid);
@@ -92,11 +92,11 @@ namespace IncreasedSliderLimits
             minarmMass = Config.Bind("General",
 "Min arm mass",
 -100f,
-"The min body mass limit");
+"The min arm mass limit");
             maxarmMass = Config.Bind("General",
-"Max body mass",
+"Max arm mass",
 100f,
-"The max body mass limit");
+"The max arm mass limit");
 
         }
 
