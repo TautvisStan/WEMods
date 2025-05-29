@@ -15,7 +15,7 @@ namespace OnePunch
     {
         public const string PluginGuid = "GeeEm.WrestlingEmpire.OnePunch";
         public const string PluginName = "OnePunch";
-        public const string PluginVer = "1.1.5";
+        public const string PluginVer = "1.1.6";
 
         internal static ManualLogSource Log;
         internal readonly static Harmony Harmony = new(PluginGuid);
@@ -380,23 +380,7 @@ namespace OnePunch
         }
         public static void KnockOut(DFOGOCNBECG instance)
         {
-            instance.DMEDPMIPBAO = 1;
-            if (FFCEGMEAIBP.LOBDMDPMFLK > 0 && instance.FIEMGOLBHIO == 1 && instance.MGPDGDCIBGC == 0)
-            {
-                FFCEGMEAIBP.NCAAOLGAGCG(instance.JNNBBJKLEFK, instance.PLFGKLGCOMD);
-            }
-            instance.MGPDGDCIBGC = 1f;
-
-
-            FFCEGMEAIBP.JPBHIEOKODO = FFCEGMEAIBP.BCENJCEONEB(1);
-            if (FFCEGMEAIBP.JPBHIEOKODO == 0)
-            {
-                FFCEGMEAIBP.CADLONHABMC = 0;
-                if (FFCEGMEAIBP.GDKCEGBINCM >= 1 && FFCEGMEAIBP.GDKCEGBINCM <= 2)
-                {
-                    FFCEGMEAIBP.GDKCEGBINCM = 0;
-                }
-            }
+            instance.CBLEEDHMPBP();
         }
         public static void DamageStun(DFOGOCNBECG instance)
         {
