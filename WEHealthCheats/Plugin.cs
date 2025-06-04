@@ -14,7 +14,7 @@ namespace HealthCheats
     {
         public const string PluginGuid = "GeeEm.WrestlingEmpire.HealthCheats";
         public const string PluginName = "HealthCheats";
-        public const string PluginVer = "1.4.0";
+        public const string PluginVer = "1.4.1";
 
         internal static ManualLogSource Log;
         internal readonly static Harmony Harmony = new(PluginGuid);
@@ -460,23 +460,7 @@ namespace HealthCheats
 
         public static void KnockOut(DFOGOCNBECG instance)
         {
-            instance.DMEDPMIPBAO = 1;
-            if (FFCEGMEAIBP.LOBDMDPMFLK > 0 && instance.FIEMGOLBHIO == 1 && instance.MGPDGDCIBGC == 0)
-            {
-                FFCEGMEAIBP.NCAAOLGAGCG(instance.JNNBBJKLEFK, instance.PLFGKLGCOMD);
-            }
-            instance.MGPDGDCIBGC = 1f;
-
-
-            FFCEGMEAIBP.JPBHIEOKODO = FFCEGMEAIBP.BCENJCEONEB(1);
-            if (FFCEGMEAIBP.JPBHIEOKODO == 0)
-            {
-                FFCEGMEAIBP.CADLONHABMC = 0;
-                if (FFCEGMEAIBP.GDKCEGBINCM >= 1 && FFCEGMEAIBP.GDKCEGBINCM <= 2)
-                {
-                    FFCEGMEAIBP.GDKCEGBINCM = 0;
-                }
-            }
+            instance.CBLEEDHMPBP();
         }
         public static void Recover(DFOGOCNBECG instance)
         {
