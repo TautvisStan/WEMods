@@ -1,8 +1,12 @@
 using BepInEx;
+using BepInEx.Configuration;
 using BepInEx.Logging;
 using HarmonyLib;
 using System;
+using System.Collections.Generic;
+using System.Diagnostics;
 using System.IO;
+using System.Reflection.Emit;
 using UnityEngine.SceneManagement;
 
 namespace IncreasedCharacterLimit
@@ -13,7 +17,7 @@ namespace IncreasedCharacterLimit
     {
         public const string PluginGuid = "GeeEm.WrestlingEmpire.IncreasedCharacterLimit";
         public const string PluginName = "IncreasedCharacterLimit";
-        public const string PluginVer = "1.0.2";
+        public const string PluginVer = "1.0.3";
 
         internal static ManualLogSource Log;
         internal readonly static Harmony Harmony = new(PluginGuid);
@@ -30,7 +34,11 @@ namespace IncreasedCharacterLimit
             Plugin.Log = base.Logger;
 
             PluginPath = Path.GetDirectoryName(Info.Location);
-            if(Characters.no_chars < hardocdedLimit)
+
+        }
+        public static void GetCharLimit()
+        {
+            if (Characters.no_chars < hardocdedLimit)
             {
                 Limit = Characters.no_chars;
             }
@@ -87,23 +95,42 @@ namespace IncreasedCharacterLimit
         {
             if(!resized)
             {
+                GetCharLimit();
                 ResizeRequiredArrays();
                 resized = true;
             }
         }
 
-            [HarmonyPatch(typeof(AKFIIKOMPLL), nameof(AKFIIKOMPLL.ODONMLDCHHF))]
-             [HarmonyPostfix]
-             private static void AKFIIKOMPLL_ODONMLDCHHFPostfix(AKFIIKOMPLL __instance, float __result, float CAAJBNHEFJJ, float OEGLNPMNEOE, float NOGFHHECJBM, float JBPAELFIDOP, ref float LKBOHHGFJFO, int LKJHMOHMKCM)
-             {
-                 if (LIPNHOMGGHF.CHLJMEPFJOK == 3 && LIPNHOMGGHF.PIEMLEPEDFN == 0)
-                 {
-                     if (LIPNHOMGGHF.FKANHDIMMBJ[1] == __instance)
-                     {
-                         NJBJIIIACEP.KLDJKHPCDHM = (int)__result;
-                     }
-                 }
-             }
+        [HarmonyPatch(typeof(AKFIIKOMPLL), nameof(AKFIIKOMPLL.ODONMLDCHHF))]
+        [HarmonyPostfix]
+        private static void AKFIIKOMPLL_ODONMLDCHHFPostfix(AKFIIKOMPLL __instance, float __result, float CAAJBNHEFJJ, float OEGLNPMNEOE, float NOGFHHECJBM, float JBPAELFIDOP, ref float LKBOHHGFJFO, int LKJHMOHMKCM)
+        {
+            if (LIPNHOMGGHF.CHLJMEPFJOK == 3 && LIPNHOMGGHF.PIEMLEPEDFN == 0)
+            {
+                if (LIPNHOMGGHF.FKANHDIMMBJ[1] == __instance)
+                {
+                    NJBJIIIACEP.KLDJKHPCDHM = (int)__result;
+                }
+            }
+        }
+        [HarmonyPatch(typeof(Scene_Match_Setup), nameof(Scene_Match_Setup.AddRandom))]
+        [HarmonyTranspiler]  
+        public static IEnumerable<CodeInstruction> Transpiler(IEnumerable<CodeInstruction> instructions)
+        {
+            foreach (var instruction in instructions)
+            {
+                if (instruction.opcode == OpCodes.Ldc_I4_S && (sbyte)instruction.operand == 100)
+                {
+                    yield return new CodeInstruction(OpCodes.Call, AccessTools.Property(typeof(Plugin), nameof(Plugin.Limit)).GetGetMethod());
+                }
+                else
+                {
+                    yield return instruction;
+                }
+            }
+
+        }
+        
         public static void ResizeRequiredArrays()
         {
             Resize(ref FFCEGMEAIBP.NMMABDGIJNC, Limit + 1);
@@ -114,8 +141,7 @@ namespace IncreasedCharacterLimit
             Resize(ref FFCEGMEAIBP.MHHLHMDOFBP, Limit + 1);
             //FFCEGMEAIBP.EHIDHAPMAKG = hardocdedLimit;
             NJBJIIIACEP.KLDJKHPCDHM = Limit;
-
-
+            NJBJIIIACEP.BOLKAGBPGAG = Limit;
 
         }
         public static void Resize<T>(ref T[] original, int newsize)
